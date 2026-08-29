@@ -45,6 +45,7 @@ namespace Client
             resources["MarginLargeVertical"] = new Thickness(0, 3 * scale, 0, 3 * scale);
             resources["MarginNormalVerticalNegative"] = new Thickness(0, -3 * scale, 0, -3 * scale);
             resources["MarginLarge"] = new Thickness(10 * scale);
+            resources["MarginLargeHorizontal"] = new Thickness(10 * scale, 0, 10 * scale, 0);
             resources["MarginLargeVertical"] = new Thickness(0, 10 * scale, 0, 10 * scale);
         }
     }

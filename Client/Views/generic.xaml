@@ -54,7 +54,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:RoundButton">
-                    <Border Background="#3D3D3D"
+                    <Border Background="{TemplateBinding Background}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}"
                             x:Name="Border">
@@ -80,6 +80,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="Padding" Value="2"/>
+        <Setter Property="Background" Value="#3D3D3D"/>
     </Style>
 
     <Style TargetType="{x:Type local:PathButton}">

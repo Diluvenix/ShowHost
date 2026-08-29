@@ -31,6 +31,7 @@
                     <Thickness x:Key="MarginNormalVertical">0,3</Thickness>
                     <Thickness x:Key="MarginNormalVerticalNegative">0,-3</Thickness>
                     <Thickness x:Key="MarginLarge">10</Thickness>
+                    <Thickness x:Key="MarginLargeHorizontal">10,0</Thickness>
                     <Thickness x:Key="MarginLargeVertical">0,10</Thickness>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

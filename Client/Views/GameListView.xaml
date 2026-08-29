@@ -18,5 +18,24 @@
                FontWeight="Black"
                FontSize="{StaticResource FontHuge}"/>
 
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <Border Background="#282828" CornerRadius="{StaticResource RadiusLarge}"
+                    Margin="{StaticResource MarginLargeVertical}"
+                    Padding="{StaticResource MarginNormal}">
+                <Grid>
+                    <Label Content="57"
+                           FontWeight="Black"
+                           FontSize="{StaticResource FontXLarge}"
+                           HorizontalAlignment="Left"/>
+                    <local:RoundButton Content="Create"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       CornerRadius="{StaticResource RadiusNormal}"
+                                       FontSize="{StaticResource FontLarge}"
+                                       Background="#3D6B3B"
+                                       Margin="{StaticResource MarginLargeHorizontal}"/>
+                </Grid>
+            </Border>
+        </StackPanel>
     </Grid>
 </UserControl>
