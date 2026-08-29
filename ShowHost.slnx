@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="THIRD_PARTY_NOTICES.md" />
+  </Folder>
+  <Folder Name="/Solution Items/LICENSES/">
+    <File Path="LICENSES/Apache-2.0_Serilog.txt" />
+    <File Path="LICENSES/MIT_FeatherIcons.txt" />
+  </Folder>
+  <Project Path="Client/Client.csproj" />
+  <Project Path="Network/Network.csproj" Id="b1c7d7a7-04a3-4651-8611-421755ce97a4" />
+  <Project Path="Server/Server.csproj" />
+</Solution>

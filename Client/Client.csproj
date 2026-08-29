@@ -1,0 +1,93 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Fonts\Besley\Besley-Bold.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-Book.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-BookItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-Fatface.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-FatfaceItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-Heavy.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-HeavyItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-Medium.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-Semi.ttf" />
+    <None Remove="Assets\Fonts\Besley\Besley-SemiItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Bold.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Book.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Fatface.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-FatfaceItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Heavy.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-HeavyItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Italic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Medium.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-Semi.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyCondensed-SemiItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Bold.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Book.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Fatface.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-FatfaceItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Heavy.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-HeavyItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Italic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Medium.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-Semi.ttf" />
+    <None Remove="Assets\Fonts\Besley\BesleyNarrow-SemiItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Network\Network.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\Besley\Besley-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-Book.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-BookItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-Fatface.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-FatfaceItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-Heavy.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-HeavyItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-Semi.ttf" />
+    <Resource Include="Assets\Fonts\Besley\Besley-SemiItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Book.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Fatface.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-FatfaceItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Heavy.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-HeavyItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Italic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-Semi.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyCondensed-SemiItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Book.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Fatface.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-FatfaceItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Heavy.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-HeavyItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Italic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Semi.ttf" />
+    <Resource Include="Assets\Fonts\Besley\BesleyNarrow-SemiItalic.ttf" />
+  </ItemGroup>
+
+</Project>

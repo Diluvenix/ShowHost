@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="Client.Views.ConnectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="900" d:DesignWidth="1600"
+             Margin="15,0">
+    <StackPanel Orientation="Vertical"
+                VerticalAlignment="Center">
+        <Label HorizontalAlignment="Center"
+               FontWeight="Black"
+               FontSize="{DynamicResource FontHuge}"
+               Margin="0,5">
+            Connect to Server ...
+        </Label>
+
+        <Grid Margin="10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <local:InputBox Grid.Column="0"
+                            Margin="0,0,5,0"
+                            CornerRadius="{DynamicResource RadiusLarge}"
+                            Watermark="Server address"
+                            FontSize="{DynamicResource FontXLarge}"
+                            x:Name="ServerAddressInputBox"/>
+            <local:InputBox Grid.Column="1"
+                            CornerRadius="{DynamicResource RadiusLarge}"
+                            Watermark="Port"
+                            FontSize="{DynamicResource FontXLarge}"
+                            x:Name="PortInputBox"/>
+        </Grid>
+
+        <Grid Margin="0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <local:InputBox Grid.Column="1"
+                            CornerRadius="{DynamicResource RadiusLarge}"
+                            Watermark="Username"
+                            FontSize="{DynamicResource FontXLarge}"
+                            x:Name="UsernameInputBox"/>
+        </Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <local:RoundButton Grid.Column="1"
+                               Content="Connect"
+                               CornerRadius="{DynamicResource RadiusLarge}"
+                               FontWeight="Bold"
+                               FontSize="{DynamicResource FontXLarge}"
+                               x:Name="ConnectButton"/>
+        </Grid>
+
+        <Label HorizontalAlignment="Center"
+               Foreground="#D15262"
+               Content="[ERROR msg]"
+               FontSize="{DynamicResource FontNormal}"
+               Visibility="Hidden"
+               x:Name="ErrorLabel"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Expander Grid.Column="1"
+                      Header="Advanced Options"
+                      FontSize="{DynamicResource FontSmall}">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Grid.ColumnSpan="2" 
+                            CornerRadius="{DynamicResource RadiusNormal}"
+                            Background="#262626"
+                            Margin="0,2"/>
+                    <CheckBox Grid.Row="0" Grid.Column="0"
+                              Content="Connect as Moderator"
+                              VerticalAlignment="Center"
+                              VerticalContentAlignment="Center"
+                              Margin="3"
+                              x:Name="ModCheckBox"/>
+                    <local:InputBox Grid.Row="0" Grid.Column="1"
+                                    CornerRadius="{DynamicResource RadiusNormal}"
+                                    Watermark="Moderator key"
+                                    FontSize="{DynamicResource FontSmall}"
+                                    Margin="1,3"
+                                    x:Name="ModKeyInputBox"
+                                    IsEnabled="False"/>
+
+                    <Border Grid.Row="1" Grid.ColumnSpan="2" 
+                            CornerRadius="{DynamicResource RadiusNormal}"
+                            Background="#262626"
+                            Margin="0,2"/>
+                    <CheckBox Grid.Row="1" Grid.Column="0"
+                              Content="Recover Connection"
+                              VerticalAlignment="Center"
+                              VerticalContentAlignment="Center"
+                              Margin="3"
+                              x:Name="RecoveryCheckBox"/>
+                    <local:InputBox Grid.Row="1" Grid.Column="1"
+                                    CornerRadius="{DynamicResource RadiusNormal}"
+                                    Watermark="Recovery key"
+                                    FontSize="{DynamicResource FontSmall}"
+                                    Margin="1,3"
+                                    x:Name="RecoveryKeyInputBox"
+                                    IsEnabled="False"/>
+                </Grid>
+            </Expander>
+        </Grid>
+        
+    </StackPanel>
+</UserControl>

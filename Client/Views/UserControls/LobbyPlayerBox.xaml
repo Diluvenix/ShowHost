@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="Client.Views.UserControls.LobbyPlayerBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="900"
+             Height="{DynamicResource CardHeightNormal}">
+    <Border Background="#262626"
+            CornerRadius="{DynamicResource RadiusNormal}"
+            Margin="{DynamicResource MarginNormal}">
+        <Grid Margin="{DynamicResource MarginNormal}">
+            <StackPanel Orientation="Horizontal" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Left"
+                        Margin="{DynamicResource MarginNormal}">
+                <Path VerticalAlignment="Center"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Stroke="WhiteSmoke" 
+                      StrokeThickness="{DynamicResource FontMicro}"
+                      Height="{DynamicResource FontLarge}"
+                      Width="{DynamicResource FontLarge}"
+                      Stretch="Uniform"
+                      x:Name="PlayerLogo"
+                      Margin="{DynamicResource MarginNormal}">
+                    <Path.Data>
+                        <GeometryGroup>
+                            <PathGeometry Figures="M 20 21 v -2 a 4 4 0 0 0 -4 -4 H 8 a 4 4 0 0 0 -4 4 v 2" FillRule="Nonzero"/>
+                            <EllipseGeometry RadiusX="4.0" RadiusY="4.0" Center="12.0,7.0"/>
+                        </GeometryGroup>
+                    </Path.Data>
+                </Path>
+                <Path VerticalAlignment="Center"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Stroke="#539af8" 
+                      StrokeThickness="{DynamicResource FontMicro}"
+                      Height="{DynamicResource FontLarge}"
+                      Width="{DynamicResource FontLarge}"
+                      Stretch="Uniform"
+                      Data="M 12 22 s 8 -4 8 -10 V 5 l -8 -3 l -8 3 v 7 c 0 6 8 10 8 10 z"
+                      x:Name="ModeratorLogo"
+                      Margin="{DynamicResource MarginNormal}"/>
+
+                <StackPanel Orientation="Vertical"
+                            VerticalAlignment="Center">
+                    <Label Content="[USERNAME]"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Left"
+                           FontSize="{DynamicResource FontNormal}"
+                           FontWeight="SemiBold"
+                           Margin="{DynamicResource MarginNormalVerticalNegative}"
+                           x:Name="UsernameLabel"/>
+                    
+                    <Label Content="[Ping]"
+                           FontSize="{DynamicResource FontSmall}"
+                           Margin="{DynamicResource MarginNormalVerticalNegative}"
+                           x:Name="PingLabel"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Margin="{DynamicResource MarginNormal}">
+                <Border VerticalAlignment="Center"
+                        Background="#18177c"
+                        CornerRadius="{DynamicResource RadiusLarge}"
+                        x:Name="ModeratorBorder">
+                    <Label Content="Moderator"
+                           FontSize="{DynamicResource FontXSmall}"
+                           Foreground="#539af8"/>
+                </Border>
+                <Border VerticalAlignment="Center"
+                        Background="#442726"
+                        CornerRadius="{DynamicResource RadiusLarge}"
+                        Margin="{DynamicResource MarginNormal}"
+                        x:Name="OfflineBorder">
+                    <Label Content="Offline"
+                           FontSize="{DynamicResource FontXSmall}"
+                           Foreground="#ff6764"/>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
