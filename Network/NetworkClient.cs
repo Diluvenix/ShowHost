@@ -247,6 +247,7 @@ namespace Network
             ["DeletePacket"] = typeof(DeletePacket),
             ["GenerateRecoveryKeyPacket"] = typeof(GenerateRecoveryKeyPacket),
             ["GenerateModeratorKeyPacket"] = typeof(GenerateModeratorKeyPacket),
+            ["CreateGamePacket"] = typeof(CreateGamePacket),
         };
     }
 }
