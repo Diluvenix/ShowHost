@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using Client.Controllers;
+using Network;
+using Network.Packets;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Client.Views
 {
@@ -18,9 +10,17 @@ namespace Client.Views
     /// </summary>
     public partial class GameListView : UserControl
     {
+        private readonly NetworkClient client;
+
         public GameListView()
         {
             InitializeComponent();
+            client = MainController.Instance!.Client;
+
+            Create57Button.Click += (_, _) =>
+            {
+                _ = client.SendPacketAsync(new CreateGamePacket() { Game = CreateGamePacket.GameType._57 });
+            };
         }
     }
 }

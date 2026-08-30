@@ -33,7 +33,8 @@
                                        CornerRadius="{StaticResource RadiusNormal}"
                                        FontSize="{StaticResource FontLarge}"
                                        Background="#3D6B3B"
-                                       Margin="{StaticResource MarginLargeHorizontal}"/>
+                                       Margin="{StaticResource MarginLargeHorizontal}"
+                                       x:Name="Create57Button"/>
                 </Grid>
             </Border>
         </StackPanel>
