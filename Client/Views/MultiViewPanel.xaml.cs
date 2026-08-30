@@ -6,15 +6,15 @@ using System.Windows.Media;
 namespace Client.Views
 {
     /// <summary>
-    /// Interaction logic for ModeratorPanel.xaml
+    /// Interaction logic for MultiViewPanel.xaml
     /// </summary>
-    public partial class ModeratorPanel : UserControl
+    public partial class MultiViewPanel : UserControl
     {
         static readonly Brush smokeWhite = new SolidColorBrush(Color.FromRgb(0xf5, 0xf5, 0xf5));
         readonly ResourceDictionary resources = Application.Current.Resources;
 
 
-        public ModeratorPanel()
+        public MultiViewPanel()
         {
             InitializeComponent();
         }

@@ -57,16 +57,21 @@ namespace Client.Controllers
             });
         }
 
-        private void SetLobbyController() 
+        private void SetLobbyController()
             => currentController = IsModerator
-                ? new ModeratorPanelController(
+                ? new MultiViewPanelController(
                     [
                         new LobbyController(),
                         new SettingsController(),
                         new ModeratorGameListController(),
                     ]
                 )
-                : new LobbyController();
+                : new MultiViewPanelController(
+                    [
+                        new LobbyController(),
+                        new PlayerGameListController(),
+                    ]
+                );
         private void Set57LobbyController()
             => currentController = IsModerator
                 ? new ModeratorLobbyController()

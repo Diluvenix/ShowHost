@@ -4,18 +4,18 @@ using System.Windows.Media;
 
 namespace Client.Controllers
 {
-    class ModeratorPanelController : IController
+    class MultiViewPanelController : IController
     {
-        private readonly ModeratorPanel view;
+        private readonly MultiViewPanel view;
         public UserControl View => view;
         public Geometry? Path => null;
 
 
         private readonly IController[] panels;
 
-        public ModeratorPanelController(IController[] panels)
+        public MultiViewPanelController(IController[] panels)
         {
-            view = new ModeratorPanel();
+            view = new MultiViewPanel();
             view.SetPanels(panels);
             this.panels = panels;
         }
