@@ -82,16 +82,16 @@ namespace Client.Controllers
             view.HintMessage = "Register user...";
 
             string secret = "";
-            ConnectMode connectMode = ConnectMode.Player;
+            ConnectPacket.ConnectMode connectMode = ConnectPacket.ConnectMode.Player;
 
             if (view.IsRecoveryChecked)
             {
-                connectMode = ConnectMode.Recovery;
+                connectMode = ConnectPacket.ConnectMode.Recovery;
                 secret = view.RecoveryKey;
             }
             else if (view.IsModChecked)
             {
-                connectMode = ConnectMode.Moderator;
+                connectMode = ConnectPacket.ConnectMode.Moderator;
                 secret = view.ModKey;
             }
 
@@ -119,7 +119,7 @@ namespace Client.Controllers
 
         private void HandleConnectPacket(ConnectPacket packet)
         {
-            if (packet.Mode == ConnectMode.NONE)
+            if (packet.Mode == ConnectPacket.ConnectMode.NONE)
             {
                 view.ErrorMessage = string.Format("Error: {0}", packet.Secret??string.Empty);
                 view.SetControllsEnabled(true);
@@ -127,7 +127,7 @@ namespace Client.Controllers
             }
 
             view.SuccessMessage = "Sucessfully connected";
-            MainController.Instance!.IsModerator = packet.Mode == ConnectMode.Moderator;
+            MainController.Instance!.IsModerator = packet.Mode == ConnectPacket.ConnectMode.Moderator;
             MainController.Instance!.Username = packet.Username;
             MainController.Instance!.SetController(MainController.ControllerType.Lobby);
         }

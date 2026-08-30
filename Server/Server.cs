@@ -146,7 +146,7 @@ namespace Server
             Base32Token token;
             switch (packet.Mode)
             {
-                case ConnectMode.Moderator:
+                case ConnectPacket.ConnectMode.Moderator:
                     try
                     {
                         token = Base32Token.FromCode(packet.Secret ?? "");
@@ -155,7 +155,7 @@ namespace Server
                         {
                             await Reject(
                                 "Invalid moderator key Client=({0})", properties: [endpoint],
-                                packet: new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectMode.NONE }
+                                packet: new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectPacket.ConnectMode.NONE }
                             );
                             return;
                         }
@@ -165,28 +165,28 @@ namespace Server
                         await Reject(
                             "Invalid moderator key Client=({0})", properties: [endpoint],
                             exception: e,
-                            packet: new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectMode.NONE }
+                            packet: new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectPacket.ConnectMode.NONE }
                         );
                         return;
                     }
-                    goto case ConnectMode.Player;
-                case ConnectMode.Player:
+                    goto case ConnectPacket.ConnectMode.Player;
+                case ConnectPacket.ConnectMode.Player:
                     if (!Player.IsUsernameValid(username))
                     {
                         await Reject(
                             "Invalid username Client=({0}) Username={1}", properties: [endpoint, username],
-                            packet: new ConnectPacket() { Secret = "Invalid username", Mode = ConnectMode.NONE }
+                            packet: new ConnectPacket() { Secret = "Invalid username", Mode = ConnectPacket.ConnectMode.NONE }
                         );
                         return;
                     }
 
-                    PlayerRole role = packet.Mode == ConnectMode.Moderator ? PlayerRole.Moderator : PlayerRole.Player;
+                    PlayerRole role = packet.Mode == ConnectPacket.ConnectMode.Moderator ? PlayerRole.Moderator : PlayerRole.Player;
                     Player? player = new(client, username, role);
                     if (!Context.Players.TryAdd(username, player))
                     {
                         await Reject(
                             "Username already taken Client=({0}) Username={1}", properties: [endpoint, username],
-                            packet: new ConnectPacket() { Secret = "Username already taken", Mode = ConnectMode.NONE }
+                            packet: new ConnectPacket() { Secret = "Username already taken", Mode = ConnectPacket.ConnectMode.NONE }
                         );
                         return;
                     }
@@ -197,12 +197,12 @@ namespace Server
                     await Context.Lobby.AddPlayerAsync(player);
                     player.Service = Context.Lobby;
                     return;
-                case ConnectMode.Recovery:
+                case ConnectPacket.ConnectMode.Recovery:
                     if (!Context.Players.TryGetValue(username, out player))
                     {
                         await Reject(
                             "Username is unknown Client=({0}) Username={1}", properties: [endpoint, username],
-                            packet: new ConnectPacket() { Secret = "Unknown username", Mode = ConnectMode.NONE }
+                            packet: new ConnectPacket() { Secret = "Unknown username", Mode = ConnectPacket.ConnectMode.NONE }
                         );
                         return;
                     }
@@ -212,7 +212,7 @@ namespace Server
                     {
                         await Reject(
                             "Invalid recovery key Client=({0}) Username={1}", properties: [endpoint, username],
-                            packet: new ConnectPacket() { Secret = "Invalid recovery key", Mode = ConnectMode.NONE }
+                            packet: new ConnectPacket() { Secret = "Invalid recovery key", Mode = ConnectPacket.ConnectMode.NONE }
                         );
                         return;
                     }
@@ -224,9 +224,8 @@ namespace Server
                         Username = username,
                         Mode = player.Role switch
                         {
-                            PlayerRole.Player => ConnectMode.Player,
-                            PlayerRole.Moderator => ConnectMode.Moderator,
-                            _ => ConnectMode.Player,
+                            PlayerRole.Moderator => ConnectPacket.ConnectMode.Moderator,
+                            _ => ConnectPacket.ConnectMode.Player,
                         }
                     });
                     await (player.Service?.RecoverAsync(player) ?? Task.CompletedTask);
@@ -235,7 +234,7 @@ namespace Server
                 default:
                     await Reject(
                         "Invalid connect Client=({0}) ConnectMode={1}", properties: [endpoint, packet.Mode], 
-                        packet: new ConnectPacket() { Secret = "Invalid connect mode", Mode = ConnectMode.NONE }
+                        packet: new ConnectPacket() { Secret = "Invalid connect mode", Mode = ConnectPacket.ConnectMode.NONE }
                     );
                     return;
             }
@@ -297,7 +296,7 @@ namespace Server
                     await sender.SendPacketAsync(new GenerateRecoveryKeyPacket() { Username = generateRecoveryKeyPacket.Username, Key = base32Token.Code });
                     systemLogger.Information("Recover: Sucessfully generated recovery key for target Username={0} Target={1}", sender.Username, generateRecoveryKeyPacket.Username);
                     break;
-                case GenerateModeratorKeyPacket generateModeratorKeyPacket:
+                case GenerateModeratorKeyPacket:
                     if (sender.Role != PlayerRole.Moderator)
                     {
                         systemLogger.Warning("Denied access to modkey command Username={0}", sender.Username);
