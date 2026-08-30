@@ -34,15 +34,24 @@ namespace Server.Services
             players.Add(player.Username, player);
             await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby });
 
-            LobbyPacket packet = new()
+            await player.SendPacketAsync(new LobbyPacket()
             {
                 Players = [.. players.Values.Select(p => new LobbyPacket.Player(
                     p.Username,
                     p.PingMS,
                     p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, _ => LobbyPacket.PlayerRole.Player }
                 ))]
-            };
-            await player.SendPacketAsync(packet);
+            });
+            await player.SendPacketAsync(new GameListPacket()
+            {
+                Games = [.. Server.Instance!.Context.Services.Select(s => new GameListPacket.Game(
+                    s.Type,
+                    s.Name,
+                    s.PlayersMax,
+                    s.PlayersCurrent,
+                    s.Status
+                ))]
+            });
             logger.ForContext("Player", player.Username).Information("Player joined");
 
             if (task.IsCompleted)
@@ -55,15 +64,24 @@ namespace Server.Services
         public async Task RecoverAsync(Player player)
         {
             await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby });
-            LobbyPacket packet = new()
+            await player.SendPacketAsync(new LobbyPacket()
             {
                 Players = [.. players.Values.Select(p => new LobbyPacket.Player(
                     p.Username,
-                    0,
-                    p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, PlayerRole.Player => LobbyPacket.PlayerRole.Player, _ => LobbyPacket.PlayerRole.Player }
+                    p.PingMS,
+                    p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, _ => LobbyPacket.PlayerRole.Player }
                 ))]
-            };
-            await player.SendPacketAsync(packet);
+            });
+            await player.SendPacketAsync(new GameListPacket()
+            {
+                Games = [.. Server.Instance!.Context.Services.Select(s => new GameListPacket.Game(
+                    s.Type,
+                    s.Name,
+                    s.PlayersMax,
+                    s.PlayersCurrent,
+                    s.Status
+                ))]
+            });
         }
 
         private async Task ScheduledTasks(CancellationToken ct)
