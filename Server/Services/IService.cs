@@ -6,7 +6,7 @@ namespace Server.Services
     {
         public Task AddPlayerAsync(Player player);
         public Task RemovePlayerAsync(Player player);
-        public Task HandleAsync<T>(T packet, Player sender);
         public Task RecoverAsync(Player player);
+        public Task HandleAsync<T>(T packet, Player sender);
     }
 }

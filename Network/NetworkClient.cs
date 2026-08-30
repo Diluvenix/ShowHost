@@ -248,6 +248,7 @@ namespace Network
             ["GenerateRecoveryKeyPacket"] = typeof(GenerateRecoveryKeyPacket),
             ["GenerateModeratorKeyPacket"] = typeof(GenerateModeratorKeyPacket),
             ["CreateGamePacket"] = typeof(CreateGamePacket),
+            ["SetViewPacket"] = typeof(SetViewPacket),
         };
     }
 }

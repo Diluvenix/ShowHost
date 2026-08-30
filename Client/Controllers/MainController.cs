@@ -1,4 +1,5 @@
-﻿using Network;
+﻿using Client.Controllers.Games._57;
+using Network;
 using Network.Packets;
 using System.Windows;
 
@@ -12,7 +13,7 @@ namespace Client.Controllers
         public string Username = string.Empty;
         public string[] RelatedUsers = [];
 
-        public readonly NetworkClient Client = new();
+        public NetworkClient Client { get; private set; }
         public readonly CancellationTokenSource Cts;
         private readonly Thread handlerThread;
 
@@ -22,50 +23,54 @@ namespace Client.Controllers
         public MainController(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
+            Client = new NetworkClient();
+            Instance = this;
 
             Cts = new CancellationTokenSource();
             handlerThread = new Thread(() => _ = Handle(Cts.Token));
             handlerThread.Start();
-        }
 
-        public void SetController(ControllerType controller)
-        {
-            switch (controller)
-            {
-                case ControllerType.Connect:
-                    SetControllerConnect();
-                    break;
-                case ControllerType.Lobby:
-                    SetControllerLobby();
-                    break;
-            }
-        }
-
-        private void SetControllerConnect()
-        {
-            currentController?.Dispose();
             currentController = new ConnectController();
-            mainWindow.Border.Child = currentController.View;
+            mainWindow.Border.Child = currentController?.View;
         }
-        private void SetControllerLobby()
+
+        public void SetView(SetViewPacket.ViewType viewType)
         {
             currentController?.Dispose();
-            if (IsModerator)
+            mainWindow.Dispatcher.Invoke(() =>
             {
-                currentController = new ModeratorPanelController(
+                switch (viewType)
+                {
+                    case SetViewPacket.ViewType.Connect:
+                        Client.Dispose();
+                        Client = new NetworkClient();
+                        currentController = new ConnectController();
+                        break;
+                    case SetViewPacket.ViewType.Lobby:
+                        SetLobbyController();
+                        break;
+                    case SetViewPacket.ViewType._57_Lobby:
+                        Set57LobbyController();
+                        break;
+                }
+                mainWindow.Border.Child = currentController?.View;
+            });
+        }
+
+        private void SetLobbyController() 
+            => currentController = IsModerator
+                ? new ModeratorPanelController(
                     [
                         new LobbyController(),
                         new SettingsController(),
                         new GameListController(),
                     ]
-                );
-            }
-            else
-            {
-                currentController = new LobbyController();
-            }
-            mainWindow.Border.Child = currentController.View;
-        }
+                )
+                : new LobbyController();
+        private void Set57LobbyController()
+            => currentController = IsModerator
+                ? new ModeratorLobbyController()
+                : null;
 
         public void Dispose()
         {
@@ -102,6 +107,9 @@ namespace Client.Controllers
                     {
                         case HeartbeatPacket heartbeatPacket:
                             await Client.SendPacketAsync(heartbeatPacket).WaitAsync(ct);
+                            continue;
+                        case SetViewPacket setViewPacket:
+                             SetView(setViewPacket.View);
                             continue;
                     }
 

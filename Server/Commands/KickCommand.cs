@@ -23,7 +23,7 @@ namespace Server.Commands
                 return;
             }
 
-            player.Disconnect();
+            player.Disconnect("Kicked").Wait();
             Console.WriteLine("Kicked player {0}", username);
         }
     }

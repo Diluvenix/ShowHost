@@ -1,6 +1,7 @@
 ﻿using Network.Packets;
 using Serilog;
 using Server.Model;
+using System.ComponentModel.Design;
 
 namespace Server.Services
 {
@@ -26,6 +27,7 @@ namespace Server.Services
         public async Task AddPlayerAsync(Player player)
         {
             players.Add(player.Username, player);
+            await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby });
 
             LobbyPacket packet = new()
             {
@@ -44,6 +46,19 @@ namespace Server.Services
         public async Task RemovePlayerAsync(Player player)
         {
             players.Remove(player.Username);
+        }
+        public async Task RecoverAsync(Player player)
+        {
+            await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby });
+            LobbyPacket packet = new()
+            {
+                Players = [.. players.Values.Select(p => new LobbyPacket.Player(
+                    p.Username,
+                    0,
+                    p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, PlayerRole.Player => LobbyPacket.PlayerRole.Player, _ => LobbyPacket.PlayerRole.Player }
+                ))]
+            };
+            await player.SendPacketAsync(packet);
         }
 
         private async Task ScheduledUpdate(CancellationToken ct)
@@ -103,19 +118,6 @@ namespace Server.Services
 
             await RemovePlayerAsync(sender);
             await newGame.AddPlayerAsync(sender);
-        }
-
-        public async Task RecoverAsync(Player player)
-        {
-            LobbyPacket packet = new()
-            {
-                Players = [.. players.Values.Select(p => new LobbyPacket.Player(
-                    p.Username,
-                    0,
-                    p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, PlayerRole.Player => LobbyPacket.PlayerRole.Player, _ => LobbyPacket.PlayerRole.Player }
-                ))]
-            };
-            await player.SendPacketAsync(packet);
         }
     }
 }

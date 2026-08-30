@@ -1,5 +1,6 @@
 ﻿using Client.Controllers;
 using Client.Views;
+using Network.Packets;
 using System.Windows;
 
 namespace Client
@@ -15,9 +16,8 @@ namespace Client
 
             Window.SizeChanged += Window_SizeChanged;
 
-            MainController.Instance = new MainController(this);
-            MainController.Instance.SetController(MainController.ControllerType.Connect);
-            Closing += (_, _) => MainController.Instance.Dispose();
+            MainController mainController = new(this);
+            Closing += (_, _) => mainController.Dispose();
         }
 
 

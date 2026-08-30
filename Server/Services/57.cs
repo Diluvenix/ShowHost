@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Network.Packets;
+using Serilog;
 using Server.Model;
 
 namespace Server.Services
@@ -25,19 +26,20 @@ namespace Server.Services
         public async Task AddPlayerAsync(Player player)
         {
             players.Add(player.Username, player);
-            logger.Information("Player joined");
+            logger.ForContext("Player", player.Username).Information("Player joined");
+
+            await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby });
         }
         public async Task RemovePlayerAsync(Player player)
         {
             players.Remove(player.Username);
         }
-
-        public async Task HandleAsync<T>(T packet, Player sender)
+        public async Task RecoverAsync(Player player)
         {
             throw new NotImplementedException();
         }
 
-        public async Task RecoverAsync(Player player)
+        public async Task HandleAsync<T>(T packet, Player sender)
         {
             throw new NotImplementedException();
         }

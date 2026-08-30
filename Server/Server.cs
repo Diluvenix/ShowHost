@@ -233,7 +233,7 @@ namespace Server
                     }
 
                     if (player.IsConnected)
-                        player.Disconnect();
+                        await player.Disconnect("Kicked");
                     configuredSystemLogger.Information("Player kicked");
                     return true;
                 case DeletePacket deletePacket:

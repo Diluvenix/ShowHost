@@ -129,7 +129,6 @@ namespace Client.Controllers
             view.SuccessMessage = "Sucessfully connected";
             MainController.Instance!.IsModerator = packet.Mode == ConnectPacket.ConnectMode.Moderator;
             MainController.Instance!.Username = packet.Username;
-            MainController.Instance!.SetController(MainController.ControllerType.Lobby);
         }
     }
 }

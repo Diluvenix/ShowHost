@@ -39,6 +39,8 @@ namespace Server.Model
         }
         public void Dispose()
         {
+            Disconnect("Deleted").Wait();
+
             cts.Cancel();
             handlerTask?.Wait();
             cts.Dispose();
@@ -64,12 +66,16 @@ namespace Server.Model
             handlerTask = Handle(cts.Token);
         }
 
-        public void Disconnect()
+        public async Task Disconnect(string reason)
         {
+            if (!IsConnected) return;
+
+            await (client?.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Connect }) ?? Task.CompletedTask);
             cts.Cancel();
+
             PingMS = 0;
             client = null;
-            networkLogger.Information("Player lost connection", Username);
+            networkLogger.ForContext("Reason", reason).Information("Player lost connection", Username);
         }
 
         public static bool IsUsernameValid(string username) 
@@ -95,7 +101,7 @@ namespace Server.Model
                         lastHeartbeat = DateTime.UtcNow;
                         TimeSpan ping = lastHeartbeat - new DateTime(heartbeatPacket.Timestamp);
                         if (ping > TimeSpan.FromSeconds(10))
-                            Disconnect();
+                            await Disconnect("Timeout").WaitAsync(ct);
                         else
                             PingMS = (int)ping.TotalMilliseconds;
 
@@ -127,7 +133,7 @@ namespace Server.Model
 
                     TimeSpan ping = DateTime.UtcNow - lastHeartbeat;
                     if (ping > TimeSpan.FromSeconds(10))
-                        Disconnect();
+                        await Disconnect("Timeout").WaitAsync(ct);
                 }
             }
             catch (OperationCanceledException) { }
