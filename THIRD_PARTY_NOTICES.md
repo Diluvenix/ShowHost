@@ -42,4 +42,16 @@ License: SIL Open Font License 1.1
 
 The license is included with the font in:
 
-[client/Assets/Fonts/Besley/LICENSE.md](client/Assets/Fonts/Besley/LICENSE.md)
+[Client/Assets/Fonts/Besley/LICENSE.md](Client/Assets/Fonts/Besley/LICENSE.md)
+
+## Word List from ACA
+
+https://github.com/csmith/aca
+
+The word lists are used to generate default game names on the server.
+
+License: MIT License
+
+The license is included with the word lists in:
+
+[Server/Keys/Words/LICENCE](Server/Keys/Words/LICENCE)

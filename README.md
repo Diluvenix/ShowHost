@@ -45,9 +45,9 @@ Serilog is distributed under the **Apache License 2.0**.
 ## Font Acknowledgment
 
 This project uses **Besley*** — an open-source serif typeface designed by Owen Earl (Indestructible Type*), inspired by the designs of Robert Besley. 
-Besley* is distributed under the SIL Open Font License (OFL), which supports the free use and sharing of typefaces. This license can be found in the [Besley subdirectory](client/Assets/Fonts/Besley/LICENSE.md).
+Besley* is distributed under the SIL Open Font License (OFL), which supports the free use and sharing of typefaces. This license can be found in the [Besley subdirectory](Client/Assets/Fonts/Besley/LICENSE.md).
 
-For more information about the Besley Font, please visit their website, [indestructibletype.com/Besley.html](https://indestructibletype.com/Besley.html), and read the [README File](client/Assets/Fonts/Besley/README.txt).
+For more information about the Besley Font, please visit their website, [indestructibletype.com/Besley.html](https://indestructibletype.com/Besley.html), and read the [README File](Client/Assets/Fonts/Besley/README.txt).
 
 *I gratefully acknowledge and value the work of the designer and the open-source type community for making this font available.*
 
@@ -59,6 +59,16 @@ Feather Icons are distributed under the MIT License, which permits free use, mod
 For more information about Feather Icons, please visit their website at [feathericons.com](https://feathericons.com/).
 
 *I gratefully acknowledge the contributors and maintainers of Feather Icons for providing this clean and accessible icon set to the community.*
+
+## Word List Acknowledgement
+
+This project produces randomly generated game names using words from curated word lists.
+These word lists can be found in the [words subdirecory](Server/Keys/Words).
+
+The lists are borrowed from the [Adjective-colour-animal generator project](https://github.com/csmith/aca), which is published under the MIT License.
+The ACA project uses word lists based heavily on the [unique-name-generator](https://github.com/andreasonny83/unique-names-generator) npm module, with various manual modifications and curation by its author.
+
+*I gratefully acknowledge the authors and contributors of both projects for their work in creating and curating these word lists and for making them available to the open-source community.*
 
 ## License
 
@@ -77,6 +87,7 @@ The project uses third-party software and assets that are distributed under diff
 | Serilog | Apache License 2.0 |
 | Besley | SIL Open Font License 1.1 |
 | Feather Icons | MIT License |
+| Word Lists | MIT License |
 
 Their licenses and attribution information are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
