@@ -13,6 +13,7 @@ namespace Server
 
         public Lobby Lobby = new();
         public readonly List<IService> Services = [];
+        public readonly NameManager ServiceNameManager = new(NameGenerator.Generate);
 
         public readonly CancellationTokenSource Cts = new();
 

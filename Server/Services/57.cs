@@ -7,12 +7,13 @@ namespace Server.Services
     internal class _57 : IService
     {
         public string Type => "57";
-        public string Name => "unnamed";
+        private readonly string name;
+        public string Name => name;
         public int PlayersMax => 4;
         public int PlayersCurrent => 75;
         public GameListPacket.GameStatus Status => GameListPacket.GameStatus.Preparing;
 
-        private readonly ILogger logger = Log.ForContext("SourceContext", "57");
+        private readonly ILogger logger;
         private readonly Dictionary<string, Player> players = [];
 
         private Task task;
@@ -21,6 +22,9 @@ namespace Server.Services
         public _57()
         {
             task = Task.CompletedTask;
+            Server.Instance!.Context.ServiceNameManager.TryGenerate(out name);
+
+            logger = Log.ForContext("SourceContext", "57").ForContext("Game", name);
             logger.Information("New game created");
         }
         public void Dispose()
