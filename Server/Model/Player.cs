@@ -22,8 +22,7 @@ namespace Server.Model
         private Task? handlerTask;
         private DateTime lastHeartbeat;
 
-        private readonly ILogger networkLogger = Log.ForContext("SourceContext", "Network");
-        private readonly ILogger systemLogger = Log.ForContext("SourceContext", "System");
+        private readonly ILogger networkLogger;
 
 
         public Player(NetworkClient client, string username, PlayerRole role)
@@ -32,6 +31,8 @@ namespace Server.Model
             Username = username;
             Role = role;
             PingMS = 1;
+
+            networkLogger = Log.ForContext("SourceContext", "Network").ForContext("Player", Username);
 
             KeyManager = new();
             handlerTask = Handle(cts.Token);
@@ -68,7 +69,7 @@ namespace Server.Model
             cts.Cancel();
             PingMS = 0;
             client = null;
-            networkLogger.Information("Player lost connection Username={0}", Username);
+            networkLogger.Information("Player lost connection", Username);
         }
 
         public static bool IsUsernameValid(string username) 
@@ -104,7 +105,7 @@ namespace Server.Model
                     if (await (Server.Instance?.TryHandleServerPackageAsync(packet, this).WaitAsync(ct) ?? Task.FromResult(false)))
                         continue;
 
-                    await (Service?.HandleAsync(packet).WaitAsync(ct) ?? Task.CompletedTask);
+                    await (Service?.HandleAsync(packet, this).WaitAsync(ct) ?? Task.CompletedTask);
                 }
             }
             catch (OperationCanceledException) { }

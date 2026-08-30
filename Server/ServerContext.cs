@@ -12,7 +12,7 @@ namespace Server
         public KeyManager ModeratorKeys = new();
 
         public Lobby Lobby = new();
-        public List<IService> Services = [];
+        public readonly List<IService> Services = [];
 
         public readonly CancellationTokenSource Cts = new();
 

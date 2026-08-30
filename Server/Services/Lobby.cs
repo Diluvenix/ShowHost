@@ -1,5 +1,4 @@
-﻿using Network;
-using Network.Packets;
+﻿using Network.Packets;
 using Serilog;
 using Server.Model;
 
@@ -37,7 +36,7 @@ namespace Server.Services
                 ))]
             };
             await player.SendPacketAsync(packet);
-            logger.Information("Player joined Username={0}", player.Username);
+            logger.ForContext("Player", player.Username).Information("Player joined");
 
             if (task.IsCompleted)
                 task = ScheduledUpdate(cts.Token);
@@ -74,9 +73,36 @@ namespace Server.Services
             catch (OperationCanceledException) { }
         }
 
-        public async Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet, Player sender)
         {
-            throw new NotImplementedException();
+            switch (packet)
+            {
+                case CreateGamePacket createGamePacket:
+                    if (sender.Role != PlayerRole.Moderator)
+                    {
+                        logger.ForContext("Actor", sender.Username).Warning("Denied access to CreateGame Method", sender.Username);
+                        return;
+                    }
+                    await CreateGame(createGamePacket, sender);
+                    break;
+            }
+        }
+
+        private async Task CreateGame(CreateGamePacket createGamePacket, Player sender)
+        {
+            IService newGame;
+            switch (createGamePacket.Game)
+            {
+                case CreateGamePacket.GameType._57:
+                    newGame = new _57();
+                    break;
+                default:
+                    return;
+            }
+            Server.Instance!.Context.Services.Add(newGame);
+
+            await RemovePlayerAsync(sender);
+            await newGame.AddPlayerAsync(sender);
         }
 
         public async Task RecoverAsync(Player player)

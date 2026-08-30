@@ -2,7 +2,7 @@
 {
     public class GenerateRecoveryKeyPacket
     {
-        public string Username { get; set; } = "";
+        public string Target { get; set; } = "";
         public string? Key { get; set; }
     }
 }

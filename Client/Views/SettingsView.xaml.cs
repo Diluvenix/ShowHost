@@ -26,7 +26,7 @@ namespace Client.Views
             RecoveryButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
-                _ = MainController.Instance!.Client.SendPacketAsync(new GenerateRecoveryKeyPacket() { Username = username });
+                _ = MainController.Instance!.Client.SendPacketAsync(new GenerateRecoveryKeyPacket() { Target = username });
             };
             KickButton.Click += (_, _) =>
             {

@@ -5,19 +5,20 @@ namespace Server
     internal class Program
     {
         public static CancellationTokenSource Cts = new();
+        private static readonly LoggingFormatter loggingFormatter = new();
 
         private static void Main()
         {
             Log.Logger = new LoggerConfiguration()
               .MinimumLevel.Debug()
               .WriteTo.Console(
-                  restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-                  outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u5}] [{SourceContext}] {Message:lj}{NewLine}"
+                  loggingFormatter,
+                  restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information
               ).WriteTo.File(
+                  loggingFormatter,
                   "Logs/server.log",
                   rollingInterval: RollingInterval.Day,
-                  restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
-                  outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u5}] [{SourceContext}] {Message:lj}{NewLine}"
+                  restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug
               ).CreateLogger();
 
             Server server = new(45678);
