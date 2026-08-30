@@ -63,7 +63,7 @@ namespace Client.Controllers
                     [
                         new LobbyController(),
                         new SettingsController(),
-                        new GameListController(),
+                        new ModeratorGameListController(),
                     ]
                 )
                 : new LobbyController();

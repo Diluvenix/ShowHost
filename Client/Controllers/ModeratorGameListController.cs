@@ -5,9 +5,9 @@ using System.Windows.Media;
 
 namespace Client.Controllers
 {
-    class GameListController : IController
+    class ModeratorGameListController : IController
     {
-        private readonly GameListView view = new();
+        private readonly ModeratorGameListView view = new();
         public UserControl View => view;
 
         private static readonly Geometry path = new GeometryGroup()

@@ -10,16 +10,16 @@ using System.Windows.Data;
 namespace Client.Views
 {
     /// <summary>
-    /// Interaction logic for GameListView.xaml
+    /// Interaction logic for ModeratorGameListView.xaml
     /// </summary>
-    public partial class GameListView : UserControl
+    public partial class ModeratorGameListView : UserControl
     {
         public readonly ObservableCollection<GameBox> GameBoxes = [];
         private readonly ICollectionView gameView;
 
         private readonly NetworkClient client;
 
-        public GameListView()
+        public ModeratorGameListView()
         {
             InitializeComponent();
 
