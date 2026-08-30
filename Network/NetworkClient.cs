@@ -250,6 +250,7 @@ namespace Network
             ["CreateGamePacket"] = typeof(CreateGamePacket),
             ["SetViewPacket"] = typeof(SetViewPacket),
             ["GameListPacket"] = typeof(GameListPacket),
+            ["JoinGamePacket"] = typeof(JoinGamePacket),
         };
     }
 }

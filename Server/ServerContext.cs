@@ -12,7 +12,7 @@ namespace Server
         public KeyManager ModeratorKeys = new();
 
         public Lobby Lobby = new();
-        public readonly List<IService> Services = [];
+        public readonly ConcurrentDictionary<string, IService> Services = [];
         public readonly NameManager ServiceNameManager = new(NameGenerator.Generate);
 
         public readonly CancellationTokenSource Cts = new();
@@ -22,7 +22,7 @@ namespace Server
             Cts.Cancel();
 
             Lobby.Dispose();
-            foreach (IService service in Services)
+            foreach (IService service in Services.Values)
                 service.Dispose();
 
             foreach (Player player in Players.Values)

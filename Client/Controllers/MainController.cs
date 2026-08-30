@@ -1,4 +1,4 @@
-﻿using Client.Controllers.Games._57;
+﻿using _57 = Client.Controllers.Games._57;
 using Network;
 using Network.Packets;
 using System.Windows;
@@ -74,8 +74,8 @@ namespace Client.Controllers
                 );
         private void Set57LobbyController()
             => currentController = IsModerator
-                ? new ModeratorLobbyController()
-                : null;
+                ? new _57.PlayerLobbyController()
+                : new _57.PlayerLobbyController();
 
         public void Dispose()
         {

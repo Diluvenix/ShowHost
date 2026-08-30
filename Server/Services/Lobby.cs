@@ -44,7 +44,7 @@ namespace Server.Services
             });
             await player.SendPacketAsync(new GameListPacket()
             {
-                Games = [.. Server.Instance!.Context.Services.Select(s => new GameListPacket.Game(
+                Games = [.. Server.Instance!.Context.Services.Values.Select(s => new GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -74,7 +74,7 @@ namespace Server.Services
             });
             await player.SendPacketAsync(new GameListPacket()
             {
-                Games = [.. Server.Instance!.Context.Services.Select(s => new GameListPacket.Game(
+                Games = [.. Server.Instance!.Context.Services.Values.Select(s => new GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -134,7 +134,7 @@ namespace Server.Services
                 {
                     GameListPacket packet = new()
                     {
-                        Games = [.. Server.Instance!.Context.Services.Select(s => new GameListPacket.Game(
+                        Games = [.. Server.Instance!.Context.Services.Values.Select(s => new GameListPacket.Game(
                                 s.Type,
                                 s.Name,
                                 s.PlayersMax,
@@ -165,6 +165,14 @@ namespace Server.Services
                     }
                     await CreateGame(createGamePacket, sender);
                     break;
+                case JoinGamePacket joinGamePacket:
+                    if (!Server.Instance!.Context.Services.TryGetValue(joinGamePacket.GameName, out IService? service)) 
+                    {
+                        logger.ForContext("Actor", sender.Username).ForContext("Game", joinGamePacket.GameName).Warning("Game is unknown"); ;
+                        break;
+                    }
+                    await service.AddPlayerAsync(sender);
+                    break;
             }
         }
 
@@ -179,7 +187,7 @@ namespace Server.Services
                 default:
                     return;
             }
-            Server.Instance!.Context.Services.Add(newGame);
+            Server.Instance!.Context.Services.TryAdd(newGame.Name, newGame);
 
             await RemovePlayerAsync(sender);
             await newGame.AddPlayerAsync(sender);

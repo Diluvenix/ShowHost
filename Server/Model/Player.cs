@@ -108,6 +108,7 @@ namespace Server.Model
                         continue;
                     }
 
+                    networkLogger.ForContext("Packet", packet.GetType()).Debug("Recieved new Packet");
                     if (await (Server.Instance?.TryHandleServerPackageAsync(packet, this).WaitAsync(ct) ?? Task.FromResult(false)))
                         continue;
 
