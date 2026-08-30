@@ -249,6 +249,7 @@ namespace Network
             ["GenerateModeratorKeyPacket"] = typeof(GenerateModeratorKeyPacket),
             ["CreateGamePacket"] = typeof(CreateGamePacket),
             ["SetViewPacket"] = typeof(SetViewPacket),
+            ["GameListPacket"] = typeof(GameListPacket),
         };
     }
 }

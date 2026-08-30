@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" 
@@ -18,11 +19,21 @@
                FontWeight="Black"
                FontSize="{StaticResource FontHuge}"/>
 
-        <StackPanel Orientation="Vertical" Grid.Row="1">
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="GameList"></ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel Orientation="Vertical" Grid.Row="2">
+            <Separator Margin="{StaticResource MarginLargeVertical}"/>
+            <Label Content="Create new game"
+               HorizontalAlignment="Center"
+               FontWeight="Bold"
+               FontSize="{StaticResource FontLarge}"/>
             <Border Background="#282828" CornerRadius="{StaticResource RadiusLarge}"
                     Margin="{StaticResource MarginLargeVertical}"
                     Padding="{StaticResource MarginNormal}">
-                <Grid>
+                <Grid Margin="{DynamicResource MarginNormal}">
                     <Label Content="57"
                            FontWeight="Black"
                            FontSize="{StaticResource FontXLarge}"
@@ -32,6 +43,7 @@
                                        VerticalAlignment="Center"
                                        CornerRadius="{StaticResource RadiusNormal}"
                                        FontSize="{StaticResource FontLarge}"
+                                       FontWeight="Bold"
                                        Background="#3D6B3B"
                                        Margin="{StaticResource MarginLargeHorizontal}"
                                        x:Name="Create57Button"/>

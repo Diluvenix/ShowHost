@@ -1,4 +1,5 @@
 ﻿using Client.Views;
+using Network.Packets;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -26,9 +27,19 @@ namespace Client.Controllers
 
         public void Dispose() {}
 
-        public Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet)
         {
-            return Task.CompletedTask;
+            switch (packet)
+            {
+                case GameListPacket gameListPacket:
+                    view.Dispatcher.Invoke(() =>
+                    {
+                        view.SetGameBoxCount(gameListPacket.Games.Length);
+                        for (int i = 0; i < gameListPacket.Games.Length; i++)
+                            view.GameBoxes[i].SetFromData(gameListPacket.Games[i]);
+                    });
+                    break;
+            }
         }
     }
 }

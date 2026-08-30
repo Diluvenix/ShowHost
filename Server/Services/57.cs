@@ -6,6 +6,12 @@ namespace Server.Services
 {
     internal class _57 : IService
     {
+        public string Type => "57";
+        public string Name => "unnamed";
+        public int PlayersMax => 4;
+        public int PlayersCurrent => 75;
+        public GameListPacket.GameStatus Status => GameListPacket.GameStatus.Preparing;
+
         private readonly ILogger logger = Log.ForContext("SourceContext", "57");
         private readonly Dictionary<string, Player> players = [];
 

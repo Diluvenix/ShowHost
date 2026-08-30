@@ -74,6 +74,7 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="TextBlock" Property="Foreground" Value="#565656"/>
+                            <Setter TargetName="Border" Property="Background" Value="#3D3D3D"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

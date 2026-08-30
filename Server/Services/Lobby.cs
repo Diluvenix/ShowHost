@@ -1,12 +1,17 @@
 ﻿using Network.Packets;
 using Serilog;
 using Server.Model;
-using System.ComponentModel.Design;
 
 namespace Server.Services
 {
     internal class Lobby : IService
     {
+        public string Type => "Lobby";
+        public string Name => "Lobby";
+        public int PlayersMax => 0;
+        public int PlayersCurrent => players.Count;
+        public GameListPacket.GameStatus Status => GameListPacket.GameStatus.Running;
+
         private readonly ILogger logger = Log.ForContext("SourceContext", "Lobby");
         private readonly Dictionary<string, Player> players = [];
 
@@ -41,7 +46,7 @@ namespace Server.Services
             logger.ForContext("Player", player.Username).Information("Player joined");
 
             if (task.IsCompleted)
-                task = ScheduledUpdate(cts.Token);
+                task = ScheduledTasks(cts.Token);
         }
         public async Task RemovePlayerAsync(Player player)
         {
@@ -61,7 +66,20 @@ namespace Server.Services
             await player.SendPacketAsync(packet);
         }
 
-        private async Task ScheduledUpdate(CancellationToken ct)
+        private async Task ScheduledTasks(CancellationToken ct)
+        {
+            Task scheduledPlayerUpdate = ScheduledPlayerUpdate(ct);
+            Task scheduledGameUpdate = ScheduledGameUpdate(ct);
+
+            try
+            {
+                await scheduledPlayerUpdate.WaitAsync(ct);
+                await scheduledGameUpdate.WaitAsync(ct);
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        private async Task ScheduledPlayerUpdate(CancellationToken ct)
         {
             PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
 
@@ -75,6 +93,35 @@ namespace Server.Services
                                 p.Username,
                                 p.PingMS,
                                 p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, _ => LobbyPacket.PlayerRole.Player }
+                            ))
+                        ]
+                    };
+
+                    await Parallel.ForEachAsync(players.Values, ct, async (p, ct) =>
+                    {
+                        await p.SendPacketAsync(packet).WaitAsync(ct);
+                    });
+                }
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        private async Task ScheduledGameUpdate(CancellationToken ct)
+        {
+            PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
+
+            try
+            {
+                while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && players.Count > 0)
+                {
+                    GameListPacket packet = new()
+                    {
+                        Games = [.. Server.Instance!.Context.Services.Select(s => new GameListPacket.Game(
+                                s.Type,
+                                s.Name,
+                                s.PlayersMax,
+                                s.PlayersCurrent,
+                                s.Status
                             ))
                         ]
                     };
