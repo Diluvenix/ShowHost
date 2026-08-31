@@ -8,9 +8,8 @@ namespace Server.Services
     internal class _57 : IService
     {
         public string Type => "57";
-        private readonly string name;
         public string Name => name;
-        public int PlayersMax => 4;
+        public int PlayersMax => playersMax;
         public int PlayersCurrent => players.Count;
         public GameListPacket.GameStatus Status => GameListPacket.GameStatus.Preparing;
 
@@ -20,17 +19,19 @@ namespace Server.Services
         private readonly List<string> players = [];
         private readonly List<string> moderators = [];
 
+        private string name;
+        private int playersMax = 4;
 
         private Task task;
         private readonly CancellationTokenSource cts = new();
-        private readonly ILogger logger;
+        private ILogger logger;
 
         public _57()
         {
             task = Task.CompletedTask;
-            Server.Instance!.Context.ServiceNameManager.TryGenerate(out name);
+            Server.Instance!.Context.Services.TryAddGenerated(out name, this);
 
-            logger = Log.ForContext("SourceContext", "57").ForContext("Game", name);
+            logger = Log.ForContext("SourceContext", Type).ForContext(nameof(Name), Name);
             logger.Information("New game created");
         }
         public void Dispose()
@@ -42,24 +43,24 @@ namespace Server.Services
         public async Task AddPlayerAsync(Player player)
         {
             clients.Add(player.Username, player);
-            switch (player.Role)
-            {
-                case PlayerRole.Player:
-                    players.Add(player.Username);
-                    break;
-                case PlayerRole.Moderator:
-                    moderators.Add(player.Username);
-                    break;
-            }
             logger.ForContext("Player", player.Username).Information("Player joined");
 
-            await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby });
-            await player.SendPacketAsync(new _57_LobbyPacket()
+            switch (internalStatus)
             {
-                Name = Name,
-                PlayersMax = PlayersMax,
-                PlayersCurrent = PlayersCurrent,
-            });
+                case InternalStatus.Lobby:
+                    switch (player.Role)
+                    {
+                        case PlayerRole.Player:
+                            players.Add(player.Username);
+                            break;
+                        case PlayerRole.Moderator:
+                            moderators.Add(player.Username);
+                            break;
+                    }
+                    await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby });
+                    await SendLobbyUpdate();
+                    break;
+            }
 
             if (task.IsCompleted)
                 task = ScheduledTasks(cts.Token);
@@ -87,13 +88,12 @@ namespace Server.Services
             Task[] tasks = internalStatus switch
             {
                 InternalStatus.Lobby => [
-                    ScheduledLobbyUpdate()
+                    Task.CompletedTask
                 ],
                 _ => [
                     Task.CompletedTask
                 ],
             };
-
 
             try
             {
@@ -102,33 +102,80 @@ namespace Server.Services
             catch (OperationCanceledException) { }
         }
 
-        private async Task ScheduledLobbyUpdate()
+        public async Task HandleAsync<T>(T packet, Player sender)
         {
-            PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
-
-            while (await timer.WaitForNextTickAsync() && clients.Count > 0)
+            switch (internalStatus)
             {
-                _57_LobbyPacket packet = new()
-                {
-                    Name = Name,
-                    PlayersMax = PlayersMax,
-                    PlayersCurrent = PlayersCurrent,
-                };
-
-                await Parallel.ForEachAsync(clients.Values, async (p, _) =>
-                {
-                    await p.SendPacketAsync(packet);
-                });
+                case InternalStatus.Lobby:
+                    await HandleLobbyAsync(packet, sender);
+                    break;
             }
         }
 
-        public async Task HandleAsync<T>(T packet, Player sender)
+        private async Task HandleLobbyAsync<T>(T packet, Player sender)
         {
-            //throw new NotImplementedException();
+            switch (packet)
+            {
+                case _57_LobbySettingsUpdatePacket _57_LobbySettingsUpdatePacket:
+                    if (sender.Role != PlayerRole.Moderator)
+                    {
+                        logger.ForContext("Actor", sender.Username).Warning("Denied access to LobbySettingsUpdate Method");
+                        return;
+                    }
+                    await LobbySettingsUpdate(_57_LobbySettingsUpdatePacket, sender);
+                    break;
+            }
         }
 
+        private async Task LobbySettingsUpdate(_57_LobbySettingsUpdatePacket packet, Player sender)
+        {
+            ILogger logger = this.logger.ForContext("Actor", sender.Username);
 
+            if (!string.IsNullOrEmpty(packet.Name))
+            {
+                if (!Server.Instance!.Context.Services.TryRename(Name, packet.Name))
+                {
+                    logger.ForContext("NewName", packet.Name).Warning("Invalid or already taken Name");
+                }
+                else
+                {
+                    logger.ForContext("NewName", packet.Name).Information("Updated Name");
+                    name = packet.Name;
+                    this.logger = Log.ForContext("SourceContext", Type).ForContext(nameof(Name), Name);
+                    logger = this.logger.ForContext("Actor", sender.Username);
+                }
+            }
 
+            if (packet.PlayersMax != null)
+            {
+                if (packet.PlayersMax < 1)
+                {
+                    logger.ForContext(nameof(PlayersMax), PlayersMax).ForContext("NewPlayersMax", packet.PlayersMax).Warning("Invalid PlayersMax");
+                }
+                else
+                {
+                    logger.ForContext(nameof(PlayersMax), PlayersMax).ForContext("NewPlayersMax", packet.PlayersMax).Information("Updated PlayersMax");
+                    playersMax = packet.PlayersMax.Value;
+                }
+            }
+
+            await SendLobbyUpdate();
+        }
+
+        private async Task SendLobbyUpdate()
+        {
+            _57_LobbyPacket packet = new()
+            {
+                Name = Name,
+                PlayersMax = PlayersMax,
+                PlayersCurrent = PlayersCurrent,
+            };
+
+            await Parallel.ForEachAsync(clients.Values, async (p, _) =>
+            {
+                await p.SendPacketAsync(packet);
+            });
+        }
 
         private enum InternalStatus
         {

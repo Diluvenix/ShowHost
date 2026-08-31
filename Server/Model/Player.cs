@@ -48,6 +48,15 @@ namespace Server.Model
             client?.Dispose();
         }
 
+        public async Task SetService(IService newService)
+        {
+            if (Service is not null)
+                await Service.RemovePlayerAsync(this);
+
+            Service = newService;
+            await newService.AddPlayerAsync(this);
+        }
+
         public async Task SendPacketAsync<T>(T packet)
         {
             if (IsConnected)

@@ -60,6 +60,7 @@ namespace Server.Services
         public async Task RemovePlayerAsync(Player player)
         {
             players.Remove(player.Username);
+            logger.ForContext("Player", player.Username).Debug("Player left");
         }
         public async Task RecoverAsync(Player player)
         {
@@ -158,10 +159,9 @@ namespace Server.Services
             switch (packet)
             {
                 case CreateGamePacket createGamePacket:
-                    await RemovePlayerAsync(sender);
                     if (sender.Role != PlayerRole.Moderator)
                     {
-                        logger.ForContext("Actor", sender.Username).Warning("Denied access to CreateGame Method", sender.Username);
+                        logger.ForContext("Actor", sender.Username).Warning("Denied access to CreateGame Method");
                         return;
                     }
                     await CreateGame(createGamePacket, sender);
@@ -172,8 +172,7 @@ namespace Server.Services
                         logger.ForContext("Actor", sender.Username).ForContext("Game", joinGamePacket.GameName).Warning("Game is unknown"); ;
                         break;
                     }
-                    await RemovePlayerAsync(sender);
-                    await service.AddPlayerAsync(sender);
+                    await sender.SetService(service);
                     break;
             }
         }
@@ -189,10 +188,8 @@ namespace Server.Services
                 default:
                     return;
             }
-            Server.Instance!.Context.Services.TryAdd(newGame.Name, newGame);
 
-            await RemovePlayerAsync(sender);
-            await newGame.AddPlayerAsync(sender);
+            await sender.SetService(newGame);
         }
     }
 }

@@ -12,8 +12,10 @@ namespace Server
         public KeyManager ModeratorKeys = new();
 
         public Lobby Lobby = new();
-        public readonly ConcurrentDictionary<string, IService> Services = [];
-        public readonly NameManager ServiceNameManager = new(NameGenerator.Generate);
+        public readonly ConcurrentNameDictionary<IService> Services = new(
+            NameGenerator.Generate,
+            (s) => !string.IsNullOrEmpty(s) && s.Length <= 32 && s.AsSpan().IndexOfAnyExceptInRange(' ', '~') == -1
+        );
 
         public readonly CancellationTokenSource Cts = new();
 
