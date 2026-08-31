@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Client.Views.Games._57"
+             xmlns:local="clr-namespace:Client.Views"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="1600">
     <Grid Margin="50,20">
@@ -17,5 +17,52 @@
                HorizontalAlignment="Center"
                FontWeight="Black"
                FontSize="{StaticResource FontHuge}"/>
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical">
+                <Label Content="General"
+                       FontWeight="Bold"
+                       FontSize="{StaticResource FontBig}"/>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0"
+                           Content="Lobby name"
+                           FontSize="{StaticResource FontNormal}"
+                           Margin="{StaticResource MarginNormal}"/>
+
+                    <local:InputBox Grid.Row="0"
+                                    Grid.Column="1"
+                                    Watermark="Lobby name"
+                                    CornerRadius="{StaticResource RadiusNormal}"
+                                    FontSize="{StaticResource FontSmall}"
+                                    Padding="{StaticResource MarginNormal}"
+                                    Margin="{StaticResource MarginNormal}"
+                                    x:Name="LobbyNameBox"/>
+
+                    <Label Grid.Row="1" Grid.Column="0"
+                           Content="Players"
+                           FontSize="{StaticResource FontNormal}"
+                           Margin="{DynamicResource MarginNormal}"/>
+
+                    <local:InputBox Grid.Row="1" Grid.Column="1"
+                                    Watermark="Player Count"
+                                    CornerRadius="{StaticResource RadiusNormal}"
+                                    FontSize="{StaticResource FontSmall}"
+                                    Padding="{StaticResource MarginNormal}"
+                                    Margin="{StaticResource MarginNormal}"
+                                    x:Name="PlayersMaxBox"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

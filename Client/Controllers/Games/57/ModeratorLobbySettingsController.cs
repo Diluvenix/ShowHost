@@ -1,4 +1,6 @@
 ﻿using Client.Views.Games._57;
+using Network.Packets.Games._57;
+using System.Configuration;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -56,7 +58,16 @@ namespace Client.Controllers.Games._57
 
         public async Task HandleAsync<T>(T packet)
         {
-
+            switch (packet)
+            {
+                case _57_LobbyPacket _57_LobbyPacket:
+                    view.Dispatcher.Invoke(() =>
+                    {
+                        view.SetLobbyName(_57_LobbyPacket.Name);
+                        view.SetPlayersMax(_57_LobbyPacket.PlayersMax);
+                    });
+                    break;
+            }
         }
     }
 }
