@@ -14,6 +14,8 @@ ShowHost is currently under active development.
 - [x] Lobby System
 - [x] Moderator controls
 - [ ] Implement the Format **"57"** ([link](https://www.youtube.com/watch?v=boFNtl8LjO8))
+- [ ] Proper Server Multithreading and admin console
+- [ ] Allow for private games / games that require a key
 
 ## Technology
 
