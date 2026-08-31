@@ -33,7 +33,7 @@
                     <local:InputBox IsReadOnly="True" Watermark="Moderator key"
                                     FontSize="{StaticResource FontSmall}"
                                     CornerRadius="{StaticResource RadiusNormal}"
-                                    Padding="{StaticResource MarginNormal}" Margin="{StaticResource MarginNormalHorizontal}"
+                                    Margin="{StaticResource MarginNormalHorizontal}"
                                     x:Name="ModkeyBox"/>
                     <local:RoundButton Content="Copy" 
                                        CornerRadius="{StaticResource RadiusNormal}"
@@ -71,7 +71,7 @@
                     <local:InputBox IsReadOnly="True" Watermark="Recovery key"
                                     FontSize="{StaticResource FontSmall}"
                                     CornerRadius="{StaticResource RadiusNormal}"
-                                    Padding="{StaticResource MarginNormal}" Margin="{StaticResource MarginNormalHorizontal}"
+                                    Margin="{StaticResource MarginNormalHorizontal}"
                                     x:Name="RecoveryBox"/>
                     <local:RoundButton Content="Copy" 
                                        CornerRadius="{StaticResource RadiusNormal}"

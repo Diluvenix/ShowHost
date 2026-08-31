@@ -45,7 +45,6 @@
                                     Watermark="Lobby name"
                                     CornerRadius="{StaticResource RadiusNormal}"
                                     FontSize="{StaticResource FontSmall}"
-                                    Padding="{StaticResource MarginNormal}"
                                     Margin="{StaticResource MarginNormal}"
                                     x:Name="LobbyNameBox"/>
 
@@ -58,7 +57,6 @@
                                     Watermark="Player Count"
                                     CornerRadius="{StaticResource RadiusNormal}"
                                     FontSize="{StaticResource FontSmall}"
-                                    Padding="{StaticResource MarginNormal}"
                                     Margin="{StaticResource MarginNormal}"
                                     x:Name="PlayersMaxBox"/>
                 </Grid>
