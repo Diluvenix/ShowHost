@@ -22,23 +22,16 @@ namespace Server.Services
         private string name;
         private int playersMax = 4;
 
-        private Task task;
-        private readonly CancellationTokenSource cts = new();
         private ILogger logger;
 
         public _57()
         {
-            task = Task.CompletedTask;
             Server.Instance!.Context.Services.TryAddGenerated(out name, this);
 
             logger = Log.ForContext("SourceContext", Type).ForContext(nameof(Name), Name);
             logger.Information("New game created");
         }
-        public void Dispose()
-        {
-            cts.Cancel();
-            task.Wait();
-        }
+        public void Dispose() { }
 
         public async Task AddPlayerAsync(Player player)
         {
@@ -61,9 +54,6 @@ namespace Server.Services
                     await SendLobbyUpdate();
                     break;
             }
-
-            if (task.IsCompleted)
-                task = ScheduledTasks(cts.Token);
         }
         public async Task RemovePlayerAsync(Player player)
         {
@@ -80,26 +70,13 @@ namespace Server.Services
         }
         public async Task RecoverAsync(Player player)
         {
-            throw new NotImplementedException();
-        }
-
-        private async Task ScheduledTasks(CancellationToken ct)
-        {
-            Task[] tasks = internalStatus switch
+            switch (internalStatus)
             {
-                InternalStatus.Lobby => [
-                    Task.CompletedTask
-                ],
-                _ => [
-                    Task.CompletedTask
-                ],
-            };
-
-            try
-            {
-                await Task.WhenAll(tasks).WaitAsync(ct);
+                case InternalStatus.Lobby:
+                    await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby });
+                    await SendLobbyUpdate();
+                    break;
             }
-            catch (OperationCanceledException) { }
         }
 
         public async Task HandleAsync<T>(T packet, Player sender)
