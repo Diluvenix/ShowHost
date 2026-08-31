@@ -253,6 +253,7 @@ namespace Network
             ["GameListPacket"] = typeof(GameListPacket),
             ["JoinGamePacket"] = typeof(JoinGamePacket),
             ["_57_LobbyPacket"] = typeof(_57_LobbyPacket),
+            ["_57_LobbySettingsUpdatePacket"] = typeof(_57_LobbySettingsUpdatePacket),
         };
     }
 }
