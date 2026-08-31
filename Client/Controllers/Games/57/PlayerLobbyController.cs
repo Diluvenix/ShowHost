@@ -10,7 +10,20 @@ namespace Client.Controllers.Games._57
         private readonly PlayerLobbyView view = new();
         public UserControl View => view;
 
-        public Geometry? Path => null;
+        private static readonly Geometry path = new GeometryGroup()
+        {
+            Children = [
+                new PathGeometry() {
+                    Figures = PathFigureCollection.Parse("M 2 16.1 A 5 5 0 0 1 5.9 20 M 2 12.05 A 9 9 0 0 1 9.95 20 M 2 8 V 6 a 2 2 0 0 1 2 -2 h 16 a 2 2 0 0 1 2 2 v 12 a 2 2 0 0 1 -2 2 h -6"),
+                    FillRule = FillRule.Nonzero
+                },
+                new LineGeometry() {
+                    StartPoint = new(2, 20),
+                    EndPoint = new(2.01, 20)
+                }
+            ]
+        };
+        public Geometry? Path => path;
 
         public void Dispose() { }
 

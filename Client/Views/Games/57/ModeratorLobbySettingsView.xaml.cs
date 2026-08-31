@@ -3,11 +3,11 @@
 namespace Client.Views.Games._57
 {
     /// <summary>
-    /// Interaction logic for ModeratorLobbyView.xaml
+    /// Interaction logic for ModeratorLobbySettingsView.xaml
     /// </summary>
-    public partial class ModeratorLobbyView : UserControl
+    public partial class ModeratorLobbySettingsView : UserControl
     {
-        public ModeratorLobbyView()
+        public ModeratorLobbySettingsView()
         {
             InitializeComponent();
         }

@@ -62,8 +62,8 @@ namespace Client.Controllers
                 ? new MultiViewPanelController(
                     [
                         new LobbyController(),
-                        new SettingsController(),
                         new ModeratorGameListController(),
+                        new SettingsController(),
                     ]
                 )
                 : new MultiViewPanelController(
@@ -74,7 +74,12 @@ namespace Client.Controllers
                 );
         private void Set57LobbyController()
             => currentController = IsModerator
-                ? new _57.PlayerLobbyController()
+                ? new MultiViewPanelController(
+                    [
+                        new _57.PlayerLobbyController(),
+                        new _57.ModeratorLobbySettingsController(),
+                    ]
+                )
                 : new _57.PlayerLobbyController();
 
         public void Dispose()

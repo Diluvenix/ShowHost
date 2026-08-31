@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Client.Views.Games._57.ModeratorLobbyView"
+﻿<UserControl x:Class="Client.Views.Games._57.ModeratorLobbySettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" 
-               Content="57"
+               Content="57 - Settings"
                HorizontalAlignment="Center"
                FontWeight="Black"
                FontSize="{StaticResource FontHuge}"/>
