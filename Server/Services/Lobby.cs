@@ -158,6 +158,7 @@ namespace Server.Services
             switch (packet)
             {
                 case CreateGamePacket createGamePacket:
+                    await RemovePlayerAsync(sender);
                     if (sender.Role != PlayerRole.Moderator)
                     {
                         logger.ForContext("Actor", sender.Username).Warning("Denied access to CreateGame Method", sender.Username);
@@ -171,6 +172,7 @@ namespace Server.Services
                         logger.ForContext("Actor", sender.Username).ForContext("Game", joinGamePacket.GameName).Warning("Game is unknown"); ;
                         break;
                     }
+                    await RemovePlayerAsync(sender);
                     await service.AddPlayerAsync(sender);
                     break;
             }

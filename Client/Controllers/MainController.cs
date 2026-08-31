@@ -114,7 +114,7 @@ namespace Client.Controllers
                             await Client.SendPacketAsync(heartbeatPacket).WaitAsync(ct);
                             continue;
                         case SetViewPacket setViewPacket:
-                             SetView(setViewPacket.View);
+                            SetView(setViewPacket.View);
                             continue;
                     }
 

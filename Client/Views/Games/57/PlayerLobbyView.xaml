@@ -12,10 +12,46 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0" 
-               Content="57"
-               HorizontalAlignment="Center"
-               FontWeight="Black"
-               FontSize="{StaticResource FontHuge}"/>
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="0"
+                    HorizontalAlignment="Center">
+            <Label Content="57"
+                   HorizontalAlignment="Center"
+                   FontWeight="Black"
+                   FontSize="{StaticResource FontHuge}"/>
+            <Label Content="[NAME]"
+                   HorizontalAlignment="Center"
+                   FontWeight="Bold" Opacity="0.7"
+                   FontSize="{StaticResource FontNormal}"
+                   Margin="{StaticResource MarginNormalVerticalNegative}"
+                   x:Name="NameLabel"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    Grid.Row="0"
+                    HorizontalAlignment="Right">
+            <Label Content="0/0"
+                   FontSize="{DynamicResource FontBig}"
+                   VerticalAlignment="Center"
+                   Opacity="0.7"
+                   x:Name="PlayerCountLabel"/>
+            <Path VerticalAlignment="Center"
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Stroke="WhiteSmoke" 
+                      StrokeThickness="{DynamicResource FontMicro}"
+                      Height="{DynamicResource FontBig}"
+                      Width="{DynamicResource FontBig}"
+                      Stretch="Uniform" Opacity="0.7">
+                <Path.Data>
+                    <GeometryGroup>
+                        <PathGeometry Figures="M 17 21 v -2 a 4 4 0 0 0 -4 -4 H 5 a 4 4 0 0 0 -4 4 v 2" FillRule="Nonzero"/>
+                        <EllipseGeometry RadiusX="4.0" RadiusY="4.0" Center="9.0,7.0"/>
+                        <PathGeometry Figures="M 23 21 v -2 a 4 4 0 0 0 -3 -3.87" FillRule="Nonzero"/>
+                        <PathGeometry Figures="M 16 3.13 a 4 4 0 0 1 0 7.75" FillRule="Nonzero"/>
+                    </GeometryGroup>
+                </Path.Data>
+            </Path>
+        </StackPanel>
     </Grid>
 </UserControl>

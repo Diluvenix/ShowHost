@@ -1,4 +1,5 @@
 ﻿using Network.Packets;
+using Network.Packets.Games._57;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -251,6 +252,7 @@ namespace Network
             ["SetViewPacket"] = typeof(SetViewPacket),
             ["GameListPacket"] = typeof(GameListPacket),
             ["JoinGamePacket"] = typeof(JoinGamePacket),
+            ["_57_LobbyPacket"] = typeof(_57_LobbyPacket),
         };
     }
 }

@@ -100,10 +100,7 @@ namespace Server.Model
                     {
                         lastHeartbeat = DateTime.UtcNow;
                         TimeSpan ping = lastHeartbeat - new DateTime(heartbeatPacket.Timestamp);
-                        if (ping > TimeSpan.FromSeconds(10))
-                            await Disconnect("Timeout").WaitAsync(ct);
-                        else
-                            PingMS = (int)ping.TotalMilliseconds;
+                        PingMS = (int)ping.TotalMilliseconds;
 
                         continue;
                     }
