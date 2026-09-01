@@ -5,5 +5,7 @@
         public string Name { get; set; } = string.Empty;
         public int PlayersMax { get; set; }
         public int PlayersCurrent { get; set; }
+
+        public _57_Player[] Players { get; set; } = [];
     }
 }

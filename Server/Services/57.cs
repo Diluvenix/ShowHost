@@ -17,7 +17,7 @@ namespace Server.Services
 
         private InternalStatus internalStatus = InternalStatus.Lobby;
         private readonly Dictionary<string, Player> clients = [];
-        private readonly List<string> players = [];
+        private readonly Dictionary<string, _57_Player> players = [];
         private readonly List<string> moderators = [];
 
         private string name;
@@ -45,7 +45,7 @@ namespace Server.Services
                     switch (player.Role)
                     {
                         case PlayerRole.Player:
-                            players.Add(player.Username);
+                            players.Add(player.Username, new _57_Player(player.Username, 0, 0));
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
@@ -147,6 +147,7 @@ namespace Server.Services
                 Name = Name,
                 PlayersMax = PlayersMax,
                 PlayersCurrent = PlayersCurrent,
+                Players = [.. players.Values]
             };
 
             await Parallel.ForEachAsync(clients.Values, async (p, _) =>
