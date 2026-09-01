@@ -8,7 +8,7 @@ namespace Server.Model
 {
     internal class Player : IDisposable
     {
-        public IService Service { get; private set; } = Context.Lobby;
+        public ServiceBase Service { get; private set; } = Context.Lobby;
         public int PingMS { get; private set; }
         public bool IsConnected => PingMS > 0;
         public readonly string Username;
@@ -48,7 +48,7 @@ namespace Server.Model
             client?.Dispose();
         }
 
-        public async Task SetServiceAsync(IService newService, CancellationToken ct)
+        public async Task SetServiceAsync(ServiceBase newService, CancellationToken ct)
         {
             await Service.RemovePlayerAsync(this, ct);
             Service = newService;

@@ -172,7 +172,7 @@ namespace Server.Model
                             _ => AuthenticationPacket.AuthenticationType.Player,
                         }
                     }, ct);
-                    await player.Service.RecoverAsync(player, ct);
+                    await player.Service.RecoverPlayerAsync(player, ct);
                     configuredAuthLogger.ForContext("Role", player.Role).Information("Player recovered");
                     return;
                 default:

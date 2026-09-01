@@ -11,7 +11,7 @@ namespace Server.Model
         public static readonly KeyManager ModeratorKeys = new();
 
         public static readonly Lobby Lobby = new();
-        public static readonly ConcurrentNameDictionary<IService> Services = new(
+        public static readonly ConcurrentNameDictionary<ServiceBase> Services = new(
             NameGenerator.Generate,
             (s) => !string.IsNullOrEmpty(s) && s.Length <= 32 && s.AsSpan().IndexOfAnyExceptInRange(' ', '~') == -1 && s != "Lobby"
         );
@@ -21,7 +21,7 @@ namespace Server.Model
         public static void Dispose()
         {
             Lobby.Dispose();
-            foreach (IService service in Services.Values)
+            foreach (ServiceBase service in Services.Values)
                 service.Dispose();
 
             foreach (Player player in Players.Values)

@@ -1,44 +1,25 @@
 ﻿using Network.Packets;
 using Network.Packets.Games._57;
-using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
 
 namespace Server.Services
 {
-    internal class _57 : IService
+    internal class _57 : ServiceBase
     {
-        public string Type => "57";
-        public string Name => name;
-        public int PlayersMax => playersMax;
-        public int PlayersCurrent => players.Count;
-        public Lobby_GameListPacket.GameStatus Status => Lobby_GameListPacket.GameStatus.Preparing;
-
-
         private InternalStatus internalStatus = InternalStatus.Lobby;
-        private readonly Dictionary<string, Player> clients = [];
         private readonly OrderedDictionary<string, _57_Player> players = [];
         private readonly List<string> moderators = [];
 
-        private string name;
-        private int playersMax = 4;
-
-        private ILogger logger;
-
-        public _57()
+        public _57() : base("57") 
         {
-            Context.Services.TryAddGenerated(out name, this);
-
-            logger = Log.ForContext("SourceContext", Type).ForContext(nameof(Name), Name);
-            logger.Information("New game created");
+            PlayersMax = 4;
         }
-        public void Dispose() { }
 
-        public async Task AddPlayerAsync(Player player, CancellationToken ct)
+        public override void Dispose() { }
+
+        private protected override async Task OnPlayerAddedAsync(Player player, CancellationToken ct)
         {
-            clients.Add(player.Username, player);
-            logger.ForContext("Player", player.Username).Information("Player joined");
-
             switch (internalStatus)
             {
                 case InternalStatus.Lobby:
@@ -46,6 +27,7 @@ namespace Server.Services
                     {
                         case PlayerRole.Player:
                             players.Add(player.Username, new _57_Player(player.Username, player.PingMS, Colors.GetNextDefault(players.Values.Select(p => p.Color)), 0));
+                            PlayersCurrent = players.Count;
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
@@ -56,20 +38,20 @@ namespace Server.Services
                     break;
             }
         }
-        public async Task RemovePlayerAsync(Player player, CancellationToken ct)
+        private protected override async Task OnPlayerRemovedAsync(Player player, CancellationToken ct)
         {
-            clients.Remove(player.Username);
             switch (player.Role)
             {
                 case PlayerRole.Player:
                     players.Remove(player.Username);
+                    PlayersCurrent = players.Count;
                     break;
                 case PlayerRole.Moderator:
                     moderators.Remove(player.Username);
                     break;
             }
         }
-        public async Task RecoverAsync(Player player, CancellationToken ct)
+        private protected override async Task OnPlayerRecoveredAsync(Player player, CancellationToken ct)
         {
             switch (internalStatus)
             {
@@ -80,7 +62,7 @@ namespace Server.Services
             }
         }
 
-        public async Task HandleAsync<T>(T packet, Player sender, CancellationToken ct)
+        public override async Task HandleAsync<T>(T packet, Player sender, CancellationToken ct)
         {
             switch (internalStatus)
             {
@@ -118,7 +100,7 @@ namespace Server.Services
                 else
                 {
                     logger.ForContext("NewName", packet.Name).Information("Updated Name");
-                    name = packet.Name;
+                    Name = packet.Name;
                     this.logger = Log.ForContext("SourceContext", Type).ForContext(nameof(Name), Name);
                     logger = this.logger.ForContext("Actor", sender.Username);
                 }
@@ -133,7 +115,7 @@ namespace Server.Services
                 else
                 {
                     logger.ForContext(nameof(PlayersMax), PlayersMax).ForContext("NewPlayersMax", packet.PlayersMax).Information("Updated PlayersMax");
-                    playersMax = packet.PlayersMax.Value;
+                    PlayersMax = packet.PlayersMax.Value;
                 }
             }
 
