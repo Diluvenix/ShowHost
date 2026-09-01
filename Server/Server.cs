@@ -208,50 +208,39 @@ namespace Server
 
             switch (package)
             {
-                case KickPacket kickPacket:
+                case ModerationPacket moderationPacket:
+                    configuredSystemLogger = configuredSystemLogger.ForContext("Action", moderationPacket.Action).ForContext("Target", moderationPacket.Target);
+
                     if (sender.Role != PlayerRole.Moderator)
                     {
-                        configuredSystemLogger.Warning("Access denied to kick command");
+                        configuredSystemLogger.Warning("Access to moderation denied");
                         return true;
                     }
-                    configuredSystemLogger = configuredSystemLogger.ForContext("Target", kickPacket.Target);
-                    if (!ServerContext.Players.TryGetValue(kickPacket.Target, out Player? player))
+                    if (!ServerContext.Players.TryGetValue(moderationPacket.Target, out Player? player))
                     {
-                        configuredSystemLogger.Warning("Couldn't find player to kick");
+                        configuredSystemLogger.Warning("Couldn't find player to moderate");
                         return true;
                     }
                     if (player == sender)
                     {
-                        configuredSystemLogger.Warning("Can't kick self");
+                        configuredSystemLogger.Warning("Can't moderate self");
                         return true;
                     }
 
-                    if (player.IsConnected)
-                        await player.Disconnect("Kicked");
-                    configuredSystemLogger.Information("Player kicked");
-                    return true;
-                case DeletePacket deletePacket:
-                    if (sender.Role != PlayerRole.Moderator)
+                    switch (moderationPacket.Action)
                     {
-                        configuredSystemLogger.Warning("Access denied to delete command");
-                        return true;
+                        case ModerationPacket.ModerationAction.Kick:
+                            if (player.IsConnected)
+                                await player.Disconnect("Kicked");
+                            configuredSystemLogger.Information("Player kicked");
+                            break;
+                        case ModerationPacket.ModerationAction.Delete:
+                            await player.Service!.RemovePlayerAsync(player);
+                            ServerContext.Players.Remove(player.Username, out _);
+                            player.Dispose();
+                            configuredSystemLogger.Information("Player deleted");
+                            break;
                     }
-                    configuredSystemLogger = configuredSystemLogger.ForContext("Target", deletePacket.Target);
-                    if (!ServerContext.Players.TryGetValue(deletePacket.Target, out player))
-                    {
-                        configuredSystemLogger.Warning("Couldn't find player to delete");
-                        return true;
-                    }
-                    if (player == sender)
-                    {
-                        configuredSystemLogger.Warning("Can't delete self");
-                        return true;
-                    }
-
-                    await (player.Service?.RemovePlayerAsync(player) ?? Task.CompletedTask);
-                    ServerContext.Players.Remove(player.Username, out _);
-                    player.Dispose();
-                    configuredSystemLogger.Information("Player deleted");
                     return true;
                 case GenerateRecoveryKeyPacket generateRecoveryKeyPacket:
                     if (sender.Role != PlayerRole.Moderator)

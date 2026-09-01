@@ -31,14 +31,14 @@ namespace Client.Views
             KickButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
-                _ = MainController.Instance!.Client.SendPacketAsync(new KickPacket() { Target = username });
+                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationPacket() { Target = username, Action = ModerationPacket.ModerationAction.Kick });
             };
             DeleteButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
                 MessageBoxResult result = MessageBox.Show($"Delete player connection for user {username}?", "Deletion request", MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
                 if (result == MessageBoxResult.OK)
-                    _ = MainController.Instance!.Client.SendPacketAsync(new DeletePacket() { Target = username });
+                    _ = MainController.Instance!.Client.SendPacketAsync(new ModerationPacket() { Target = username, Action = ModerationPacket.ModerationAction.Delete });
             };
             RecoveryCopyButton.Click += (_, _) =>
             {
