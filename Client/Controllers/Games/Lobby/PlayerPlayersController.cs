@@ -29,8 +29,6 @@ namespace Client.Controllers.Games.Lobby
 
         private readonly Dictionary<string, PlayerBox> playerBoxes = [];
 
-        public PlayerPlayersController() { }
-
         public void Dispose() { }
 
         public async Task HandleAsync<T>(T packet)
@@ -50,40 +48,15 @@ namespace Client.Controllers.Games.Lobby
 
         private void HandleLobbyPacket(Lobby_PlayerListPacket packet)
         {
-            bool updatePlayers = true;
+            if (packet.Players.Length != playerBoxes.Count)
+                view.SetPlayerBoxCount(packet.Players.Length);
 
-            foreach (string username in playerBoxes.Keys)
+            playerBoxes.Clear();
+            for (int i = 0; i < packet.Players.Length; i++)
             {
-                if (!packet.Players.Any(p => p.Username == username))
-                {
-                    view.RemovePlayer(playerBoxes[username]);
-                    playerBoxes.Remove(username);
-
-                    if (updatePlayers)
-                    {
-                        MainController.Instance!.RelatedUsers = [.. packet.Players.Select(p => p.Username)];
-                        updatePlayers = false;
-                    }
-                }
-            }
-
-            foreach (Lobby_PlayerListPacket.Player player in packet.Players)
-            {
-                if (!playerBoxes.TryGetValue(player.Username, out PlayerBox? playerBox))
-                {
-                    playerBox = new PlayerBox(player.Username, player.Ping);
-                    playerBoxes[player.Username] = playerBox;
-                    view.AddPlayer(playerBox);
-
-                    if (updatePlayers)
-                    {
-                        MainController.Instance!.RelatedUsers = [.. packet.Players.Select(p => p.Username)];
-                        updatePlayers = false;
-                    }
-                }
-
-                playerBox.Ping = player.Ping;
-                playerBox.Role = player.PlayerRole;
+                PlayerBox playerBox = view.PlayerBoxes[i];
+                playerBoxes[packet.Players[i].Username] = playerBox;
+                playerBox.Update(packet.Players[i]);
             }
 
             view.PlayerViewRefresh();
@@ -94,10 +67,9 @@ namespace Client.Controllers.Games.Lobby
             foreach (PingPacket.Player player in packet.Players)
             {
                 if (playerBoxes.TryGetValue(player.Username, out PlayerBox? playerBox))
-                {
-                    playerBox.Ping = player.Ping;
-                }
+                    playerBox.Update(player);
             }
+            view.PlayerViewRefresh();
         }
     }
 }

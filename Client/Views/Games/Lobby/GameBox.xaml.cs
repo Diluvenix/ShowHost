@@ -25,7 +25,7 @@ namespace Client.Views.Games.Lobby
             };
         }
 
-        public void SetFromData(Lobby_GameListPacket.Game gameData)
+        public void Update(Lobby_GameListPacket.Game gameData)
         {
             gameName = gameData.Name;
 

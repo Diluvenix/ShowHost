@@ -57,9 +57,7 @@ namespace Client.Controllers.Games._57
             view.PlayerCountLabel.Content = $"{packet.PlayersCurrent}/{packet.PlayersMax}";
 
             if (packet.Players.Length != playerBoxes.Count)
-            {
                 view.SetPlayerBoxCount(packet.Players.Length);
-            }
 
             playerBoxes.Clear();
             for (int i = 0; i < packet.Players.Length; i++)

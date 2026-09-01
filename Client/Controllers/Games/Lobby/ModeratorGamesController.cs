@@ -36,7 +36,7 @@ namespace Client.Controllers.Games.Lobby
                     {
                         view.SetGameBoxCount(gameListPacket.Games.Length);
                         for (int i = 0; i < gameListPacket.Games.Length; i++)
-                            view.GameBoxes[i].SetFromData(gameListPacket.Games[i]);
+                            view.GameBoxes[i].Update(gameListPacket.Games[i]);
                     });
                     break;
             }

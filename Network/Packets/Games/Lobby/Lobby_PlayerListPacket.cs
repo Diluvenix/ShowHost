@@ -4,7 +4,7 @@
     {
         public Player[] Players { get; set; } = [];
 
-        public record class Player(string Username, int Ping, PlayerRole PlayerRole);
+        public record class Player(string Username, int Ping, PlayerRole Role);
 
         public enum PlayerRole
         {
