@@ -40,7 +40,7 @@ namespace Server.Services
             }, ct);
             await player.SendPacketAsync(new Lobby_GameListPacket()
             {
-                Games = [.. ServerContext.Services.Values.Select(s => new Lobby_GameListPacket.Game(
+                Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -51,7 +51,7 @@ namespace Server.Services
             logger.ForContext("Player", player.Username).Information("Player joined");
 
             if (scheduledTask.IsCompleted)
-                scheduledTask = ScheduledTasks(ServerContext.Cts.Token);
+                scheduledTask = ScheduledTasks(Context.Cts.Token);
             await SendPlayerUpdateAsync(ct);
         }
         public async Task RemovePlayerAsync(Player player, CancellationToken ct)
@@ -73,7 +73,7 @@ namespace Server.Services
             }, ct);
             await player.SendPacketAsync(new Lobby_GameListPacket()
             {
-                Games = [.. ServerContext.Services.Values.Select(s => new Lobby_GameListPacket.Game(
+                Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -126,7 +126,7 @@ namespace Server.Services
                 {
                     Lobby_GameListPacket packet = new()
                     {
-                        Games = [.. ServerContext.Services.Values.Select(s => new Lobby_GameListPacket.Game(
+                        Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
                                 s.Type,
                                 s.Name,
                                 s.PlayersMax,
@@ -158,7 +158,7 @@ namespace Server.Services
                     await CreateGame(createGamePacket, sender, ct);
                     break;
                 case Lobby_GameJoinPacket joinGamePacket:
-                    if (!ServerContext.Services.TryGetValue(joinGamePacket.GameName, out IService? service)) 
+                    if (!Context.Services.TryGetValue(joinGamePacket.GameName, out IService? service)) 
                     {
                         logger.ForContext("Actor", sender.Username).ForContext("Game", joinGamePacket.GameName).Warning("Game is unknown"); ;
                         break;

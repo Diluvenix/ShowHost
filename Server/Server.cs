@@ -24,8 +24,8 @@ namespace Server
             serverListener.Start();
             systemLogger.ForContext("Port", port).Information("Server started", port);
 
-            _ = HandleConnectionsAsync(ServerContext.Cts.Token);
-            _ = HandleInputAsync(ServerContext.Cts.Token);
+            _ = HandleConnectionsAsync(Context.Cts.Token);
+            _ = HandleInputAsync(Context.Cts.Token);
 
             Console.WriteLine("Press Ctrl-C or use 'stop' to shutdown the server at any time.");
             Console.WriteLine("Use 'help' to get a list of available commands");
@@ -39,7 +39,7 @@ namespace Server
             serverListener.Stop();
             serverListener.Dispose();
 
-            ServerContext.Dispose();
+            Context.Dispose();
 
             systemLogger.Information("Server closed");
         }
@@ -104,7 +104,7 @@ namespace Server
                     {
                         token = Base32Token.FromCode(packet.Secret ?? "");
 
-                        if (!ServerContext.ModeratorKeys.TryUseKey(token.Hash))
+                        if (!Context.ModeratorKeys.TryUseKey(token.Hash))
                         {
                             configuredAuthLogger.Warning(packetResult.Error, "Invalid moderator key");
                             await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
@@ -131,7 +131,7 @@ namespace Server
 
                     PlayerRole role = packet.Type == AuthenticationPacket.AuthenticationType.Moderator ? PlayerRole.Moderator : PlayerRole.Player;
                     Player? player = new(client, username, role);
-                    if (!ServerContext.Players.TryAdd(username, player))
+                    if (!Context.Players.TryAdd(username, player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username already taken");
                         await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username already taken", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
@@ -142,10 +142,10 @@ namespace Server
                     await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = packet.Type }, ct);
                     configuredAuthLogger.ForContext("Role", role).Information("Player authenticated");
 
-                    await ServerContext.Lobby.AddPlayerAsync(player, ct);
+                    await Context.Lobby.AddPlayerAsync(player, ct);
                     return;
                 case AuthenticationPacket.AuthenticationType.Recovery:
-                    if (!ServerContext.Players.TryGetValue(username, out player))
+                    if (!Context.Players.TryGetValue(username, out player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username is unknown");
                         await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username is unknown", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
@@ -198,7 +198,7 @@ namespace Server
                         configuredSystemLogger.Warning("Access to moderation denied");
                         return true;
                     }
-                    if (!ServerContext.Players.TryGetValue(moderationPacket.Target, out Player? player))
+                    if (!Context.Players.TryGetValue(moderationPacket.Target, out Player? player))
                     {
                         configuredSystemLogger.Warning("Couldn't find player to moderate");
                         return true;
@@ -218,7 +218,7 @@ namespace Server
                             break;
                         case ModerationPacket.ModerationAction.Delete:
                             await player.Service.RemovePlayerAsync(player, ct);
-                            ServerContext.Players.Remove(player.Username, out _);
+                            Context.Players.Remove(player.Username, out _);
                             player.Dispose();
                             configuredSystemLogger.Information("Player deleted");
                             break;
@@ -239,7 +239,7 @@ namespace Server
                     switch (moderationSecretPacket.Type)
                     {
                         case ModerationSecretPacket.SecretType.Recovery:
-                            if (moderationSecretPacket.Target is null || !ServerContext.Players.TryGetValue(moderationSecretPacket.Target, out player))
+                            if (moderationSecretPacket.Target is null || !Context.Players.TryGetValue(moderationSecretPacket.Target, out player))
                             {
                                 configuredSystemLogger.Warning("Couldn't find player to recover");
                                 return true;
@@ -247,7 +247,7 @@ namespace Server
                             player.KeyManager.RegisterKey(keyToken);
                             break;
                         case ModerationSecretPacket.SecretType.Moderator:
-                            ServerContext.ModeratorKeys.RegisterKey(keyToken);
+                            Context.ModeratorKeys.RegisterKey(keyToken);
                             break;
                     }
                     await sender.SendPacketAsync(moderationSecretPacket, ct);

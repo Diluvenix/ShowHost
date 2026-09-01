@@ -15,7 +15,7 @@ namespace Server.Commands
             Console.WriteLine("Generated a moderator key: \"{0}\"", base32Token.Code);
             KeyToken keyToken = new(base32Token.Hash, TimeSpan.FromMinutes(10));
 
-            ServerContext.ModeratorKeys.RegisterKey(keyToken);
+            Context.ModeratorKeys.RegisterKey(keyToken);
         }
     }
 }

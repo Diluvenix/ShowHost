@@ -25,13 +25,13 @@ namespace Server
 
             Console.CancelKeyPress += (sender, e) =>
             {
-                ServerContext.Cts.Cancel();
+                Context.Cts.Cancel();
                 e.Cancel = true;
             };
 
             try
             {
-                Task.Delay(Timeout.Infinite).Wait(ServerContext.Cts.Token);
+                Task.Delay(Timeout.Infinite).Wait(Context.Cts.Token);
             }
             catch (OperationCanceledException) { }
         }

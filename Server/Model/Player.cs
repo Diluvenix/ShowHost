@@ -8,7 +8,7 @@ namespace Server.Model
 {
     internal class Player : IDisposable
     {
-        public IService Service { get; private set; } = ServerContext.Lobby;
+        public IService Service { get; private set; } = Context.Lobby;
         public int PingMS { get; private set; }
         public bool IsConnected => PingMS > 0;
         public readonly string Username;

@@ -10,7 +10,7 @@ namespace Server.Commands
 
         public void Execute(string[] args)
         {
-            ServerContext.Cts.Cancel();
+            Context.Cts.Cancel();
         }
     }
 }

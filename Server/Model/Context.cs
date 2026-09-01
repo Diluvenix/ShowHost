@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace Server.Model
 {
-    internal static class ServerContext
+    internal static class Context
     {
         public static readonly ConcurrentDictionary<string, Player> Players = [];
 

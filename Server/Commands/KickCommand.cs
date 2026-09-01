@@ -17,7 +17,7 @@ namespace Server.Commands
             }
 
             string username = args[0];
-            if (!ServerContext.Players.TryGetValue(username, out Player? player))
+            if (!Context.Players.TryGetValue(username, out Player? player))
             {
                 Console.WriteLine("Couldn't find player {0}", username);
                 return;
@@ -25,7 +25,7 @@ namespace Server.Commands
 
             try
             {
-                player.DisconnectAsync("Kicked", ServerContext.Cts.Token).Wait();
+                player.DisconnectAsync("Kicked", Context.Cts.Token).Wait();
                 Console.WriteLine("Kicked player {0}", username);
             }
             catch (AggregateException) { }

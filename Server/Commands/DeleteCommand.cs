@@ -17,7 +17,7 @@ namespace Server.Commands
             }
 
             string username = args[0];
-            if (!ServerContext.Players.TryGetValue(username, out Player? player))
+            if (!Context.Players.TryGetValue(username, out Player? player))
             {
                 Console.WriteLine("Couldn't find player {0}", username);
                 return;
@@ -25,8 +25,8 @@ namespace Server.Commands
 
             try
             {
-                player.Service.RemovePlayerAsync(player, ServerContext.Cts.Token).Wait();
-                ServerContext.Players.Remove(player.Username, out _);
+                player.Service.RemovePlayerAsync(player, Context.Cts.Token).Wait();
+                Context.Players.Remove(player.Username, out _);
                 player.Dispose();
                 Console.WriteLine("Deleted player connection {0}", username);
             }

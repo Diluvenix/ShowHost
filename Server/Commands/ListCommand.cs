@@ -10,9 +10,9 @@ namespace Server.Commands
 
         public void Execute(string[] args)
         {
-            Console.WriteLine("There are currently {0} players connected:", ServerContext.Players.Count);
+            Console.WriteLine("There are currently {0} players connected:", Context.Players.Count);
 
-            foreach (Player player in ServerContext.Players.Values)
+            foreach (Player player in Context.Players.Values)
             {
                 Console.WriteLine(
                     $"\t{player.Username, -10}" +
