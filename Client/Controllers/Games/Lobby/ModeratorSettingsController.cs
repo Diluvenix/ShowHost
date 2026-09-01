@@ -30,7 +30,7 @@ namespace Client.Controllers.Games.Lobby
 
         public void Dispose() {}
 
-        public Task HandleAsync<T>(T packet)
+        public Task HandleAsync<T>(T packet, CancellationToken ct)
         {
             switch (packet)
             {
@@ -46,7 +46,7 @@ namespace Client.Controllers.Games.Lobby
                     }
                     break;
                 case Lobby_PlayerListPacket lobbyPacket:
-                    view.Dispatcher.Invoke(() => view.SetPlayers(lobbyPacket.Players.Select(p => p.Username)));
+                    view.Dispatcher.Invoke(view.SetPlayers, lobbyPacket.Players.Select(p => p.Username));
                     break;
             }
 

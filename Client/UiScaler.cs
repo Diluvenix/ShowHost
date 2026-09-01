@@ -1,8 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
-using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows;
 
 namespace Client
 {

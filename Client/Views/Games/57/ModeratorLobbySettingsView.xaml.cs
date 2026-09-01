@@ -56,7 +56,7 @@ namespace Client.Views.Games._57
             if (playersMax == this.playersMax)
                 return;
 
-            _ = client.SendPacketAsync(new _57_LobbySettingsUpdatePacket() { PlayersMax = playersMax });
+            _ = client.SendPacketAsync(new _57_LobbySettingsUpdatePacket() { PlayersMax = playersMax }, MainController.Instance!.Cts.Token);
         }
 
         public void SetLobbyName(string lobbyName)
@@ -82,7 +82,7 @@ namespace Client.Views.Games._57
             if (LobbyNameBox.Text == lobbyName)
                 return;
 
-            _ = client.SendPacketAsync(new _57_LobbySettingsUpdatePacket() { Name = LobbyNameBox.Text });
+            _ = client.SendPacketAsync(new _57_LobbySettingsUpdatePacket() { Name = LobbyNameBox.Text }, MainController.Instance!.Cts.Token);
         }
         private void LobbyNameBox_KeyDown(object sender, KeyEventArgs e)
         {

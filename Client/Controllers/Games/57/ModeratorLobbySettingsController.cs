@@ -3,6 +3,7 @@ using Network.Packets.Games._57;
 using System.Configuration;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Client.Controllers.Games._57
 {
@@ -56,16 +57,13 @@ namespace Client.Controllers.Games._57
 
         public void Dispose() { }
 
-        public async Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet, CancellationToken ct)
         {
             switch (packet)
             {
                 case _57_LobbyPacket _57_LobbyPacket:
-                    view.Dispatcher.Invoke(() =>
-                    {
-                        view.SetLobbyName(_57_LobbyPacket.Name);
-                        view.SetPlayersMax(_57_LobbyPacket.PlayersMax);
-                    });
+                    view.Dispatcher.Invoke(view.SetLobbyName, _57_LobbyPacket.Name);
+                    view.Dispatcher.Invoke(view.SetPlayersMax, _57_LobbyPacket.PlayersMax);
                     break;
             }
         }

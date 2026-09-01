@@ -31,15 +31,15 @@ namespace Client.Controllers.Games.Lobby
 
         public void Dispose() { }
 
-        public async Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet, CancellationToken ct)
         {
             switch (packet)
             {
                 case Lobby_PlayerListPacket lobbyPacket:
-                    view.Dispatcher.Invoke(() => HandleLobbyPacket(lobbyPacket));
+                    view.Dispatcher.Invoke(HandleLobbyPacket, lobbyPacket);
                     break;
                 case PingPacket pingPacket:
-                    view.Dispatcher.Invoke(() => HandlePingPacket(pingPacket));
+                    view.Dispatcher.Invoke(HandlePingPacket, pingPacket);
                     break;
                 default:
                     return;

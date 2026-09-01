@@ -29,7 +29,7 @@ namespace Client.Views.Games.Lobby
 
             Create57Button.Click += (_, _) =>
             {
-                _ = client.SendPacketAsync(new Lobby_GameCreatePacket() { Type = Lobby_GameCreatePacket.GameType._57 });
+                _ = client.SendPacketAsync(new Lobby_GameCreatePacket() { Type = Lobby_GameCreatePacket.GameType._57 }, MainController.Instance!.Cts.Token);
             };
         }
 

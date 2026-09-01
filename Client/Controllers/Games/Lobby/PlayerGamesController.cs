@@ -27,7 +27,7 @@ namespace Client.Controllers.Games.Lobby
 
         public void Dispose() {}
 
-        public async Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet, CancellationToken ct)
         {
             switch (packet)
             {

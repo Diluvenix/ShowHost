@@ -31,12 +31,12 @@ namespace Client.Controllers.Games._57
 
         public void Dispose() { }
 
-        public async Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet, CancellationToken ct)
         {
             switch (packet)
             {
                 case _57_LobbyPacket _57_LobbyPacket:
-                    view.Dispatcher.Invoke(() => HandleLobbyPacket(_57_LobbyPacket));
+                    view.Dispatcher.Invoke(HandleLobbyPacket, _57_LobbyPacket);
                     break;
                 case PingPacket pingPacket:
                     view.Dispatcher.Invoke(() =>

@@ -1,6 +1,4 @@
 ﻿using Client.Controllers;
-using Client.Views;
-using Network.Packets;
 using System.Windows;
 
 namespace Client

@@ -19,10 +19,10 @@ namespace Client.Controllers
             view = new ConnectView();
             client = MainController.Instance!.Client;
 
-            view.AddConnectButtonClickEventHandler((_, _) => _ = TryConnect());
+            view.AddConnectButtonClickEventHandler((_, _) => _ = TryConnectAsync(MainController.Instance!.Cts.Token));
         }
 
-        private async Task TryConnect()
+        private async Task TryConnectAsync(CancellationToken ct)
         {
             view.SetControllsEnabled(false);
 
@@ -63,7 +63,7 @@ namespace Client.Controllers
             }
 
             view.HintMessage = "Connecting...";
-            if (!(await client.TryConnectAsync(view.ServerAddress, view.Port)).Success)
+            if (!(await client.TryConnectAsync(view.ServerAddress, view.Port, ct)).Success)
             {
                 view.ErrorMessage = "Error: Server is unreachable.";
                 view.SetControllsEnabled(true);
@@ -72,7 +72,7 @@ namespace Client.Controllers
 
             view.HintMessage = "Encrypting channel...";
 
-            if (!(await client.DoHandshakeAsync()).Success)
+            if (!(await client.DoHandshakeAsync(ct)).Success)
             {
                 view.ErrorMessage = "Error: Server connection aborted.";
                 view.SetControllsEnabled(true);
@@ -95,7 +95,7 @@ namespace Client.Controllers
                 secret = view.ModKey;
             }
 
-            if (!(await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = connectMode, Secret = secret })).Success)
+            if (!(await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = connectMode, Secret = secret }, ct)).Success)
             {
                 view.ErrorMessage = "Error: Server connection aborted.";
                 view.SetControllsEnabled(true);
@@ -105,12 +105,12 @@ namespace Client.Controllers
 
         public void Dispose() {}
 
-        public async Task HandleAsync<T>(T packet)
+        public async Task HandleAsync<T>(T packet, CancellationToken ct)
         {
             switch (packet)
             {
                 case AuthenticationPacket connectPacket:
-                    view.Dispatcher.Invoke(() => HandleConnectPacket(connectPacket));
+                    view.Dispatcher.Invoke(HandleConnectPacket , connectPacket);
                     break;
                 default:
                     return;

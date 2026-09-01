@@ -16,7 +16,7 @@ namespace Client.Views.Games.Lobby
 
             ModkeyButton.Click += (_, _) =>
             {
-                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationSecretPacket() { Type = ModerationSecretPacket.SecretType.Moderator });
+                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationSecretPacket() { Type = ModerationSecretPacket.SecretType.Moderator }, MainController.Instance!.Cts.Token);
             };
             ModkeyCopyButton.Click += (_, _) =>
             {
@@ -26,19 +26,19 @@ namespace Client.Views.Games.Lobby
             RecoveryButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
-                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationSecretPacket() { Type = ModerationSecretPacket.SecretType.Recovery, Target = username });
+                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationSecretPacket() { Type = ModerationSecretPacket.SecretType.Recovery, Target = username }, MainController.Instance!.Cts.Token);
             };
             KickButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
-                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationPacket() { Target = username, Action = ModerationPacket.ModerationAction.Kick });
+                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationPacket() { Target = username, Action = ModerationPacket.ModerationAction.Kick }, MainController.Instance!.Cts.Token);
             };
             DeleteButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
                 MessageBoxResult result = MessageBox.Show($"Delete player connection for user {username}?", "Deletion request", MessageBoxButton.OKCancel, MessageBoxImage.Warning, MessageBoxResult.Cancel);
                 if (result == MessageBoxResult.OK)
-                    _ = MainController.Instance!.Client.SendPacketAsync(new ModerationPacket() { Target = username, Action = ModerationPacket.ModerationAction.Delete });
+                    _ = MainController.Instance!.Client.SendPacketAsync(new ModerationPacket() { Target = username, Action = ModerationPacket.ModerationAction.Delete }, MainController.Instance!.Cts.Token);
             };
             RecoveryCopyButton.Click += (_, _) =>
             {

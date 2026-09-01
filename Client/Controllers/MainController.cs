@@ -12,14 +12,12 @@ namespace Client.Controllers
 
         public bool IsModerator = false;
         public string Username = string.Empty;
-        public string[] RelatedUsers = [];
 
         public NetworkClient Client { get; private set; }
         public readonly CancellationTokenSource Cts;
-        private readonly Thread handlerThread;
 
         private readonly MainWindow mainWindow;
-        private IController? currentController;
+        private IController currentController;
 
         public MainController(MainWindow mainWindow)
         {
@@ -28,16 +26,15 @@ namespace Client.Controllers
             Instance = this;
 
             Cts = new CancellationTokenSource();
-            handlerThread = new Thread(() => _ = Handle(Cts.Token));
-            handlerThread.Start();
+            _ = Handle(Cts.Token);
 
             currentController = new ConnectController();
-            mainWindow.Border.Child = currentController?.View;
+            mainWindow.Border.Child = currentController.View;
         }
 
         public void SetView(SetViewPacket.ViewType viewType)
         {
-            currentController?.Dispose();
+            currentController.Dispose();
             mainWindow.Dispatcher.Invoke(() =>
             {
                 switch (viewType)
@@ -54,7 +51,7 @@ namespace Client.Controllers
                         Set57LobbyController();
                         break;
                 }
-                mainWindow.Border.Child = currentController?.View;
+                mainWindow.Border.Child = currentController.View;
             });
         }
 
@@ -86,9 +83,8 @@ namespace Client.Controllers
         public void Dispose()
         {
             Cts.Cancel();
-            handlerThread.Join();
 
-            currentController?.Dispose();
+            currentController.Dispose();
             Cts.Dispose();
             Client.Dispose();
             Instance = null;
@@ -96,44 +92,34 @@ namespace Client.Controllers
 
         private async Task Handle(CancellationToken ct)
         {
-            try
+            while (!Client.IsConnected && !ct.IsCancellationRequested)
             {
-                while ((!Client.IsConnected || currentController is null) && !ct.IsCancellationRequested)
-                {
-                    await Task.Delay(100, ct);
-                }
-
-                while (!ct.IsCancellationRequested)
-                {
-                    Result<object> result = await Client.ReceivePacketAsync().WaitAsync(ct);
-
-                    if (!result.Success)
-                    {
-                        MessageBox.Show(result.Error?.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        continue;
-                    }
-                    object packet = result.Value!;
-
-                    switch (packet)
-                    {
-                        case HeartbeatPacket heartbeatPacket:
-                            await Client.SendPacketAsync(heartbeatPacket).WaitAsync(ct);
-                            continue;
-                        case SetViewPacket setViewPacket:
-                            SetView(setViewPacket.View);
-                            continue;
-                    }
-
-                    await (currentController?.HandleAsync(packet).WaitAsync(ct) ?? Task.CompletedTask);
-                }
+                await Task.Delay(100, ct);
             }
-            catch (OperationCanceledException) { }
-        }
 
-        public enum ControllerType
-        {
-            Connect,
-            Lobby,
+            while (!ct.IsCancellationRequested)
+            {
+                Result<object> result = await Client.ReceivePacketAsync(ct);
+
+                if (!result.Success)
+                {
+                    MessageBox.Show(result.Error?.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    continue;
+                }
+                object packet = result.Value!;
+
+                switch (packet)
+                {
+                    case HeartbeatPacket heartbeatPacket:
+                        await Client.SendPacketAsync(heartbeatPacket, ct);
+                        continue;
+                    case SetViewPacket setViewPacket:
+                        SetView(setViewPacket.View);
+                        continue;
+                }
+
+                await currentController.HandleAsync(packet, ct);
+            }
         }
     }
 }
