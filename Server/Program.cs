@@ -4,7 +4,7 @@ namespace Server
 {
     internal class Program
     {
-        public static CancellationTokenSource Cts = new();
+        public static readonly CancellationTokenSource Cts = new();
         private static readonly LoggingFormatter loggingFormatter = new();
 
         private static void Main()
@@ -31,10 +31,7 @@ namespace Server
 
             try
             {
-                while (!Cts.IsCancellationRequested)
-                {
-                    Task.Delay(1000).Wait(Cts.Token);
-                }
+                Task.Delay(Timeout.Infinite).Wait(Cts.Token);
             }
             catch (OperationCanceledException) { }
         }
