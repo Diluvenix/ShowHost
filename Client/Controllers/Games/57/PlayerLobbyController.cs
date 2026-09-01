@@ -25,6 +25,9 @@ namespace Client.Controllers.Games._57
         };
         public Geometry? Path => path;
 
+
+        private readonly Dictionary<string, LobbyPlayerBox> playerBoxes = [];
+
         public void Dispose() { }
 
         public async Task HandleAsync<T>(T packet)
@@ -32,12 +35,27 @@ namespace Client.Controllers.Games._57
             switch (packet)
             {
                 case _57_LobbyPacket _57_LobbyPacket:
-                    view.Dispatcher.Invoke(() =>
-                    {
-                        view.NameLabel.Content = _57_LobbyPacket.Name;
-                        view.PlayerCountLabel.Content = $"{_57_LobbyPacket.PlayersCurrent}/{_57_LobbyPacket.PlayersMax}";
-                    });
+                    view.Dispatcher.Invoke(() => HandleLobbyPacket(_57_LobbyPacket));
                     break;
+            }
+        }
+
+        private void HandleLobbyPacket(_57_LobbyPacket packet)
+        {
+            view.NameLabel.Content = packet.Name;
+            view.PlayerCountLabel.Content = $"{packet.PlayersCurrent}/{packet.PlayersMax}";
+
+            if (packet.Players.Length != playerBoxes.Count)
+            {
+                view.SetPlayerBoxCount(packet.Players.Length);
+            }
+
+            playerBoxes.Clear();
+            for (int i = 0; i < packet.Players.Length; i++)
+            {
+                LobbyPlayerBox playerBox = view.PlayerBoxes[i];
+                playerBoxes[packet.Players[i].Username] = playerBox;
+                playerBox.Update(packet.Players[i]);
             }
         }
     }

@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="Client.Views.Games._57.LobbyPlayerBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="900"
+             Height="{DynamicResource CardHeightNormal}">
+    <Border Background="#262626"
+            CornerRadius="{DynamicResource RadiusNormal}"
+            Margin="{DynamicResource MarginNormal}">
+        <Grid Margin="{DynamicResource MarginNormal}">
+            <StackPanel Orientation="Horizontal" 
+                        VerticalAlignment="Stretch" 
+                        HorizontalAlignment="Left"
+                        Margin="{DynamicResource MarginNormal}">
+                <Border Background="Purple"
+                        Width="{StaticResource FontNormal}"
+                        CornerRadius="{StaticResource RadiusNormal}"
+                        x:Name="ColorBorder"/>
+
+                <StackPanel Orientation="Vertical"
+                            VerticalAlignment="Center">
+                    <Label Content="[USERNAME]"
+                           VerticalAlignment="Bottom"
+                           HorizontalAlignment="Left"
+                           FontSize="{DynamicResource FontNormal}"
+                           FontWeight="SemiBold"
+                           Margin="{DynamicResource MarginNormalVerticalNegative}"
+                           x:Name="UsernameLabel"/>
+
+                    <Label Content="[Ping]"
+                           FontSize="{DynamicResource FontSmall}"
+                           Margin="{DynamicResource MarginNormalVerticalNegative}"
+                           x:Name="PingLabel"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    Background="#442726"
+                    CornerRadius="{DynamicResource RadiusLarge}"
+                    Margin="{DynamicResource MarginNormal}"
+                    x:Name="OfflineBorder">
+                <Label Content="Offline"
+                        FontSize="{DynamicResource FontXSmall}"
+                        Foreground="#ff6764"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,7 +1,4 @@
-﻿using Client.Controllers;
-using Client.Views.UserControls;
-using Network;
-using Network.Packets;
+﻿using Client.Views.UserControls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;

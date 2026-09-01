@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Client.Views.Games._57
 {
@@ -18,9 +10,25 @@ namespace Client.Views.Games._57
     /// </summary>
     public partial class PlayerLobbyView : UserControl
     {
+        public readonly ObservableCollection<LobbyPlayerBox> PlayerBoxes = [];
+        private readonly ICollectionView playerBoxesView;
+
         public PlayerLobbyView()
         {
             InitializeComponent();
+
+            playerBoxesView = CollectionViewSource.GetDefaultView(PlayerBoxes);
+            PlayerList.ItemsSource = PlayerBoxes;
+        }
+
+        public void SetPlayerBoxCount(int count)
+        {
+            while (PlayerBoxes.Count > count)
+                PlayerBoxes.RemoveAt(0);
+            while (PlayerBoxes.Count < count)
+                PlayerBoxes.Add(new LobbyPlayerBox());
+
+            playerBoxesView.Refresh();
         }
     }
 }
