@@ -11,10 +11,9 @@ namespace Server
 {
     internal class Server : IDisposable
     {
-        private readonly CancellationTokenSource cts = new();
-
         private readonly TcpListener serverListener;
         private readonly Task connectionTask;
+        private readonly CancellationTokenSource cts = new();
 
         private static readonly ILogger systemLogger = Log.ForContext("SourceContext", "System");
         private static readonly ILogger networkLogger = Log.ForContext("SourceContext", "Network");
