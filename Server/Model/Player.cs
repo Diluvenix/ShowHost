@@ -8,16 +8,14 @@ namespace Server.Model
 {
     internal class Player : IDisposable
     {
-        private NetworkClient? client;
-        public IService? Service;
-
+        public IService Service { get; private set; } = ServerContext.Lobby;
         public int PingMS { get; private set; }
         public bool IsConnected => PingMS > 0;
-        public string Username;
-        public PlayerRole Role;
-
+        public readonly string Username;
+        public readonly PlayerRole Role;
         public readonly KeyManager KeyManager;
 
+        private NetworkClient? client;
         private CancellationTokenSource cts = new();
         private Task? handlerTask;
         private DateTime lastHeartbeat;
@@ -50,9 +48,7 @@ namespace Server.Model
 
         public async Task SetService(IService newService)
         {
-            if (Service is not null)
-                await Service.RemovePlayerAsync(this);
-
+            await Service.RemovePlayerAsync(this);
             Service = newService;
             await newService.AddPlayerAsync(this);
         }
@@ -118,7 +114,7 @@ namespace Server.Model
                     if (await (Server.TryHandleServerPackageAsync(packet, this).WaitAsync(ct) ?? Task.FromResult(false)))
                         continue;
 
-                    await (Service?.HandleAsync(packet, this).WaitAsync(ct) ?? Task.CompletedTask);
+                    await Service.HandleAsync(packet, this).WaitAsync(ct);
                 }
             }
             catch (OperationCanceledException) { }

@@ -160,7 +160,6 @@ namespace Server
                     configuredAuthLogger.ForContext("Role", role).Information("Player authenticated");
 
                     await ServerContext.Lobby.AddPlayerAsync(player);
-                    player.Service = ServerContext.Lobby;
                     return;
                 case ConnectPacket.ConnectMode.Recovery:
                     if (!ServerContext.Players.TryGetValue(username, out player))
@@ -191,7 +190,7 @@ namespace Server
                             _ => ConnectPacket.ConnectMode.Player,
                         }
                     });
-                    await (player.Service?.RecoverAsync(player) ?? Task.CompletedTask);
+                    await player.Service.RecoverAsync(player);
                     configuredAuthLogger.ForContext("Role", player.Role).Information("Player recovered");
                     return;
                 default:
@@ -235,7 +234,7 @@ namespace Server
                             configuredSystemLogger.Information("Player kicked");
                             break;
                         case ModerationPacket.ModerationAction.Delete:
-                            await player.Service!.RemovePlayerAsync(player);
+                            await player.Service.RemovePlayerAsync(player);
                             ServerContext.Players.Remove(player.Username, out _);
                             player.Dispose();
                             configuredSystemLogger.Information("Player deleted");

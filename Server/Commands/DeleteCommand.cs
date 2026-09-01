@@ -23,7 +23,7 @@ namespace Server.Commands
                 return;
             }
 
-            player.Service?.RemovePlayerAsync(player).Wait();
+            player.Service.RemovePlayerAsync(player).Wait();
             ServerContext.Players.Remove(player.Username, out _);
             player.Dispose();
             Console.WriteLine("Deleted player connection {0}", username);
