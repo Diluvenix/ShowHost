@@ -1,12 +1,12 @@
 ﻿namespace Network.Packets
 {
-    public class ConnectPacket
+    public class AuthenticationPacket
     {
         public string Username { get; set; } = "";
-        public ConnectMode Mode { get; set; }
+        public AuthenticationType Type { get; set; }
         public string? Secret { get; set; }
 
-        public enum ConnectMode
+        public enum AuthenticationType
         {
             NONE,
             Player,
@@ -14,5 +14,4 @@
             Recovery
         }
     }
-
 }

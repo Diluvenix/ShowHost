@@ -1,5 +1,6 @@
 ﻿using Network.Packets;
 using Network.Packets.Games._57;
+using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
 
@@ -11,7 +12,7 @@ namespace Server.Services
         public string Name => name;
         public int PlayersMax => playersMax;
         public int PlayersCurrent => players.Count;
-        public GameListPacket.GameStatus Status => GameListPacket.GameStatus.Preparing;
+        public Lobby_GameListPacket.GameStatus Status => Lobby_GameListPacket.GameStatus.Preparing;
 
 
         private InternalStatus internalStatus = InternalStatus.Lobby;

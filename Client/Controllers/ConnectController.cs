@@ -82,20 +82,20 @@ namespace Client.Controllers
             view.HintMessage = "Register user...";
 
             string secret = "";
-            ConnectPacket.ConnectMode connectMode = ConnectPacket.ConnectMode.Player;
+            AuthenticationPacket.AuthenticationType connectMode = AuthenticationPacket.AuthenticationType.Player;
 
             if (view.IsRecoveryChecked)
             {
-                connectMode = ConnectPacket.ConnectMode.Recovery;
+                connectMode = AuthenticationPacket.AuthenticationType.Recovery;
                 secret = view.RecoveryKey;
             }
             else if (view.IsModChecked)
             {
-                connectMode = ConnectPacket.ConnectMode.Moderator;
+                connectMode = AuthenticationPacket.AuthenticationType.Moderator;
                 secret = view.ModKey;
             }
 
-            if (!(await client.SendPacketAsync(new ConnectPacket() { Username = username, Mode = connectMode, Secret = secret })).Success)
+            if (!(await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = connectMode, Secret = secret })).Success)
             {
                 view.ErrorMessage = "Error: Server connection aborted.";
                 view.SetControllsEnabled(true);
@@ -109,7 +109,7 @@ namespace Client.Controllers
         {
             switch (packet)
             {
-                case ConnectPacket connectPacket:
+                case AuthenticationPacket connectPacket:
                     view.Dispatcher.Invoke(() => HandleConnectPacket(connectPacket));
                     break;
                 default:
@@ -117,9 +117,9 @@ namespace Client.Controllers
             }
         }
 
-        private void HandleConnectPacket(ConnectPacket packet)
+        private void HandleConnectPacket(AuthenticationPacket packet)
         {
-            if (packet.Mode == ConnectPacket.ConnectMode.NONE)
+            if (packet.Type == AuthenticationPacket.AuthenticationType.NONE)
             {
                 view.ErrorMessage = string.Format("Error: {0}", packet.Secret??string.Empty);
                 view.SetControllsEnabled(true);
@@ -127,7 +127,7 @@ namespace Client.Controllers
             }
 
             view.SuccessMessage = "Sucessfully connected";
-            MainController.Instance!.IsModerator = packet.Mode == ConnectPacket.ConnectMode.Moderator;
+            MainController.Instance!.IsModerator = packet.Type == AuthenticationPacket.AuthenticationType.Moderator;
             MainController.Instance!.Username = packet.Username;
         }
     }

@@ -1,6 +1,6 @@
-﻿namespace Network.Packets
+﻿namespace Network.Packets.Games.Lobby
 {
-    public class LobbyPacket
+    public class Lobby_PlayerListPacket
     {
         public Player[] Players { get; set; } = [];
 

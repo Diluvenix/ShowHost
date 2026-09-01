@@ -1,4 +1,5 @@
 ﻿using Network.Packets;
+using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
 
@@ -10,7 +11,7 @@ namespace Server.Services
         public string Name => "Lobby";
         public int PlayersMax => 0;
         public int PlayersCurrent => players.Count;
-        public GameListPacket.GameStatus Status => GameListPacket.GameStatus.Running;
+        public Lobby_GameListPacket.GameStatus Status => Lobby_GameListPacket.GameStatus.Running;
 
         private readonly ILogger logger = Log.ForContext("SourceContext", "Lobby");
         private readonly Dictionary<string, Player> players = [];
@@ -34,17 +35,17 @@ namespace Server.Services
             players.Add(player.Username, player);
             await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby });
 
-            await player.SendPacketAsync(new LobbyPacket()
+            await player.SendPacketAsync(new Lobby_PlayerListPacket()
             {
-                Players = [.. players.Values.Select(p => new LobbyPacket.Player(
+                Players = [.. players.Values.Select(p => new Lobby_PlayerListPacket.Player(
                     p.Username,
                     p.PingMS,
-                    p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, _ => LobbyPacket.PlayerRole.Player }
+                    p.Role switch { PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, _ => Lobby_PlayerListPacket.PlayerRole.Player }
                 ))]
             });
-            await player.SendPacketAsync(new GameListPacket()
+            await player.SendPacketAsync(new Lobby_GameListPacket()
             {
-                Games = [.. ServerContext.Services.Values.Select(s => new GameListPacket.Game(
+                Games = [.. ServerContext.Services.Values.Select(s => new Lobby_GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -65,17 +66,17 @@ namespace Server.Services
         public async Task RecoverAsync(Player player)
         {
             await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby });
-            await player.SendPacketAsync(new LobbyPacket()
+            await player.SendPacketAsync(new Lobby_PlayerListPacket()
             {
-                Players = [.. players.Values.Select(p => new LobbyPacket.Player(
+                Players = [.. players.Values.Select(p => new Lobby_PlayerListPacket.Player(
                     p.Username,
                     p.PingMS,
-                    p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, _ => LobbyPacket.PlayerRole.Player }
+                    p.Role switch { PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, _ => Lobby_PlayerListPacket.PlayerRole.Player }
                 ))]
             });
-            await player.SendPacketAsync(new GameListPacket()
+            await player.SendPacketAsync(new Lobby_GameListPacket()
             {
-                Games = [.. ServerContext.Services.Values.Select(s => new GameListPacket.Game(
+                Games = [.. ServerContext.Services.Values.Select(s => new Lobby_GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -106,12 +107,12 @@ namespace Server.Services
             {
                 while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && players.Count > 0)
                 {
-                    LobbyPacket packet = new()
+                    Lobby_PlayerListPacket packet = new()
                     {
-                        Players = [.. players.Values.Select(p => new LobbyPacket.Player(
+                        Players = [.. players.Values.Select(p => new Lobby_PlayerListPacket.Player(
                                 p.Username,
                                 p.PingMS,
-                                p.Role switch { PlayerRole.Moderator => LobbyPacket.PlayerRole.Moderator, _ => LobbyPacket.PlayerRole.Player }
+                                p.Role switch { PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, _ => Lobby_PlayerListPacket.PlayerRole.Player }
                             ))
                         ]
                     };
@@ -133,9 +134,9 @@ namespace Server.Services
             {
                 while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && players.Count > 0)
                 {
-                    GameListPacket packet = new()
+                    Lobby_GameListPacket packet = new()
                     {
-                        Games = [.. ServerContext.Services.Values.Select(s => new GameListPacket.Game(
+                        Games = [.. ServerContext.Services.Values.Select(s => new Lobby_GameListPacket.Game(
                                 s.Type,
                                 s.Name,
                                 s.PlayersMax,
@@ -158,7 +159,7 @@ namespace Server.Services
         {
             switch (packet)
             {
-                case CreateGamePacket createGamePacket:
+                case Lobby_GameCreatePacket createGamePacket:
                     if (sender.Role != PlayerRole.Moderator)
                     {
                         logger.ForContext("Actor", sender.Username).Warning("Denied access to CreateGame Method");
@@ -166,7 +167,7 @@ namespace Server.Services
                     }
                     await CreateGame(createGamePacket, sender);
                     break;
-                case JoinGamePacket joinGamePacket:
+                case Lobby_GameJoinPacket joinGamePacket:
                     if (!ServerContext.Services.TryGetValue(joinGamePacket.GameName, out IService? service)) 
                     {
                         logger.ForContext("Actor", sender.Username).ForContext("Game", joinGamePacket.GameName).Warning("Game is unknown"); ;
@@ -177,12 +178,12 @@ namespace Server.Services
             }
         }
 
-        private static async Task CreateGame(CreateGamePacket createGamePacket, Player sender)
+        private static async Task CreateGame(Lobby_GameCreatePacket createGamePacket, Player sender)
         {
             IService newGame;
-            switch (createGamePacket.Game)
+            switch (createGamePacket.Type)
             {
-                case CreateGamePacket.GameType._57:
+                case Lobby_GameCreatePacket.GameType._57:
                     newGame = new _57();
                     break;
                 default:

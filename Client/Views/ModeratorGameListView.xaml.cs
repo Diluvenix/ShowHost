@@ -1,7 +1,7 @@
 ﻿using Client.Controllers;
 using Client.Views.UserControls;
 using Network;
-using Network.Packets;
+using Network.Packets.Games.Lobby;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
@@ -30,7 +30,7 @@ namespace Client.Views
 
             Create57Button.Click += (_, _) =>
             {
-                _ = client.SendPacketAsync(new CreateGamePacket() { Game = CreateGamePacket.GameType._57 });
+                _ = client.SendPacketAsync(new Lobby_GameCreatePacket() { Type = Lobby_GameCreatePacket.GameType._57 });
             };
         }
 

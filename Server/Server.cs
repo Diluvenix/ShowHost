@@ -103,7 +103,7 @@ namespace Server
                 client.Dispose();
                 return;
             }
-            if (packetResult.Value is not ConnectPacket packet)
+            if (packetResult.Value is not AuthenticationPacket packet)
             {
                 configuredAuthLogger.Warning(packetResult.Error, "Unexpected Packet during authentication");
                 client.Dispose();
@@ -113,9 +113,9 @@ namespace Server
             string username = packet.Username;
             configuredAuthLogger = configuredAuthLogger.ForContext("Username", username);
             Base32Token token;
-            switch (packet.Mode)
+            switch (packet.Type)
             {
-                case ConnectPacket.ConnectMode.Moderator:
+                case AuthenticationPacket.AuthenticationType.Moderator:
                     try
                     {
                         token = Base32Token.FromCode(packet.Secret ?? "");
@@ -123,7 +123,7 @@ namespace Server
                         if (!ServerContext.ModeratorKeys.TryUseKey(token.Hash))
                         {
                             configuredAuthLogger.Warning(packetResult.Error, "Invalid moderator key");
-                            await client.SendPacketAsync(new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectPacket.ConnectMode.NONE });
+                            await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE });
                             client.Dispose();
                             return;
                         }
@@ -131,40 +131,40 @@ namespace Server
                     catch (Exception e)
                     {
                         configuredAuthLogger.Warning(e, "Invalid moderator key");
-                        await client.SendPacketAsync(new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectPacket.ConnectMode.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE });
                         client.Dispose();
                         return;
                     }
-                    goto case ConnectPacket.ConnectMode.Player;
-                case ConnectPacket.ConnectMode.Player:
+                    goto case AuthenticationPacket.AuthenticationType.Player;
+                case AuthenticationPacket.AuthenticationType.Player:
                     if (!Player.IsUsernameValid(username))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Invalid username");
-                        await client.SendPacketAsync(new ConnectPacket() { Secret = "Invalid username", Mode = ConnectPacket.ConnectMode.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid username", Type = AuthenticationPacket.AuthenticationType.NONE });
                         client.Dispose();
                         return;
                     }
 
-                    PlayerRole role = packet.Mode == ConnectPacket.ConnectMode.Moderator ? PlayerRole.Moderator : PlayerRole.Player;
+                    PlayerRole role = packet.Type == AuthenticationPacket.AuthenticationType.Moderator ? PlayerRole.Moderator : PlayerRole.Player;
                     Player? player = new(client, username, role);
                     if (!ServerContext.Players.TryAdd(username, player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username already taken");
-                        await client.SendPacketAsync(new ConnectPacket() { Secret = "Username already taken", Mode = ConnectPacket.ConnectMode.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username already taken", Type = AuthenticationPacket.AuthenticationType.NONE });
                         client.Dispose();
                         return;
                     }
 
-                    await client.SendPacketAsync(new ConnectPacket() { Username = username, Mode = packet.Mode });
+                    await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = packet.Type });
                     configuredAuthLogger.ForContext("Role", role).Information("Player authenticated");
 
                     await ServerContext.Lobby.AddPlayerAsync(player);
                     return;
-                case ConnectPacket.ConnectMode.Recovery:
+                case AuthenticationPacket.AuthenticationType.Recovery:
                     if (!ServerContext.Players.TryGetValue(username, out player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username is unknown");
-                        await client.SendPacketAsync(new ConnectPacket() { Secret = "Username is unknown", Mode = ConnectPacket.ConnectMode.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username is unknown", Type = AuthenticationPacket.AuthenticationType.NONE });
                         client.Dispose();
                         return;
                     }
@@ -173,20 +173,20 @@ namespace Server
                     if (!player.KeyManager.TryUseKey(token.Hash))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Invalid recovery key");
-                        await client.SendPacketAsync(new ConnectPacket() { Secret = "Invalid recovery key", Mode = ConnectPacket.ConnectMode.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid recovery key", Type = AuthenticationPacket.AuthenticationType.NONE });
                         client.Dispose();
                         return;
                     }
 
                     player.SetClient(client);
 
-                    await client.SendPacketAsync(new ConnectPacket()
+                    await client.SendPacketAsync(new AuthenticationPacket()
                     {
                         Username = username,
-                        Mode = player.Role switch
+                        Type = player.Role switch
                         {
-                            PlayerRole.Moderator => ConnectPacket.ConnectMode.Moderator,
-                            _ => ConnectPacket.ConnectMode.Player,
+                            PlayerRole.Moderator => AuthenticationPacket.AuthenticationType.Moderator,
+                            _ => AuthenticationPacket.AuthenticationType.Player,
                         }
                     });
                     await player.Service.RecoverAsync(player);
@@ -194,7 +194,7 @@ namespace Server
                     return;
                 default:
                     configuredAuthLogger.Warning(packetResult.Error, "Invalid connect mode");
-                    await client.SendPacketAsync(new ConnectPacket() { Secret = "Invalid connect mode", Mode = ConnectPacket.ConnectMode.NONE });
+                    await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid connect mode", Type = AuthenticationPacket.AuthenticationType.NONE });
                     client.Dispose();
                     return;
             }
@@ -240,39 +240,34 @@ namespace Server
                             break;
                     }
                     return true;
-                case GenerateRecoveryKeyPacket generateRecoveryKeyPacket:
+                case ModerationSecretPacket moderationSecretPacket:
+                    configuredSystemLogger = configuredSystemLogger.ForContext("Type", moderationSecretPacket.Type).ForContext("Target", moderationSecretPacket.Target);
                     if (sender.Role != PlayerRole.Moderator)
                     {
-                        configuredSystemLogger.Warning("Access denied to recover command");
-                        return true;
-                    }
-                    configuredSystemLogger = configuredSystemLogger.ForContext("Target", generateRecoveryKeyPacket.Target);
-                    if (!ServerContext.Players.TryGetValue(generateRecoveryKeyPacket.Target, out player))
-                    {
-                        configuredSystemLogger.Warning("Couldn't find player to recover");
+                        configuredSystemLogger.Warning("Access to moderation secrets denied");
                         return true;
                     }
 
                     Base32Token base32Token = Base32Token.FromRandom();
                     KeyToken keyToken = new(base32Token.Hash, TimeSpan.FromMinutes(10));
-                    player.KeyManager.RegisterKey(keyToken);
+                    moderationSecretPacket.Secret = base32Token.Code;
 
-                    await sender.SendPacketAsync(new GenerateRecoveryKeyPacket() { Target = generateRecoveryKeyPacket.Target, Key = base32Token.Code });
-                    configuredSystemLogger.Information("Recovery key generated");
-                    return true;
-                case GenerateModeratorKeyPacket:
-                    if (sender.Role != PlayerRole.Moderator)
+                    switch (moderationSecretPacket.Type)
                     {
-                        configuredSystemLogger.Warning("Access denied to modkey command");
-                        return true;
+                        case ModerationSecretPacket.SecretType.Recovery:
+                            if (moderationSecretPacket.Target is null || !ServerContext.Players.TryGetValue(moderationSecretPacket.Target, out player))
+                            {
+                                configuredSystemLogger.Warning("Couldn't find player to recover");
+                                return true;
+                            }
+                            player.KeyManager.RegisterKey(keyToken);
+                            break;
+                        case ModerationSecretPacket.SecretType.Moderator:
+                            ServerContext.ModeratorKeys.RegisterKey(keyToken);
+                            break;
                     }
-
-                    base32Token = Base32Token.FromRandom();
-                    keyToken = new(base32Token.Hash, TimeSpan.FromMinutes(10));
-                    ServerContext.ModeratorKeys.RegisterKey(keyToken);
-
-                    await sender.SendPacketAsync(new GenerateModeratorKeyPacket() { Key = base32Token.Code });
-                    configuredSystemLogger.Information("Moderator key generated");
+                    await sender.SendPacketAsync(moderationSecretPacket);
+                    configuredSystemLogger.Information("Secret generated");
                     return true;
                 default:
                     return false;

@@ -1,5 +1,5 @@
 ﻿using Client.Controllers;
-using Network.Packets;
+using Network.Packets.Games.Lobby;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -42,20 +42,20 @@ namespace Client.Views.UserControls
         }
         public int PingRank => ping > 0 ? 1 : 0;
 
-        private LobbyPacket.PlayerRole role;
-        public LobbyPacket.PlayerRole Role
+        private Lobby_PlayerListPacket.PlayerRole role;
+        public Lobby_PlayerListPacket.PlayerRole Role
         {
             set
             {
                 role = value;
                 switch (value)
                 {
-                    case LobbyPacket.PlayerRole.Player:
+                    case Lobby_PlayerListPacket.PlayerRole.Player:
                         PlayerLogo.Visibility = Visibility.Visible;
                         ModeratorLogo.Visibility = Visibility.Collapsed;
                         ModeratorBorder.Visibility = Visibility.Collapsed;
                         break;
-                    case LobbyPacket.PlayerRole.Moderator:
+                    case Lobby_PlayerListPacket.PlayerRole.Moderator:
                         PlayerLogo.Visibility = Visibility.Collapsed;
                         ModeratorLogo.Visibility = Visibility.Visible;
                         ModeratorBorder.Visibility = Visibility.Visible;
@@ -66,8 +66,8 @@ namespace Client.Views.UserControls
         public int RoleRank 
             => role switch 
             { 
-                LobbyPacket.PlayerRole.Moderator => 1, 
-                LobbyPacket.PlayerRole.Player => 0, 
+                Lobby_PlayerListPacket.PlayerRole.Moderator => 1, 
+                Lobby_PlayerListPacket.PlayerRole.Player => 0, 
                 _ => 0
             };
 

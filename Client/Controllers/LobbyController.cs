@@ -1,7 +1,7 @@
 ﻿using Client.Views;
 using Client.Views.UserControls;
 using Network;
-using Network.Packets;
+using Network.Packets.Games.Lobby;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -44,7 +44,7 @@ namespace Client.Controllers
         {
             switch (packet)
             {
-                case LobbyPacket lobbyPacket:
+                case Lobby_PlayerListPacket lobbyPacket:
                     view.Dispatcher.Invoke(() => HandleLobbyPacket(lobbyPacket));
                     break;
                 default:
@@ -52,7 +52,7 @@ namespace Client.Controllers
             }
         }
 
-        private void HandleLobbyPacket(LobbyPacket packet)
+        private void HandleLobbyPacket(Lobby_PlayerListPacket packet)
         {
             bool updatePlayers = true;
 
@@ -71,7 +71,7 @@ namespace Client.Controllers
                 }
             }
 
-            foreach (LobbyPacket.Player player in packet.Players)
+            foreach (Lobby_PlayerListPacket.Player player in packet.Players)
             {
                 if (!playerBoxes.TryGetValue(player.Username, out LobbyPlayerBox? playerBox))
                 {

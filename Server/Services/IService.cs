@@ -1,4 +1,4 @@
-﻿using Network.Packets;
+﻿using Network.Packets.Games.Lobby;
 using Server.Model;
 
 namespace Server.Services
@@ -9,7 +9,7 @@ namespace Server.Services
         public string Name { get; }
         public int PlayersMax { get; }
         public int PlayersCurrent { get; }
-        public GameListPacket.GameStatus Status { get; }
+        public Lobby_GameListPacket.GameStatus Status { get; }
 
         public Task AddPlayerAsync(Player player);
         public Task RemovePlayerAsync(Player player);

@@ -1,6 +1,6 @@
 ﻿using Client.Controllers;
 using Network;
-using Network.Packets;
+using Network.Packets.Games.Lobby;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,11 +21,11 @@ namespace Client.Views.UserControls
             {
                 if (string.IsNullOrEmpty(gameName))
                     return;
-                _ = MainController.Instance!.Client.SendPacketAsync(new JoinGamePacket() { GameName = gameName });
+                _ = MainController.Instance!.Client.SendPacketAsync(new Lobby_GameJoinPacket() { GameName = gameName });
             };
         }
 
-        public void SetFromData(GameListPacket.Game gameData)
+        public void SetFromData(Lobby_GameListPacket.Game gameData)
         {
             gameName = gameData.Name;
 
@@ -33,9 +33,9 @@ namespace Client.Views.UserControls
             NameLabel.Content = gameData.Name;
             PlayerLabel.Content = $"{gameData.PlayersCurrent}/{gameData.PlayersMax}";
 
-            PreparingBorder.Visibility = gameData.GameStatus == GameListPacket.GameStatus.Preparing ? Visibility.Visible : Visibility.Collapsed;
-            RunningBorder.Visibility = gameData.GameStatus == GameListPacket.GameStatus.Running ? Visibility.Visible : Visibility.Collapsed;
-            JoinButton.IsEnabled = gameData.GameStatus == GameListPacket.GameStatus.Preparing;
+            PreparingBorder.Visibility = gameData.Status == Lobby_GameListPacket.GameStatus.Preparing ? Visibility.Visible : Visibility.Collapsed;
+            RunningBorder.Visibility = gameData.Status == Lobby_GameListPacket.GameStatus.Running ? Visibility.Visible : Visibility.Collapsed;
+            JoinButton.IsEnabled = gameData.Status == Lobby_GameListPacket.GameStatus.Preparing;
         }
     }
 }

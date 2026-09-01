@@ -1,4 +1,5 @@
 ﻿using Network.Packets;
+using Network.Packets.Games.Lobby;
 using Network.Packets.Games._57;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -241,16 +242,17 @@ namespace Network
 
         private static readonly Dictionary<string, Type> packetRegistry = new()
         {
-            ["ConnectPacket"] = typeof(ConnectPacket),
-            ["LobbyPacket"] = typeof(LobbyPacket),
             ["HeartbeatPacket"] = typeof(HeartbeatPacket),
-            ["ModerationPacket"] = typeof(ModerationPacket),
-            ["GenerateRecoveryKeyPacket"] = typeof(GenerateRecoveryKeyPacket),
-            ["GenerateModeratorKeyPacket"] = typeof(GenerateModeratorKeyPacket),
-            ["CreateGamePacket"] = typeof(CreateGamePacket),
+            ["AuthenticationPacket"] = typeof(AuthenticationPacket),
             ["SetViewPacket"] = typeof(SetViewPacket),
-            ["GameListPacket"] = typeof(GameListPacket),
-            ["JoinGamePacket"] = typeof(JoinGamePacket),
+            ["ModerationPacket"] = typeof(ModerationPacket),
+            ["ModerationSecretPacket"] = typeof(ModerationSecretPacket),
+
+            ["Lobby_PlayerListPacket"] = typeof(Lobby_PlayerListPacket),
+            ["Lobby_GameCreatePacket"] = typeof(Lobby_GameCreatePacket),
+            ["Lobby_GameListPacket"] = typeof(Lobby_GameListPacket),
+            ["Lobby_GameJoinPacket"] = typeof(Lobby_GameJoinPacket),
+
             ["_57_LobbyPacket"] = typeof(_57_LobbyPacket),
             ["_57_LobbySettingsUpdatePacket"] = typeof(_57_LobbySettingsUpdatePacket),
         };

@@ -1,5 +1,5 @@
 ﻿using Client.Views;
-using Network.Packets;
+using Network.Packets.Games.Lobby;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -31,7 +31,7 @@ namespace Client.Controllers
         {
             switch (packet)
             {
-                case GameListPacket gameListPacket:
+                case Lobby_GameListPacket gameListPacket:
                     view.Dispatcher.Invoke(() =>
                     {
                         view.SetGameBoxCount(gameListPacket.Games.Length);

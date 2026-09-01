@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
 using Network.Packets;
+using Network.Packets.Games.Lobby;
 
 namespace Client.Controllers
 {
@@ -33,13 +34,18 @@ namespace Client.Controllers
         {
             switch (packet)
             {
-                case GenerateModeratorKeyPacket generateModeratorKeyPacket:
-                    view.Dispatcher.Invoke(() => view.ModkeyBox.Text = generateModeratorKeyPacket.Key);
+                case ModerationSecretPacket moderationSecretPacket:
+                    switch (moderationSecretPacket.Type)
+                    {
+                        case ModerationSecretPacket.SecretType.Recovery:
+                            view.Dispatcher.Invoke(() => view.RecoveryBox.Text = moderationSecretPacket.Secret);
+                            break;
+                        case ModerationSecretPacket.SecretType.Moderator:
+                            view.Dispatcher.Invoke(() => view.ModkeyBox.Text = moderationSecretPacket.Secret);
+                            break;
+                    }
                     break;
-                case GenerateRecoveryKeyPacket generateRecoveryKeyPacket:
-                    view.Dispatcher.Invoke(() => view.RecoveryBox.Text = generateRecoveryKeyPacket.Key); 
-                    break;
-                case LobbyPacket lobbyPacket:
+                case Lobby_PlayerListPacket lobbyPacket:
                     view.Dispatcher.Invoke(() => view.SetPlayers(lobbyPacket.Players.Select(p => p.Username)));
                     break;
             }

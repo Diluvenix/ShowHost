@@ -16,7 +16,7 @@ namespace Client.Views
 
             ModkeyButton.Click += (_, _) =>
             {
-                _ = MainController.Instance!.Client.SendPacketAsync(new GenerateModeratorKeyPacket());
+                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationSecretPacket() { Type = ModerationSecretPacket.SecretType.Moderator });
             };
             ModkeyCopyButton.Click += (_, _) =>
             {
@@ -26,7 +26,7 @@ namespace Client.Views
             RecoveryButton.Click += (_, _) =>
             {
                 if (PlayersDropDown.SelectedItem is not string username) return;
-                _ = MainController.Instance!.Client.SendPacketAsync(new GenerateRecoveryKeyPacket() { Target = username });
+                _ = MainController.Instance!.Client.SendPacketAsync(new ModerationSecretPacket() { Type = ModerationSecretPacket.SecretType.Recovery, Target = username });
             };
             KickButton.Click += (_, _) =>
             {
