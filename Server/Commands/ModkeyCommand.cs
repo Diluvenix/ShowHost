@@ -8,13 +8,13 @@ namespace Server.Commands
 
         public string Description => "Generates a new moderator key";
 
-        public void Execute(string[] args, Server server)
+        public void Execute(string[] args)
         {
             Base32Token base32Token = Base32Token.FromRandom();
             Console.WriteLine("Generated a moderator key: \"{0}\"", base32Token.Code);
             KeyToken keyToken = new(base32Token.Hash, TimeSpan.FromMinutes(10));
 
-            server.Context.ModeratorKeys.RegisterKey(keyToken);
+            ServerContext.ModeratorKeys.RegisterKey(keyToken);
         }
     }
 }

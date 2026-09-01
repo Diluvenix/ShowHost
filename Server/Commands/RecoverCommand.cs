@@ -9,7 +9,7 @@ namespace Server.Commands
 
         public string Description => "Generates a recovery key";
 
-        public void Execute(string[] args, Server server)
+        public void Execute(string[] args)
         {
             if (args.Length != 1)
             {
@@ -18,7 +18,7 @@ namespace Server.Commands
             }
 
             string username = args[0];
-            if (!server.Context.Players.TryGetValue(username, out Player? player))
+            if (!ServerContext.Players.TryGetValue(username, out Player? player))
             {
                 Console.WriteLine("Couldn't find player {0}", username);
                 return;

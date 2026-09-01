@@ -6,7 +6,7 @@
 
         public string Description => "Stops the server";
 
-        public void Execute(string[] args, Server server)
+        public void Execute(string[] args)
         {
             Program.Cts.Cancel();
         }

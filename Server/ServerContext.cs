@@ -5,21 +5,21 @@ using System.Collections.Concurrent;
 
 namespace Server
 {
-    internal class ServerContext : IDisposable
+    internal static class ServerContext
     {
-        public ConcurrentDictionary<string, Player> Players = [];
+        public static ConcurrentDictionary<string, Player> Players = [];
 
-        public KeyManager ModeratorKeys = new();
+        public static KeyManager ModeratorKeys = new();
 
-        public Lobby Lobby = new();
-        public readonly ConcurrentNameDictionary<IService> Services = new(
+        public static Lobby Lobby = new();
+        public static readonly ConcurrentNameDictionary<IService> Services = new(
             NameGenerator.Generate,
             (s) => !string.IsNullOrEmpty(s) && s.Length <= 32 && s.AsSpan().IndexOfAnyExceptInRange(' ', '~') == -1
         );
 
-        public readonly CancellationTokenSource Cts = new();
+        public static readonly CancellationTokenSource Cts = new();
 
-        public void Dispose()
+        public static void Dispose()
         {
             Cts.Cancel();
 

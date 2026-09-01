@@ -26,7 +26,7 @@ namespace Server.Services
 
         public _57()
         {
-            Server.Instance!.Context.Services.TryAddGenerated(out name, this);
+            ServerContext.Services.TryAddGenerated(out name, this);
 
             logger = Log.ForContext("SourceContext", Type).ForContext(nameof(Name), Name);
             logger.Information("New game created");
@@ -110,7 +110,7 @@ namespace Server.Services
 
             if (!string.IsNullOrEmpty(packet.Name))
             {
-                if (!Server.Instance!.Context.Services.TryRename(Name, packet.Name))
+                if (!ServerContext.Services.TryRename(Name, packet.Name))
                 {
                     logger.ForContext("NewName", packet.Name).Warning("Invalid or already taken Name");
                 }

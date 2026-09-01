@@ -44,7 +44,7 @@ namespace Server.Services
             });
             await player.SendPacketAsync(new GameListPacket()
             {
-                Games = [.. Server.Instance!.Context.Services.Values.Select(s => new GameListPacket.Game(
+                Games = [.. ServerContext.Services.Values.Select(s => new GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -75,7 +75,7 @@ namespace Server.Services
             });
             await player.SendPacketAsync(new GameListPacket()
             {
-                Games = [.. Server.Instance!.Context.Services.Values.Select(s => new GameListPacket.Game(
+                Games = [.. ServerContext.Services.Values.Select(s => new GameListPacket.Game(
                     s.Type,
                     s.Name,
                     s.PlayersMax,
@@ -135,7 +135,7 @@ namespace Server.Services
                 {
                     GameListPacket packet = new()
                     {
-                        Games = [.. Server.Instance!.Context.Services.Values.Select(s => new GameListPacket.Game(
+                        Games = [.. ServerContext.Services.Values.Select(s => new GameListPacket.Game(
                                 s.Type,
                                 s.Name,
                                 s.PlayersMax,
@@ -167,7 +167,7 @@ namespace Server.Services
                     await CreateGame(createGamePacket, sender);
                     break;
                 case JoinGamePacket joinGamePacket:
-                    if (!Server.Instance!.Context.Services.TryGetValue(joinGamePacket.GameName, out IService? service)) 
+                    if (!ServerContext.Services.TryGetValue(joinGamePacket.GameName, out IService? service)) 
                     {
                         logger.ForContext("Actor", sender.Username).ForContext("Game", joinGamePacket.GameName).Warning("Game is unknown"); ;
                         break;
@@ -177,7 +177,7 @@ namespace Server.Services
             }
         }
 
-        private async Task CreateGame(CreateGamePacket createGamePacket, Player sender)
+        private static async Task CreateGame(CreateGamePacket createGamePacket, Player sender)
         {
             IService newGame;
             switch (createGamePacket.Game)

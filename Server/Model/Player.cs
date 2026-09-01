@@ -115,7 +115,7 @@ namespace Server.Model
                     }
 
                     networkLogger.ForContext("Packet", packet.GetType()).Debug("Recieved new Packet");
-                    if (await (Server.Instance?.TryHandleServerPackageAsync(packet, this).WaitAsync(ct) ?? Task.FromResult(false)))
+                    if (await (Server.TryHandleServerPackageAsync(packet, this).WaitAsync(ct) ?? Task.FromResult(false)))
                         continue;
 
                     await (Service?.HandleAsync(packet, this).WaitAsync(ct) ?? Task.CompletedTask);

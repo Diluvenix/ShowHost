@@ -8,11 +8,11 @@ namespace Server.Commands
 
         public string Description => "Lists all players";
 
-        public void Execute(string[] args, Server server)
+        public void Execute(string[] args)
         {
-            Console.WriteLine("There are currently {0} players connected:", server.Context.Players.Count);
+            Console.WriteLine("There are currently {0} players connected:", ServerContext.Players.Count);
 
-            foreach (Player player in server.Context.Players.Values)
+            foreach (Player player in ServerContext.Players.Values)
             {
                 Console.WriteLine(
                     $"\t{player.Username, -10}" +

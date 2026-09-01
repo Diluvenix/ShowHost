@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Server.Commands
+﻿namespace Server.Commands
 {
     internal static class CommandManager
     {
@@ -14,7 +12,7 @@ namespace Server.Commands
             ["delete"] = new DeleteCommand(),
         };
 
-        public static void Execute(string input, Server server)
+        public static void Execute(string input)
         {
             if (string.IsNullOrEmpty(input)) return;
 
@@ -24,9 +22,7 @@ namespace Server.Commands
             string[] args = [.. parts.Skip(1)];
 
             if(commands.TryGetValue(name, out ICommand? command))
-            {
-                command?.Execute(args, server);
-            }
+                command?.Execute(args);
             else if (name == "help")
             {
                 Console.WriteLine("'help' - Displays this message");

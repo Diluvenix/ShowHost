@@ -11,22 +11,18 @@ namespace Server
 {
     internal class Server : IDisposable
     {
-        public static Server? Instance { get; private set; }
-
-        public readonly ServerContext Context;
         private readonly CancellationTokenSource cts = new();
 
         private readonly TcpListener serverListener;
         private readonly Task connectionTask;
 
-        private readonly ILogger systemLogger = Log.ForContext("SourceContext", "System");
-        private readonly ILogger networkLogger = Log.ForContext("SourceContext", "Network");
-        private readonly ILogger authLogger = Log.ForContext("SourceContext", "Auth");
+        private static readonly ILogger systemLogger = Log.ForContext("SourceContext", "System");
+        private static readonly ILogger networkLogger = Log.ForContext("SourceContext", "Network");
+        private static readonly ILogger authLogger = Log.ForContext("SourceContext", "Auth");
 
         public Server(int port)
         {
             serverListener = new(IPAddress.Any, port);
-            Context = new ServerContext();
 
             serverListener.Start();
             systemLogger.ForContext("Port", port).Information("Server started", port);
@@ -36,9 +32,7 @@ namespace Server
 
             Console.WriteLine("Press Ctrl-C or use 'stop' to shutdown the server at any time.");
             Console.WriteLine("Use 'help' to get a list of available commands");
-            CommandManager.Execute("modkey", this);
-
-            Instance = this;
+            CommandManager.Execute("modkey");
         }
 
         public void Dispose()
@@ -53,7 +47,7 @@ namespace Server
                 serverListener.Stop();
                 serverListener.Dispose();
 
-                Context.Dispose();
+                ServerContext.Dispose();
 
                 systemLogger.Information("Server closed");
             }
@@ -75,7 +69,7 @@ namespace Server
             catch (OperationCanceledException) { }
         }
 
-        public void HandleInput(CancellationToken ct)
+        private static void HandleInput(CancellationToken ct)
         {
             _ = Task.Run(() =>
             {
@@ -84,14 +78,14 @@ namespace Server
                     while (!ct.IsCancellationRequested)
                     {
                         string command = Console.ReadLine() ?? "";
-                        CommandManager.Execute(command, this);
+                        CommandManager.Execute(command);
                     }
                 }
                 catch (OperationCanceledException) { }
             }, ct);
         }
 
-        public async Task AuthenticateUser(NetworkClient client, TcpClient tcpClient)
+        private static async Task AuthenticateUser(NetworkClient client, TcpClient tcpClient)
         {
             Result result = await client.ReceiveHandshake();
             if (!result.Success)
@@ -127,7 +121,7 @@ namespace Server
                     {
                         token = Base32Token.FromCode(packet.Secret ?? "");
 
-                        if (!Context.ModeratorKeys.TryUseKey(token.Hash))
+                        if (!ServerContext.ModeratorKeys.TryUseKey(token.Hash))
                         {
                             configuredAuthLogger.Warning(packetResult.Error, "Invalid moderator key");
                             await client.SendPacketAsync(new ConnectPacket() { Secret = "Invalid moderator key", Mode = ConnectPacket.ConnectMode.NONE });
@@ -154,7 +148,7 @@ namespace Server
 
                     PlayerRole role = packet.Mode == ConnectPacket.ConnectMode.Moderator ? PlayerRole.Moderator : PlayerRole.Player;
                     Player? player = new(client, username, role);
-                    if (!Context.Players.TryAdd(username, player))
+                    if (!ServerContext.Players.TryAdd(username, player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username already taken");
                         await client.SendPacketAsync(new ConnectPacket() { Secret = "Username already taken", Mode = ConnectPacket.ConnectMode.NONE });
@@ -165,11 +159,11 @@ namespace Server
                     await client.SendPacketAsync(new ConnectPacket() { Username = username, Mode = packet.Mode });
                     configuredAuthLogger.ForContext("Role", role).Information("Player authenticated");
 
-                    await Context.Lobby.AddPlayerAsync(player);
-                    player.Service = Context.Lobby;
+                    await ServerContext.Lobby.AddPlayerAsync(player);
+                    player.Service = ServerContext.Lobby;
                     return;
                 case ConnectPacket.ConnectMode.Recovery:
-                    if (!Context.Players.TryGetValue(username, out player))
+                    if (!ServerContext.Players.TryGetValue(username, out player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username is unknown");
                         await client.SendPacketAsync(new ConnectPacket() { Secret = "Username is unknown", Mode = ConnectPacket.ConnectMode.NONE });
@@ -208,7 +202,7 @@ namespace Server
             }
         }
 
-        public async Task<bool> TryHandleServerPackageAsync(object package, Player sender)
+        public static async Task<bool> TryHandleServerPackageAsync(object package, Player sender)
         {
             ILogger configuredSystemLogger = systemLogger.ForContext("Actor", sender.Username);
 
@@ -221,7 +215,7 @@ namespace Server
                         return true;
                     }
                     configuredSystemLogger = configuredSystemLogger.ForContext("Target", kickPacket.Target);
-                    if (!Context.Players.TryGetValue(kickPacket.Target, out Player? player))
+                    if (!ServerContext.Players.TryGetValue(kickPacket.Target, out Player? player))
                     {
                         configuredSystemLogger.Warning("Couldn't find player to kick");
                         return true;
@@ -243,7 +237,7 @@ namespace Server
                         return true;
                     }
                     configuredSystemLogger = configuredSystemLogger.ForContext("Target", deletePacket.Target);
-                    if (!Context.Players.TryGetValue(deletePacket.Target, out player))
+                    if (!ServerContext.Players.TryGetValue(deletePacket.Target, out player))
                     {
                         configuredSystemLogger.Warning("Couldn't find player to delete");
                         return true;
@@ -255,7 +249,7 @@ namespace Server
                     }
 
                     await (player.Service?.RemovePlayerAsync(player) ?? Task.CompletedTask);
-                    Context.Players.Remove(player.Username, out _);
+                    ServerContext.Players.Remove(player.Username, out _);
                     player.Dispose();
                     configuredSystemLogger.Information("Player deleted");
                     return true;
@@ -266,7 +260,7 @@ namespace Server
                         return true;
                     }
                     configuredSystemLogger = configuredSystemLogger.ForContext("Target", generateRecoveryKeyPacket.Target);
-                    if (!Context.Players.TryGetValue(generateRecoveryKeyPacket.Target, out player))
+                    if (!ServerContext.Players.TryGetValue(generateRecoveryKeyPacket.Target, out player))
                     {
                         configuredSystemLogger.Warning("Couldn't find player to recover");
                         return true;
@@ -288,7 +282,7 @@ namespace Server
 
                     base32Token = Base32Token.FromRandom();
                     keyToken = new(base32Token.Hash, TimeSpan.FromMinutes(10));
-                    Context.ModeratorKeys.RegisterKey(keyToken);
+                    ServerContext.ModeratorKeys.RegisterKey(keyToken);
 
                     await sender.SendPacketAsync(new GenerateModeratorKeyPacket() { Key = base32Token.Code });
                     configuredSystemLogger.Information("Moderator key generated");
