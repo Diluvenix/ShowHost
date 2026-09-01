@@ -1,9 +1,8 @@
 ﻿using Server.Keys;
-using Server.Model;
 using Server.Services;
 using System.Collections.Concurrent;
 
-namespace Server
+namespace Server.Model
 {
     internal static class ServerContext
     {

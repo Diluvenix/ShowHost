@@ -1,4 +1,5 @@
 ﻿using Server.Keys;
+using Server.Model;
 
 namespace Server.Commands
 {
