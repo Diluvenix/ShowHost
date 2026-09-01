@@ -21,7 +21,7 @@ namespace Server
                   restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug
               ).CreateLogger();
 
-            using Server server = new(45678);
+            using Model.Server server = new(45678);
 
             Console.CancelKeyPress += (sender, e) =>
             {

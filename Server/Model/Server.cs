@@ -3,11 +3,10 @@ using Network.Packets;
 using Serilog;
 using Server.Commands;
 using Server.Keys;
-using Server.Model;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server
+namespace Server.Model
 {
     internal class Server : IDisposable
     {
