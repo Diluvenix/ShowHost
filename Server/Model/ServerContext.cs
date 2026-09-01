@@ -13,7 +13,7 @@ namespace Server.Model
         public static readonly Lobby Lobby = new();
         public static readonly ConcurrentNameDictionary<IService> Services = new(
             NameGenerator.Generate,
-            (s) => !string.IsNullOrEmpty(s) && s.Length <= 32 && s.AsSpan().IndexOfAnyExceptInRange(' ', '~') == -1
+            (s) => !string.IsNullOrEmpty(s) && s.Length <= 32 && s.AsSpan().IndexOfAnyExceptInRange(' ', '~') == -1 && s != "Lobby"
         );
 
         public static void Dispose()
