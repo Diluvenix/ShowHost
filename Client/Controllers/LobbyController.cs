@@ -1,6 +1,7 @@
 ﻿using Client.Views;
 using Client.Views.UserControls;
 using Network;
+using Network.Packets;
 using Network.Packets.Games.Lobby;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -28,14 +29,11 @@ namespace Client.Controllers
         };
         public Geometry Path => path;
 
-        private readonly NetworkClient client;
-
         private readonly Dictionary<string, LobbyPlayerBox> playerBoxes = [];
 
         public LobbyController()
         {
             view = new LobbyView();
-            client = MainController.Instance!.Client;
         }
 
         public void Dispose() { }
@@ -46,6 +44,9 @@ namespace Client.Controllers
             {
                 case Lobby_PlayerListPacket lobbyPacket:
                     view.Dispatcher.Invoke(() => HandleLobbyPacket(lobbyPacket));
+                    break;
+                case PingPacket pingPacket:
+                    view.Dispatcher.Invoke(() => HandlePingPacket(pingPacket));
                     break;
                 default:
                     return;
@@ -91,6 +92,17 @@ namespace Client.Controllers
             }
 
             view.PlayerViewRefresh();
+        }
+
+        private void HandlePingPacket(PingPacket packet)
+        {
+            foreach (PingPacket.Player player in packet.Players)
+            {
+                if (playerBoxes.TryGetValue(player.Username, out LobbyPlayerBox? playerBox))
+                {
+                    playerBox.Ping = player.Ping;
+                }
+            }
         }
     }
 }

@@ -27,6 +27,8 @@ namespace Server.Services
         {
             cts.Cancel();
             task.Wait();
+
+            logger.Information("Lobby disposed");
         }
 
 
@@ -57,11 +59,13 @@ namespace Server.Services
 
             if (task.IsCompleted)
                 task = ScheduledTasks(cts.Token);
+            await SendPlayerUpdate();
         }
         public async Task RemovePlayerAsync(Player player)
         {
             players.Remove(player.Username);
             logger.ForContext("Player", player.Username).Debug("Player left");
+            await SendPlayerUpdate();
         }
         public async Task RecoverAsync(Player player)
         {
@@ -88,13 +92,15 @@ namespace Server.Services
 
         private async Task ScheduledTasks(CancellationToken ct)
         {
-            Task scheduledPlayerUpdate = ScheduledPlayerUpdate(ct);
-            Task scheduledGameUpdate = ScheduledGameUpdate(ct);
+            Task[] tasks = 
+            [
+                ScheduledPlayerUpdate(ct),
+                ScheduledGameUpdate(ct)
+            ];
 
             try
             {
-                await scheduledPlayerUpdate.WaitAsync(ct);
-                await scheduledGameUpdate.WaitAsync(ct);
+                await Task.WhenAll(tasks).WaitAsync(ct);
             }
             catch (OperationCanceledException) { }
         }
@@ -107,14 +113,9 @@ namespace Server.Services
             {
                 while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && players.Count > 0)
                 {
-                    Lobby_PlayerListPacket packet = new()
+                    PingPacket packet = new()
                     {
-                        Players = [.. players.Values.Select(p => new Lobby_PlayerListPacket.Player(
-                                p.Username,
-                                p.PingMS,
-                                p.Role switch { PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, _ => Lobby_PlayerListPacket.PlayerRole.Player }
-                            ))
-                        ]
+                        Players = [.. players.Values.Select(p => new PingPacket.Player(p.Username, p.PingMS))]
                     };
 
                     await Parallel.ForEachAsync(players.Values, ct, async (p, ct) =>
@@ -191,6 +192,24 @@ namespace Server.Services
             }
 
             await sender.SetService(newGame);
+        }
+
+        private async Task SendPlayerUpdate()
+        {
+            Lobby_PlayerListPacket packet = new()
+            {
+                Players = [.. players.Values.Select(p => new Lobby_PlayerListPacket.Player(
+                                p.Username,
+                                p.PingMS,
+                                p.Role switch { PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, _ => Lobby_PlayerListPacket.PlayerRole.Player }
+                            ))
+                ]
+            };
+
+            await Parallel.ForEachAsync(players.Values, async (p, _) =>
+            {
+                await p.SendPacketAsync(packet);
+            });
         }
     }
 }

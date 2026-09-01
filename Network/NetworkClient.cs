@@ -247,6 +247,7 @@ namespace Network
             ["SetViewPacket"] = typeof(SetViewPacket),
             ["ModerationPacket"] = typeof(ModerationPacket),
             ["ModerationSecretPacket"] = typeof(ModerationSecretPacket),
+            ["PingPacket"] = typeof(PingPacket),
 
             ["Lobby_PlayerListPacket"] = typeof(Lobby_PlayerListPacket),
             ["Lobby_GameCreatePacket"] = typeof(Lobby_GameCreatePacket),
