@@ -1,16 +1,14 @@
-﻿using Client.Views;
-using Client.Views.UserControls;
-using Network;
+﻿using Client.Views.Games.Lobby;
 using Network.Packets;
 using Network.Packets.Games.Lobby;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Client.Controllers
+namespace Client.Controllers.Games.Lobby
 {
-    internal class LobbyController : IController
+    internal class PlayerPlayersController : IController
     {
-        private readonly LobbyView view;
+        private readonly PlayerPlayersView view = new();
         public UserControl View => view;
 
         private static readonly Geometry path = new GeometryGroup()
@@ -29,12 +27,9 @@ namespace Client.Controllers
         };
         public Geometry Path => path;
 
-        private readonly Dictionary<string, LobbyPlayerBox> playerBoxes = [];
+        private readonly Dictionary<string, PlayerBox> playerBoxes = [];
 
-        public LobbyController()
-        {
-            view = new LobbyView();
-        }
+        public PlayerPlayersController() { }
 
         public void Dispose() { }
 
@@ -74,9 +69,9 @@ namespace Client.Controllers
 
             foreach (Lobby_PlayerListPacket.Player player in packet.Players)
             {
-                if (!playerBoxes.TryGetValue(player.Username, out LobbyPlayerBox? playerBox))
+                if (!playerBoxes.TryGetValue(player.Username, out PlayerBox? playerBox))
                 {
-                    playerBox = new LobbyPlayerBox(player.Username, player.Ping);
+                    playerBox = new PlayerBox(player.Username, player.Ping);
                     playerBoxes[player.Username] = playerBox;
                     view.AddPlayer(playerBox);
 
@@ -98,7 +93,7 @@ namespace Client.Controllers
         {
             foreach (PingPacket.Player player in packet.Players)
             {
-                if (playerBoxes.TryGetValue(player.Username, out LobbyPlayerBox? playerBox))
+                if (playerBoxes.TryGetValue(player.Username, out PlayerBox? playerBox))
                 {
                     playerBox.Ping = player.Ping;
                 }

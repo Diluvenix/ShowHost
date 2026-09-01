@@ -1,4 +1,5 @@
 ﻿using _57 = Client.Controllers.Games._57;
+using Lobby = Client.Controllers.Games.Lobby;
 using Network;
 using Network.Packets;
 using System.Windows;
@@ -61,15 +62,15 @@ namespace Client.Controllers
             => currentController = IsModerator
                 ? new MultiViewPanelController(
                     [
-                        new LobbyController(),
-                        new ModeratorGameListController(),
-                        new SettingsController(),
+                        new Lobby.PlayerPlayersController(),
+                        new Lobby.ModeratorGamesController(),
+                        new Lobby.ModeratorSettingsController(),
                     ]
                 )
                 : new MultiViewPanelController(
                     [
-                        new LobbyController(),
-                        new PlayerGameListController(),
+                        new Lobby.PlayerPlayersController(),
+                        new Lobby.PlayerGamesController(),
                     ]
                 );
         private void Set57LobbyController()

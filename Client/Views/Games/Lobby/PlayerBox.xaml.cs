@@ -1,14 +1,13 @@
-﻿using Client.Controllers;
-using Network.Packets.Games.Lobby;
+﻿using Network.Packets.Games.Lobby;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Client.Views.UserControls
+namespace Client.Views.Games.Lobby
 {
     /// <summary>
-    /// Interaction logic for LobbyPlayerBox.xaml
+    /// Interaction logic for PlayerBox.xaml
     /// </summary>
-    public partial class LobbyPlayerBox : UserControl
+    public partial class PlayerBox : UserControl
     {
         private string username = string.Empty;
         public string Username 
@@ -71,7 +70,7 @@ namespace Client.Views.UserControls
                 _ => 0
             };
 
-        public LobbyPlayerBox(string username, int ping)
+        public PlayerBox(string username, int ping)
         {
             InitializeComponent();
 

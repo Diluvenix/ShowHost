@@ -1,37 +1,24 @@
-﻿using Client.Controllers;
-using Client.Views.UserControls;
-using Network;
-using Network.Packets.Games.Lobby;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Client.Views
+namespace Client.Views.Games.Lobby
 {
     /// <summary>
-    /// Interaction logic for ModeratorGameListView.xaml
+    /// Interaction logic for PlayerGamesView.xaml
     /// </summary>
-    public partial class ModeratorGameListView : UserControl
+    public partial class PlayerGamesView : UserControl
     {
         public readonly ObservableCollection<GameBox> GameBoxes = [];
         private readonly ICollectionView gameView;
 
-        private readonly NetworkClient client;
-
-        public ModeratorGameListView()
+        public PlayerGamesView()
         {
             InitializeComponent();
 
             gameView = CollectionViewSource.GetDefaultView(GameBoxes);
             GameList.ItemsSource = GameBoxes;
-
-            client = MainController.Instance!.Client;
-
-            Create57Button.Click += (_, _) =>
-            {
-                _ = client.SendPacketAsync(new Lobby_GameCreatePacket() { Type = Lobby_GameCreatePacket.GameType._57 });
-            };
         }
 
         public void SetGameBoxCount(int count)

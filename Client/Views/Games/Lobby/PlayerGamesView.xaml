@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Client.Views.LobbyView"
+﻿<UserControl x:Class="Client.Views.Games.Lobby.PlayerGamesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,14 +13,14 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" 
-               Content="Lobby"
+               Content="Games"
+               HorizontalAlignment="Center"
                FontWeight="Black"
-               FontSize="{DynamicResource FontHuge}"
-               HorizontalAlignment="Center"/>
+               FontSize="{StaticResource FontHuge}"/>
 
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="PlayerList"></ItemsControl>
+            <ItemsControl x:Name="GameList"></ItemsControl>
         </ScrollViewer>
     </Grid>
 </UserControl>

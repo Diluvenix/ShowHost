@@ -4,7 +4,7 @@ using Network.Packets.Games.Lobby;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Client.Views.UserControls
+namespace Client.Views.Games.Lobby
 {
     /// <summary>
     /// Interaction logic for GameBox.xaml

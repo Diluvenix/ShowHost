@@ -90,4 +90,8 @@
     <Resource Include="Assets\Fonts\Besley\BesleyNarrow-SemiItalic.ttf" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\UserControls\" />
+  </ItemGroup>
+
 </Project>

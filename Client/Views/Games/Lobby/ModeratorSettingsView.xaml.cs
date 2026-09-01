@@ -3,14 +3,14 @@ using Network.Packets;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Client.Views
+namespace Client.Views.Games.Lobby
 {
     /// <summary>
-    /// Interaction logic for SettingsView.xaml
+    /// Interaction logic for ModeratorSettingsView.xaml
     /// </summary>
-    public partial class SettingsView : UserControl
+    public partial class ModeratorSettingsView : UserControl
     {
-        public SettingsView()
+        public ModeratorSettingsView()
         {
             InitializeComponent();
 

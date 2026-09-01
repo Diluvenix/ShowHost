@@ -1,15 +1,15 @@
-﻿using Client.Views;
+﻿using Client.Views.Games.Lobby;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
 using Network.Packets;
 using Network.Packets.Games.Lobby;
 
-namespace Client.Controllers
+namespace Client.Controllers.Games.Lobby
 {
-    class SettingsController : IController
+    class ModeratorSettingsController : IController
     {
-        private readonly SettingsView view = new();
+        private readonly ModeratorSettingsView view = new();
         public UserControl View => view;
 
         private static readonly Geometry path = new GeometryGroup() 
