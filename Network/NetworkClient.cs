@@ -38,9 +38,11 @@ namespace Network
             }
             tcpClient.Dispose();
             aes?.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
-        public async Task<Result> TryConnect(string ip, int port)
+        public async Task<Result> TryConnectAsync(string ip, int port, CancellationToken ct = default)
         {
             if (IsConnected)
             {
@@ -51,7 +53,7 @@ namespace Network
 
             try
             {
-                await tcpClient.ConnectAsync(ip, port);
+                await tcpClient.ConnectAsync(ip, port, ct);
             }
             catch (SocketException e)
             {
@@ -62,7 +64,7 @@ namespace Network
             return Result.Ok();
         }
 
-        public async Task<Result> SendPacketAsync<T>(T packet)
+        public async Task<Result> SendPacketAsync<T>(T packet, CancellationToken ct = default)
         {
             PacketEnvelope envelope = new()
             {
@@ -71,12 +73,12 @@ namespace Network
             };
 
             byte[] data = JsonSerializer.SerializeToUtf8Bytes(envelope);
-            return await SendEncryptedBytesAsync(data);
+            return await SendEncryptedBytesAsync(data, ct);
         }
 
-        public async Task<Result<object>> ReceivePacketAsync()
+        public async Task<Result<object>> ReceivePacketAsync(CancellationToken ct = default)
         {
-            Result<byte[]> result = await ReceiveEncryptedBytesAsync();
+            Result<byte[]> result = await ReceiveEncryptedBytesAsync(ct);
             if (!result.Success)
                 return Result<object>.Fail(result.Error!);
 
@@ -95,7 +97,7 @@ namespace Network
             }
         }
 
-        public async Task<Result> DoHandshake()
+        public async Task<Result> DoHandshakeAsync(CancellationToken ct = default)
         {
             aes?.Dispose();
             aes = null;
@@ -104,9 +106,9 @@ namespace Network
             using ECDiffieHellman other = ECDiffieHellman.Create();
 
             byte[] myKey = self.ExportSubjectPublicKeyInfo();
-            await SendPlainBytesAsync(myKey);
+            await SendPlainBytesAsync(myKey, ct);
 
-            Result<byte[]> result = await ReceivePlainBytesAsync();
+            Result<byte[]> result = await ReceivePlainBytesAsync(ct);
             if (!result.Success)
                 return Result.Fail(result.Error!);
 
@@ -118,7 +120,7 @@ namespace Network
 
             return Result.Ok();
         }
-        public async Task<Result> ReceiveHandshake()
+        public async Task<Result> ReceiveHandshakeAsync(CancellationToken ct = default)
         {
             aes?.Dispose();
             aes = null;
@@ -126,7 +128,7 @@ namespace Network
             using ECDiffieHellman self = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
             using ECDiffieHellman other = ECDiffieHellman.Create();
 
-            Result<byte[]> result = await ReceivePlainBytesAsync();
+            Result<byte[]> result = await ReceivePlainBytesAsync(ct);
             if (!result.Success)
                 return Result.Fail(result.Error!);
 
@@ -134,7 +136,7 @@ namespace Network
             other.ImportSubjectPublicKeyInfo(otherKey, out _);
 
             byte[] myKey = self.ExportSubjectPublicKeyInfo();
-            await SendPlainBytesAsync(myKey);
+            await SendPlainBytesAsync(myKey, ct);
 
             key = self.DeriveKeyMaterial(other.PublicKey);
             aes = new AesGcm(key, 16);
@@ -142,7 +144,7 @@ namespace Network
             return Result.Ok();
         }
 
-        private async Task<Result> SendPlainBytesAsync(byte[] data)
+        private async Task<Result> SendPlainBytesAsync(byte[] data, CancellationToken ct = default)
         {
             byte[] length = BitConverter.GetBytes(data.Length);
 
@@ -151,8 +153,8 @@ namespace Network
 
             try
             {
-                await stream!.WriteAsync(length);
-                await stream!.WriteAsync(data);
+                await stream!.WriteAsync(length, ct);
+                await stream!.WriteAsync(data, ct);
             }
             catch (Exception e)
             {
@@ -162,12 +164,12 @@ namespace Network
             return Result.Ok();
         }
 
-        private async Task<Result<byte[]>> ReceivePlainBytesAsync()
+        private async Task<Result<byte[]>> ReceivePlainBytesAsync(CancellationToken ct = default)
         {
             try
             {
                 byte[] length = new byte[4];
-                await stream!.ReadExactlyAsync(length);
+                await stream!.ReadExactlyAsync(length, ct);
 
                 if (BitConverter.IsLittleEndian)
                     Array.Reverse(length);
@@ -178,7 +180,7 @@ namespace Network
 
                 byte[] data = new byte[size];
 
-                await stream!.ReadExactlyAsync(data);
+                await stream!.ReadExactlyAsync(data, ct);
 
                 return Result<byte[]>.Ok(data);
             }
@@ -189,7 +191,7 @@ namespace Network
         }
 
 
-        private async Task<Result> SendEncryptedBytesAsync(byte[] plaintext)
+        private async Task<Result> SendEncryptedBytesAsync(byte[] plaintext, CancellationToken ct = default)
         {
             lock (this)
             {
@@ -207,14 +209,14 @@ namespace Network
                 Buffer.BlockCopy(tag, 0, packet, 12, 16);
                 Buffer.BlockCopy(ciphertext, 0, packet, 28, ciphertext.Length);
 
-                return SendPlainBytesAsync(packet).Result;
+                return SendPlainBytesAsync(packet, ct).Result;
             }
         }
-        private async Task<Result<byte[]>> ReceiveEncryptedBytesAsync()
+        private async Task<Result<byte[]>> ReceiveEncryptedBytesAsync(CancellationToken ct = default)
         {
             while (tcpClient.Available < 4)
             {
-                await Task.Delay(10);
+                await Task.Delay(10, ct);
             }
 
             lock (this)
@@ -222,7 +224,7 @@ namespace Network
                 if (!IsConnected || aes == null)
                     return Result<byte[]>.Fail(new Exception("Connection not encrypted."));
 
-                Result<byte[]> result = ReceivePlainBytesAsync().Result;
+                Result<byte[]> result = ReceivePlainBytesAsync(ct).Result;
                 if (!result.Success)
                     return Result<byte[]>.Fail(result.Error!);
 

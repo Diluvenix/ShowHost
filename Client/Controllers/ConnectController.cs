@@ -63,7 +63,7 @@ namespace Client.Controllers
             }
 
             view.HintMessage = "Connecting...";
-            if (!(await client.TryConnect(view.ServerAddress, view.Port)).Success)
+            if (!(await client.TryConnectAsync(view.ServerAddress, view.Port)).Success)
             {
                 view.ErrorMessage = "Error: Server is unreachable.";
                 view.SetControllsEnabled(true);
@@ -72,7 +72,7 @@ namespace Client.Controllers
 
             view.HintMessage = "Encrypting channel...";
 
-            if (!(await client.DoHandshake()).Success)
+            if (!(await client.DoHandshakeAsync()).Success)
             {
                 view.ErrorMessage = "Error: Server connection aborted.";
                 view.SetControllsEnabled(true);
