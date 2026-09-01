@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
+using Network.Packets;
 
 namespace Client.Views.Games._57
 {
@@ -32,6 +33,22 @@ namespace Client.Views.Games._57
                 ));
                 ColorBorder.Background = colorBrush;
             }
+
+            if (player.Ping > 0)
+            {
+                PingLabel.Content = $"{player.Ping} ms";
+                OfflineBorder.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                PingLabel.Content = "Waiting for recovery";
+                OfflineBorder.Visibility = Visibility.Visible;
+            }
+        }
+
+        public void Update(PingPacket.Player player)
+        {
+            UsernameLabel.Content = player.Username;
 
             if (player.Ping > 0)
             {
