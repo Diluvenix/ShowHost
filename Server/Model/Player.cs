@@ -15,9 +15,9 @@ namespace Server.Model
         public readonly PlayerRole Role;
         public readonly KeyManager KeyManager;
 
-        private NetworkClient? client;
         private CancellationTokenSource cts = new();
-        private Task? handlerTask;
+        private Task handlerTask;
+        private NetworkClient? client;
         private DateTime lastHeartbeat;
 
         private readonly ILogger networkLogger;
@@ -33,49 +33,56 @@ namespace Server.Model
             networkLogger = Log.ForContext("SourceContext", "Network").ForContext("Player", Username);
 
             KeyManager = new();
-            handlerTask = Handle(cts.Token);
+            handlerTask = HandleAsync(cts.Token);
         }
         public void Dispose()
         {
-            Disconnect("Deleted").Wait();
+            try
+            {
+                cts.Cancel();
+            }
+            catch(ObjectDisposedException) { }
 
-            cts.Cancel();
-            handlerTask?.Wait();
-            cts.Dispose();
+            DisconnectAsync("Deleted", CancellationToken.None).Wait();
 
             client?.Dispose();
         }
 
-        public async Task SetService(IService newService)
+        public async Task SetServiceAsync(IService newService, CancellationToken ct)
         {
-            await Service.RemovePlayerAsync(this);
+            await Service.RemovePlayerAsync(this, ct);
             Service = newService;
-            await newService.AddPlayerAsync(this);
+            await newService.AddPlayerAsync(this, ct);
         }
 
-        public async Task SendPacketAsync<T>(T packet)
+        public async Task SendPacketAsync<T>(T packet, CancellationToken ct)
         {
-            if (IsConnected)
-                await (client?.SendPacketAsync(packet) ?? Task.CompletedTask);
+            if (IsConnected && client is not null)
+                await client.SendPacketAsync(packet, ct);
         }
         public void SetClient(NetworkClient client)
         {
             cts.Cancel();
-            handlerTask?.Wait();
+            try
+            {
+                handlerTask.Wait();
+            } 
+            catch (AggregateException) { }
             cts.Dispose();
             cts = new();
 
             this.client?.Dispose();
             this.client = client;
             PingMS = 1;
-            handlerTask = Handle(cts.Token);
+            handlerTask = HandleAsync(cts.Token);
         }
 
-        public async Task Disconnect(string reason)
+        public async Task DisconnectAsync(string reason, CancellationToken ct)
         {
             if (!IsConnected) return;
 
-            await (client?.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Connect }) ?? Task.CompletedTask);
+            if (client is not null)
+                await client.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Connect }, ct);
             cts.Cancel();
 
             PingMS = 0;
@@ -86,15 +93,15 @@ namespace Server.Model
         public static bool IsUsernameValid(string username) 
             => !string.IsNullOrEmpty(username) && username.Length <= 10 && username.AsSpan().IndexOfAnyExceptInRange('!', '~') == -1;
 
-        private async Task Handle(CancellationToken ct)
+        private async Task HandleAsync(CancellationToken ct)
         {
-            Task heartbeatTask = Heartbeat(ct);
+            _ = HeartbeatAsync(ct);
 
             try
             {
                 while (client is not null && !ct.IsCancellationRequested)
                 {
-                    Result<object> result = await client.ReceivePacketAsync().WaitAsync(ct);
+                    Result<object> result = await client.ReceivePacketAsync(ct);
                     if (!result.Success)
                     {
                         continue;
@@ -111,18 +118,16 @@ namespace Server.Model
                     }
 
                     networkLogger.ForContext("Packet", packet.GetType().Name).Debug("Recieved new Packet");
-                    if (await (Server.TryHandleServerPackageAsync(packet, this).WaitAsync(ct) ?? Task.FromResult(false)))
+                    if (await Server.TryHandleServerPackageAsync(packet, this, ct))
                         continue;
 
-                    await Service.HandleAsync(packet, this).WaitAsync(ct);
+                    await Service.HandleAsync(packet, this, ct);
                 }
             }
             catch (OperationCanceledException) { }
-
-            await heartbeatTask;
         }
 
-        private async Task Heartbeat(CancellationToken ct)
+        private async Task HeartbeatAsync(CancellationToken ct)
         {
             PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
             lastHeartbeat = DateTime.UtcNow;
@@ -132,11 +137,11 @@ namespace Server.Model
             {
                 while (client is not null && !ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct))
                 {
-                    await SendPacketAsync(new HeartbeatPacket() { Timestamp = DateTime.UtcNow.Ticks });
+                    await SendPacketAsync(new HeartbeatPacket() { Timestamp = DateTime.UtcNow.Ticks }, ct);
 
                     TimeSpan ping = DateTime.UtcNow - lastHeartbeat;
                     if (ping > TimeSpan.FromSeconds(10))
-                        await Disconnect("Timeout").WaitAsync(ct);
+                        await DisconnectAsync("Timeout", ct);
                 }
             }
             catch (OperationCanceledException) { }

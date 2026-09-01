@@ -1,4 +1,6 @@
-﻿namespace Server.Commands
+﻿using Server.Model;
+
+namespace Server.Commands
 {
     internal class StopCommand : ICommand
     {
@@ -8,7 +10,7 @@
 
         public void Execute(string[] args)
         {
-            Program.Cts.Cancel();
+            ServerContext.Cts.Cancel();
         }
     }
 }

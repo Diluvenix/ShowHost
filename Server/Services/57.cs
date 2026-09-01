@@ -34,7 +34,7 @@ namespace Server.Services
         }
         public void Dispose() { }
 
-        public async Task AddPlayerAsync(Player player)
+        public async Task AddPlayerAsync(Player player, CancellationToken ct)
         {
             clients.Add(player.Username, player);
             logger.ForContext("Player", player.Username).Information("Player joined");
@@ -51,12 +51,12 @@ namespace Server.Services
                             moderators.Add(player.Username);
                             break;
                     }
-                    await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby });
-                    await SendLobbyUpdate();
+                    await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby }, ct);
+                    await SendLobbyUpdateAsync(ct);
                     break;
             }
         }
-        public async Task RemovePlayerAsync(Player player)
+        public async Task RemovePlayerAsync(Player player, CancellationToken ct)
         {
             clients.Remove(player.Username);
             switch (player.Role)
@@ -69,28 +69,28 @@ namespace Server.Services
                     break;
             }
         }
-        public async Task RecoverAsync(Player player)
+        public async Task RecoverAsync(Player player, CancellationToken ct)
         {
             switch (internalStatus)
             {
                 case InternalStatus.Lobby:
-                    await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby });
-                    await SendLobbyUpdate();
+                    await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby }, ct);
+                    await SendLobbyUpdateAsync(ct);
                     break;
             }
         }
 
-        public async Task HandleAsync<T>(T packet, Player sender)
+        public async Task HandleAsync<T>(T packet, Player sender, CancellationToken ct)
         {
             switch (internalStatus)
             {
                 case InternalStatus.Lobby:
-                    await HandleLobbyAsync(packet, sender);
+                    await HandleLobbyAsync(packet, sender, ct);
                     break;
             }
         }
 
-        private async Task HandleLobbyAsync<T>(T packet, Player sender)
+        private async Task HandleLobbyAsync<T>(T packet, Player sender, CancellationToken ct)
         {
             switch (packet)
             {
@@ -100,12 +100,12 @@ namespace Server.Services
                         logger.ForContext("Actor", sender.Username).Warning("Denied access to LobbySettingsUpdate Method");
                         return;
                     }
-                    await LobbySettingsUpdate(_57_LobbySettingsUpdatePacket, sender);
+                    await LobbySettingsUpdateAsync(_57_LobbySettingsUpdatePacket, sender, ct);
                     break;
             }
         }
 
-        private async Task LobbySettingsUpdate(_57_LobbySettingsUpdatePacket packet, Player sender)
+        private async Task LobbySettingsUpdateAsync(_57_LobbySettingsUpdatePacket packet, Player sender, CancellationToken ct)
         {
             ILogger logger = this.logger.ForContext("Actor", sender.Username);
 
@@ -137,10 +137,10 @@ namespace Server.Services
                 }
             }
 
-            await SendLobbyUpdate();
+            await SendLobbyUpdateAsync(ct);
         }
 
-        private async Task SendLobbyUpdate()
+        private async Task SendLobbyUpdateAsync(CancellationToken ct)
         {
             _57_LobbyPacket packet = new()
             {
@@ -150,9 +150,9 @@ namespace Server.Services
                 Players = [.. players.Values]
             };
 
-            await Parallel.ForEachAsync(clients.Values, async (p, _) =>
+            await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
             {
-                await p.SendPacketAsync(packet);
+                await p.SendPacketAsync(packet, ct);
             });
         }
 

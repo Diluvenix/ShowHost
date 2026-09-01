@@ -23,10 +23,14 @@ namespace Server.Commands
                 return;
             }
 
-            player.Service.RemovePlayerAsync(player).Wait();
-            ServerContext.Players.Remove(player.Username, out _);
-            player.Dispose();
-            Console.WriteLine("Deleted player connection {0}", username);
+            try
+            {
+                player.Service.RemovePlayerAsync(player, ServerContext.Cts.Token).Wait();
+                ServerContext.Players.Remove(player.Username, out _);
+                player.Dispose();
+                Console.WriteLine("Deleted player connection {0}", username);
+            }
+            catch (AggregateException) { }
         }
     }
 }

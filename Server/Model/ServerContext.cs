@@ -16,6 +16,8 @@ namespace Server.Model
             (s) => !string.IsNullOrEmpty(s) && s.Length <= 32 && s.AsSpan().IndexOfAnyExceptInRange(' ', '~') == -1 && s != "Lobby"
         );
 
+        public static readonly CancellationTokenSource Cts = new();
+
         public static void Dispose()
         {
             Lobby.Dispose();

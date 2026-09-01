@@ -11,9 +11,9 @@ namespace Server.Services
         public int PlayersCurrent { get; }
         public Lobby_GameListPacket.GameStatus Status { get; }
 
-        public Task AddPlayerAsync(Player player);
-        public Task RemovePlayerAsync(Player player);
-        public Task RecoverAsync(Player player);
-        public Task HandleAsync<T>(T packet, Player sender);
+        public Task AddPlayerAsync(Player player, CancellationToken ct);
+        public Task RemovePlayerAsync(Player player, CancellationToken ct);
+        public Task RecoverAsync(Player player, CancellationToken ct);
+        public Task HandleAsync<T>(T packet, Player sender, CancellationToken ct);
     }
 }

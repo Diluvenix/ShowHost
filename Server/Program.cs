@@ -1,10 +1,10 @@
 ﻿using Serilog;
+using Server.Model;
 
 namespace Server
 {
     internal class Program
     {
-        public static readonly CancellationTokenSource Cts = new();
         private static readonly LoggingFormatter loggingFormatter = new();
 
         private static void Main()
@@ -25,13 +25,13 @@ namespace Server
 
             Console.CancelKeyPress += (sender, e) =>
             {
-                Cts.Cancel();
+                ServerContext.Cts.Cancel();
                 e.Cancel = true;
             };
 
             try
             {
-                Task.Delay(Timeout.Infinite).Wait(Cts.Token);
+                Task.Delay(Timeout.Infinite).Wait(ServerContext.Cts.Token);
             }
             catch (OperationCanceledException) { }
         }

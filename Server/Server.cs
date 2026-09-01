@@ -12,8 +12,6 @@ namespace Server
     internal class Server : IDisposable
     {
         private readonly TcpListener serverListener;
-        private readonly Task connectionTask;
-        private readonly CancellationTokenSource cts = new();
 
         private static readonly ILogger systemLogger = Log.ForContext("SourceContext", "System");
         private static readonly ILogger networkLogger = Log.ForContext("SourceContext", "Network");
@@ -26,8 +24,8 @@ namespace Server
             serverListener.Start();
             systemLogger.ForContext("Port", port).Information("Server started", port);
 
-            connectionTask = HandleConnections(cts.Token);
-            HandleInput(cts.Token);
+            _ = HandleConnectionsAsync(ServerContext.Cts.Token);
+            _ = HandleInputAsync(ServerContext.Cts.Token);
 
             Console.WriteLine("Press Ctrl-C or use 'stop' to shutdown the server at any time.");
             Console.WriteLine("Use 'help' to get a list of available commands");
@@ -36,57 +34,43 @@ namespace Server
 
         public void Dispose()
         {
-            if (!cts.IsCancellationRequested)
-            {
-                systemLogger.Information("Closing server...");
-                cts.Cancel();
+            systemLogger.Information("Closing server...");
 
-                connectionTask.Wait();
+            serverListener.Stop();
+            serverListener.Dispose();
 
-                serverListener.Stop();
-                serverListener.Dispose();
+            ServerContext.Dispose();
 
-                ServerContext.Dispose();
-
-                systemLogger.Information("Server closed");
-            }
+            systemLogger.Information("Server closed");
         }
 
-        private async Task HandleConnections(CancellationToken ct)
+        private async Task HandleConnectionsAsync(CancellationToken ct)
         {
             networkLogger.Information("Waiting for incoming connections...");
 
-            try
+            while (!ct.IsCancellationRequested)
+            {
+                TcpClient tcpClient = await serverListener.AcceptTcpClientAsync(ct);
+                networkLogger.ForContext("RemoteEndPoint", tcpClient.Client.RemoteEndPoint).Debug("Handling new connection");
+                _ = AuthenticateUserAsync(new NetworkClient(tcpClient), tcpClient, ct);
+            }
+        }
+
+        private static async Task HandleInputAsync(CancellationToken ct)
+        {
+            await Task.Run(() =>
             {
                 while (!ct.IsCancellationRequested)
                 {
-                    TcpClient tcpClient = await serverListener.AcceptTcpClientAsync(ct);
-                    networkLogger.ForContext("RemoteEndPoint", tcpClient.Client.RemoteEndPoint).Debug("Handling new connection");
-                    _ = AuthenticateUser(new NetworkClient(tcpClient), tcpClient);
+                    string command = Console.ReadLine() ?? "";
+                    CommandManager.Execute(command);
                 }
-            }
-            catch (OperationCanceledException) { }
-        }
-
-        private static void HandleInput(CancellationToken ct)
-        {
-            _ = Task.Run(() =>
-            {
-                try
-                {
-                    while (!ct.IsCancellationRequested)
-                    {
-                        string command = Console.ReadLine() ?? "";
-                        CommandManager.Execute(command);
-                    }
-                }
-                catch (OperationCanceledException) { }
             }, ct);
         }
 
-        private static async Task AuthenticateUser(NetworkClient client, TcpClient tcpClient)
+        private static async Task AuthenticateUserAsync(NetworkClient client, TcpClient tcpClient, CancellationToken ct)
         {
-            Result result = await client.ReceiveHandshake();
+            Result result = await client.ReceiveHandshakeAsync(ct);
             if (!result.Success)
             {
                 networkLogger.ForContext("RemoteEndPoint", tcpClient.Client.RemoteEndPoint).Warning(result.Error, "Error during ECDH handshake");
@@ -96,7 +80,7 @@ namespace Server
 
             ILogger configuredAuthLogger = authLogger.ForContext("RemoteEndPoint", tcpClient.Client.RemoteEndPoint);
 
-            Result<object> packetResult = await client.ReceivePacketAsync();
+            Result<object> packetResult = await client.ReceivePacketAsync(ct);
             if (!packetResult.Success)
             {
                 configuredAuthLogger.Warning(packetResult.Error, "Error whilst waiting for user authentication");
@@ -123,7 +107,7 @@ namespace Server
                         if (!ServerContext.ModeratorKeys.TryUseKey(token.Hash))
                         {
                             configuredAuthLogger.Warning(packetResult.Error, "Invalid moderator key");
-                            await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE });
+                            await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                             client.Dispose();
                             return;
                         }
@@ -131,7 +115,7 @@ namespace Server
                     catch (Exception e)
                     {
                         configuredAuthLogger.Warning(e, "Invalid moderator key");
-                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid moderator key", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                         client.Dispose();
                         return;
                     }
@@ -140,7 +124,7 @@ namespace Server
                     if (!Player.IsUsernameValid(username))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Invalid username");
-                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid username", Type = AuthenticationPacket.AuthenticationType.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid username", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                         client.Dispose();
                         return;
                     }
@@ -150,21 +134,21 @@ namespace Server
                     if (!ServerContext.Players.TryAdd(username, player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username already taken");
-                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username already taken", Type = AuthenticationPacket.AuthenticationType.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username already taken", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                         client.Dispose();
                         return;
                     }
 
-                    await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = packet.Type });
+                    await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = packet.Type }, ct);
                     configuredAuthLogger.ForContext("Role", role).Information("Player authenticated");
 
-                    await ServerContext.Lobby.AddPlayerAsync(player);
+                    await ServerContext.Lobby.AddPlayerAsync(player, ct);
                     return;
                 case AuthenticationPacket.AuthenticationType.Recovery:
                     if (!ServerContext.Players.TryGetValue(username, out player))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Username is unknown");
-                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username is unknown", Type = AuthenticationPacket.AuthenticationType.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Username is unknown", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                         client.Dispose();
                         return;
                     }
@@ -173,7 +157,7 @@ namespace Server
                     if (!player.KeyManager.TryUseKey(token.Hash))
                     {
                         configuredAuthLogger.Warning(packetResult.Error, "Invalid recovery key");
-                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid recovery key", Type = AuthenticationPacket.AuthenticationType.NONE });
+                        await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid recovery key", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                         client.Dispose();
                         return;
                     }
@@ -188,19 +172,19 @@ namespace Server
                             PlayerRole.Moderator => AuthenticationPacket.AuthenticationType.Moderator,
                             _ => AuthenticationPacket.AuthenticationType.Player,
                         }
-                    });
-                    await player.Service.RecoverAsync(player);
+                    }, ct);
+                    await player.Service.RecoverAsync(player, ct);
                     configuredAuthLogger.ForContext("Role", player.Role).Information("Player recovered");
                     return;
                 default:
                     configuredAuthLogger.Warning(packetResult.Error, "Invalid connect mode");
-                    await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid connect mode", Type = AuthenticationPacket.AuthenticationType.NONE });
+                    await client.SendPacketAsync(new AuthenticationPacket() { Secret = "Invalid connect mode", Type = AuthenticationPacket.AuthenticationType.NONE }, ct);
                     client.Dispose();
                     return;
             }
         }
 
-        public static async Task<bool> TryHandleServerPackageAsync(object package, Player sender)
+        public static async Task<bool> TryHandleServerPackageAsync(object package, Player sender, CancellationToken ct)
         {
             ILogger configuredSystemLogger = systemLogger.ForContext("Actor", sender.Username);
 
@@ -229,11 +213,11 @@ namespace Server
                     {
                         case ModerationPacket.ModerationAction.Kick:
                             if (player.IsConnected)
-                                await player.Disconnect("Kicked");
+                                await player.DisconnectAsync("Kicked", ct);
                             configuredSystemLogger.Information("Player kicked");
                             break;
                         case ModerationPacket.ModerationAction.Delete:
-                            await player.Service.RemovePlayerAsync(player);
+                            await player.Service.RemovePlayerAsync(player, ct);
                             ServerContext.Players.Remove(player.Username, out _);
                             player.Dispose();
                             configuredSystemLogger.Information("Player deleted");
@@ -266,7 +250,7 @@ namespace Server
                             ServerContext.ModeratorKeys.RegisterKey(keyToken);
                             break;
                     }
-                    await sender.SendPacketAsync(moderationSecretPacket);
+                    await sender.SendPacketAsync(moderationSecretPacket, ct);
                     configuredSystemLogger.Information("Secret generated");
                     return true;
                 default:

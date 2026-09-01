@@ -23,8 +23,12 @@ namespace Server.Commands
                 return;
             }
 
-            player.Disconnect("Kicked").Wait();
-            Console.WriteLine("Kicked player {0}", username);
+            try
+            {
+                player.DisconnectAsync("Kicked", ServerContext.Cts.Token).Wait();
+                Console.WriteLine("Kicked player {0}", username);
+            }
+            catch (AggregateException) { }
         }
     }
 }
