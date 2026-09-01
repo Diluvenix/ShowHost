@@ -45,7 +45,7 @@ namespace Server.Services
                     switch (player.Role)
                     {
                         case PlayerRole.Player:
-                            players.Add(player.Username, new _57_Player(player.Username, 0, 0));
+                            players.Add(player.Username, new _57_Player(player.Username, Colors.GetNextDefault(players.Values.Select(p => p.Color)), 0));
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
