@@ -39,15 +39,18 @@ namespace Server.Services
             await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby }, ct);
             await SendPlayersUpdateAsync(ct);
             await SendGamesUpdateAsync(ct);
+
+            if (ScheduledGamesUpdateTask.IsCompleted)
+                ScheduledGamesUpdateTask = ScheduledGamesUpdateAsync(Context.Cts.Token);
         }
 
         private async Task ScheduledGamesUpdateAsync(CancellationToken ct)
         {
             PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
 
-            while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Count > 0)
+            while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Values.Any(p => p.IsConnected))
             {
-                await SendPlayersUpdateAsync(ct);
+                await SendGamesUpdateAsync(ct);
             }
         }
 
