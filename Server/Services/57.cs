@@ -7,6 +7,8 @@ namespace Server.Services
 {
     internal class _57 : ServiceBase
     {
+        public override int PlayersCount => players.Count;
+
         private InternalStatus internalStatus = InternalStatus.Lobby;
         private readonly OrderedDictionary<string, _57_Player> players = [];
         private readonly List<string> moderators = [];
@@ -18,6 +20,9 @@ namespace Server.Services
 
         public override void Dispose() { }
 
+        public override bool IsPlayerAddable(Player player) 
+            => player.Role == PlayerRole.Moderator || PlayersCount < PlayersMax;
+
         private protected override async Task OnPlayerAddedAsync(Player player, CancellationToken ct)
         {
             switch (internalStatus)
@@ -27,7 +32,6 @@ namespace Server.Services
                     {
                         case PlayerRole.Player:
                             players.Add(player.Username, new _57_Player(player.Username, player.PingMS, Colors.GetNextDefault(players.Values.Select(p => p.Color)), 0));
-                            PlayersCurrent = players.Count;
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
@@ -44,7 +48,6 @@ namespace Server.Services
             {
                 case PlayerRole.Player:
                     players.Remove(player.Username);
-                    PlayersCurrent = players.Count;
                     break;
                 case PlayerRole.Moderator:
                     moderators.Remove(player.Username);
@@ -128,7 +131,7 @@ namespace Server.Services
             {
                 Name = Name,
                 PlayersMax = PlayersMax,
-                PlayersCurrent = PlayersCurrent,
+                PlayersCurrent = PlayersCount,
                 Players = [.. players.Values]
             };
 

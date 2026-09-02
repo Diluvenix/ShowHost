@@ -6,6 +6,8 @@ namespace Server.Services
 {
     internal class Lobby : ServiceBase
     {
+        public override int PlayersCount => clients.Count;
+
         private Task ScheduledGamesUpdateTask;
 
         public Lobby() : base("Lobby", "Lobby")
@@ -16,10 +18,11 @@ namespace Server.Services
 
         public override void Dispose() { }
 
+        public override bool IsPlayerAddable(Player player)
+            => true;
+
         private protected override async Task OnPlayerAddedAsync(Player player, CancellationToken ct)
         {
-            PlayersCurrent = clients.Count;
-
             await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Lobby }, ct);
 
             await SendPlayersUpdateAsync(ct);
@@ -30,8 +33,6 @@ namespace Server.Services
         }
         private protected override async Task OnPlayerRemovedAsync(Player player, CancellationToken ct)
         {
-            PlayersCurrent = clients.Count;
-
             await SendPlayersUpdateAsync(ct);
         }
         private protected override async Task OnPlayerRecoveredAsync(Player player, CancellationToken ct)
@@ -117,7 +118,7 @@ namespace Server.Services
                     s.Type,
                     s.Name,
                     s.PlayersMax,
-                    s.PlayersCurrent,
+                    s.PlayersCount,
                     s.Status
                 ))]
             };

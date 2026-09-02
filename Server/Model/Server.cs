@@ -141,7 +141,7 @@ namespace Server.Model
                     await client.SendPacketAsync(new AuthenticationPacket() { Username = username, Type = packet.Type }, ct);
                     configuredAuthLogger.ForContext("Role", role).Information("Player authenticated");
 
-                    await Context.Lobby.AddPlayerAsync(player, ct);
+                    await Context.Lobby.TryAddPlayerAsync(player, ct);
                     return;
                 case AuthenticationPacket.AuthenticationType.Recovery:
                     if (!Context.Players.TryGetValue(username, out player))

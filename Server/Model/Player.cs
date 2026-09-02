@@ -50,9 +50,18 @@ namespace Server.Model
 
         public async Task SetServiceAsync(ServiceBase newService, CancellationToken ct)
         {
-            await Service.RemovePlayerAsync(this, ct);
-            Service = newService;
-            await newService.AddPlayerAsync(this, ct);
+            ServiceBase oldService = Service;
+            await oldService.RemovePlayerAsync(this, ct);
+
+            if (await newService.TryAddPlayerAsync(this, ct))
+                Service = newService;
+            else if (await oldService.TryAddPlayerAsync(this, ct))
+                Service = oldService;
+            else
+            {
+                await Context.Lobby.TryAddPlayerAsync(this, ct);
+                Service = Context.Lobby;
+            }
         }
 
         public async Task SendPacketAsync<T>(T packet, CancellationToken ct)
