@@ -195,7 +195,9 @@ namespace Network
         {
             lock (this)
             {
-                if (!IsConnected || aes == null) 
+                if (!IsConnected)
+                    return Result.Fail(new Exception("Client not connected."));
+                if (aes == null) 
                     return Result.Fail(new Exception("Connection not encrypted."));
 
                 byte[] nonce = RandomNumberGenerator.GetBytes(12);
@@ -221,7 +223,9 @@ namespace Network
 
             lock (this)
             {
-                if (!IsConnected || aes == null)
+                if (!IsConnected)
+                    return Result<byte[]>.Fail(new Exception("Client not connected."));
+                if (aes == null)
                     return Result<byte[]>.Fail(new Exception("Connection not encrypted."));
 
                 Result<byte[]> result = ReceivePlainBytesAsync(ct).Result;
