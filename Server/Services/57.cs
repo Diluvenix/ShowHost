@@ -20,7 +20,7 @@ namespace Server.Services
 
         public override void Dispose() { }
 
-        public override bool IsPlayerAddable(Player player) 
+        public override bool CanPlayerJoin(Player player) 
             => player.Role == PlayerRole.Moderator || PlayersCount < PlayersMax;
 
         private protected override async Task OnPlayerAddedAsync(Player player, CancellationToken ct)

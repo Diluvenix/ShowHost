@@ -4,7 +4,7 @@
     {
         public Game[] Games { get; set; } = [];
 
-        public record class Game(string Type, string Name, int PlayersMax, int PlayersCurrent, GameStatus Status);
+        public record class Game(string Type, string Name, int PlayersMax, int PlayersCurrent, GameStatus Status, bool CanJoin);
 
         public enum GameStatus
         {

@@ -18,7 +18,7 @@ namespace Server.Services
 
         public override void Dispose() { }
 
-        public override bool IsPlayerAddable(Player player)
+        public override bool CanPlayerJoin(Player player)
             => true;
 
         private protected override async Task OnPlayerAddedAsync(Player player, CancellationToken ct)
@@ -112,19 +112,19 @@ namespace Server.Services
 
         private async Task SendGamesUpdateAsync(CancellationToken ct)
         {
-            Lobby_GameListPacket packet = new()
-            {
-                Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
-                    s.Type,
-                    s.Name,
-                    s.PlayersMax,
-                    s.PlayersCount,
-                    s.Status
-                ))]
-            };
-
             await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
             {
+                Lobby_GameListPacket packet = new()
+                {
+                    Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
+                        s.Type,
+                        s.Name,
+                        s.PlayersMax,
+                        s.PlayersCount,
+                        s.Status,
+                        s.CanPlayerJoin(p)
+                    ))]
+                };
                 await p.SendPacketAsync(packet, ct);
             });
         }

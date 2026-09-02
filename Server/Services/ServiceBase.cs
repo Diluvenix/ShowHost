@@ -38,7 +38,7 @@ namespace Server.Services
         {
             lock(this)
             {
-                if (!IsPlayerAddable(player))
+                if (!CanPlayerJoin(player))
                     return false;
 
                 clients[player.Username] = player;
@@ -73,7 +73,7 @@ namespace Server.Services
             await OnPlayerRecoveredAsync(player, ct);
         }
 
-        public abstract bool IsPlayerAddable(Player player);
+        public abstract bool CanPlayerJoin(Player player);
         private protected abstract Task OnPlayerAddedAsync(Player player, CancellationToken ct);
         private protected abstract Task OnPlayerRemovedAsync(Player player, CancellationToken ct);
         private protected abstract Task OnPlayerRecoveredAsync(Player player, CancellationToken ct);

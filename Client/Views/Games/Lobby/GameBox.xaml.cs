@@ -35,7 +35,7 @@ namespace Client.Views.Games.Lobby
 
             PreparingBorder.Visibility = gameData.Status == Lobby_GameListPacket.GameStatus.Preparing ? Visibility.Visible : Visibility.Collapsed;
             RunningBorder.Visibility = gameData.Status == Lobby_GameListPacket.GameStatus.Running ? Visibility.Visible : Visibility.Collapsed;
-            JoinButton.IsEnabled = gameData.Status == Lobby_GameListPacket.GameStatus.Preparing;
+            JoinButton.IsEnabled = gameData.CanJoin;
         }
     }
 }
