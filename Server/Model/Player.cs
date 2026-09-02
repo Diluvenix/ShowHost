@@ -43,7 +43,7 @@ namespace Server.Model
             }
             catch(ObjectDisposedException) { }
 
-            DisconnectAsync("Deleted", CancellationToken.None).Wait();
+            DisconnectAsync("Deleted", default).Wait();
 
             client?.Dispose();
         }
@@ -92,10 +92,11 @@ namespace Server.Model
 
             if (client is not null)
                 await client.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Connect }, ct);
+                client?.Dispose();
+                client = null;
+            
             cts.Cancel();
-
             PingMS = 0;
-            client = null;
             networkLogger.ForContext("Reason", reason).Information("Player lost connection", Username);
         }
 
