@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" Background="#353535">
-            <StackPanel Margin="{StaticResource MarginLarge}"
+            <StackPanel Margin="{DynamicResource MarginLarge}"
                         x:Name="ButtonStackPanel"/>
         </Border>
 

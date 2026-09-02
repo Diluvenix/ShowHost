@@ -18,12 +18,12 @@
             <Label Content="57"
                    HorizontalAlignment="Center"
                    FontWeight="Black"
-                   FontSize="{StaticResource FontHuge}"/>
+                   FontSize="{DynamicResource FontHuge}"/>
             <Label Content="[NAME]"
                    HorizontalAlignment="Center"
                    FontWeight="Bold" Opacity="0.7"
-                   FontSize="{StaticResource FontNormal}"
-                   Margin="{StaticResource MarginNormalVerticalNegative}"
+                   FontSize="{DynamicResource FontNormal}"
+                   Margin="{DynamicResource MarginNormalVerticalNegative}"
                    x:Name="NameLabel"/>
         </StackPanel>
 

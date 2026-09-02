@@ -1,4 +1,5 @@
 ﻿using Client.Views.Games._57;
+using Client.Views.Games.Lobby;
 using Network.Packets.Games._57;
 using System.Configuration;
 using System.Windows.Controls;
@@ -11,6 +12,8 @@ namespace Client.Controllers.Games._57
     {
         private readonly ModeratorLobbySettingsView view = new();
         public UserControl View => view;
+
+        private readonly Dictionary<string, SettingsPlayerBox> settingsPlayerBoxes = [];
 
         private static readonly Geometry path = new GeometryGroup()
         {
@@ -62,9 +65,24 @@ namespace Client.Controllers.Games._57
             switch (packet)
             {
                 case _57_LobbyPacket _57_LobbyPacket:
-                    view.Dispatcher.Invoke(view.SetLobbyName, _57_LobbyPacket.Name);
-                    view.Dispatcher.Invoke(view.SetPlayersMax, _57_LobbyPacket.PlayersMax);
+                    view.Dispatcher.Invoke(HandleLobbyPacket, _57_LobbyPacket);
                     break;
+            }
+        }
+
+        private void HandleLobbyPacket(_57_LobbyPacket packet)
+        {
+            view.Update(packet);
+
+            if (packet.Players.Length != settingsPlayerBoxes.Count)
+                view.SetSettingsPlayerBoxCount(packet.Players.Length);
+
+            settingsPlayerBoxes.Clear();
+            for (int i = 0; i < packet.Players.Length; i++)
+            {
+                SettingsPlayerBox settingsPlayerBox = view.SettingsPlayerBoxes[i];
+                settingsPlayerBoxes[packet.Players[i].Username] = settingsPlayerBox;
+                settingsPlayerBox.Update(packet.Players[i]);
             }
         }
     }

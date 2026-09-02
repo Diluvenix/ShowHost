@@ -16,8 +16,8 @@
                         HorizontalAlignment="Left"
                         Margin="{DynamicResource MarginNormal}">
                 <Border Background="Purple"
-                        Width="{StaticResource FontNormal}"
-                        CornerRadius="{StaticResource RadiusNormal}"
+                        Width="{DynamicResource FontNormal}"
+                        CornerRadius="{DynamicResource RadiusNormal}"
                         x:Name="ColorBorder"/>
 
                 <StackPanel Orientation="Vertical"

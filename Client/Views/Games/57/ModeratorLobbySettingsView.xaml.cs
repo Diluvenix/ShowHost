@@ -1,8 +1,11 @@
 ﻿using Client.Controllers;
 using Network;
 using Network.Packets.Games._57;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Client.Views.Games._57
@@ -12,6 +15,9 @@ namespace Client.Views.Games._57
     /// </summary>
     public partial class ModeratorLobbySettingsView : UserControl
     {
+        public readonly ObservableCollection<SettingsPlayerBox> SettingsPlayerBoxes = [];
+        private readonly ICollectionView settingsPlayerBoxesView;
+
         private string lobbyName = string.Empty;
         private int playersMax;
 
@@ -33,6 +39,9 @@ namespace Client.Views.Games._57
                 if (!e.Text.All(char.IsDigit))
                     e.Handled = true;
             };
+
+            settingsPlayerBoxesView = CollectionViewSource.GetDefaultView(SettingsPlayerBoxes);
+            PlayerList.ItemsSource = SettingsPlayerBoxes;
         }
 
         private void PlayersMaxBox_KeyDown(object sender, KeyEventArgs e)
@@ -59,18 +68,6 @@ namespace Client.Views.Games._57
             _ = client.SendPacketAsync(new _57_LobbySettingsUpdatePacket() { PlayersMax = playersMax }, MainController.Instance!.Cts.Token);
         }
 
-        public void SetLobbyName(string lobbyName)
-        {
-            this.lobbyName = lobbyName;
-            LobbyNameBox.Text = this.lobbyName;
-        }
-
-        public void SetPlayersMax(int playersMax)
-        {
-            this.playersMax = playersMax;
-            PlayersMaxBox.Text = this.playersMax.ToString();
-        }
-
         private void LobbyNameBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(LobbyNameBox.Text))
@@ -92,6 +89,25 @@ namespace Client.Views.Games._57
                 Keyboard.ClearFocus();
                 e.Handled = true;
             }
+        }
+
+        public void Update(_57_LobbyPacket _57_LobbyPacket)
+        {
+            lobbyName = _57_LobbyPacket.Name;
+            LobbyNameBox.Text = lobbyName;
+
+            playersMax = _57_LobbyPacket.PlayersMax;
+            PlayersMaxBox.Text = playersMax.ToString();
+        }
+
+        public void SetSettingsPlayerBoxCount(int count)
+        {
+            while (SettingsPlayerBoxes.Count > count)
+                SettingsPlayerBoxes.RemoveAt(0);
+            while (SettingsPlayerBoxes.Count < count)
+                SettingsPlayerBoxes.Add(new SettingsPlayerBox());
+
+            //settingsPlayerBoxesView.Refresh();
         }
     }
 }

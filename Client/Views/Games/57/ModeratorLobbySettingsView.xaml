@@ -16,14 +16,14 @@
                Content="57 - Settings"
                HorizontalAlignment="Center"
                FontWeight="Black"
-               FontSize="{StaticResource FontHuge}"/>
+               FontSize="{DynamicResource FontHuge}"/>
 
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel Orientation="Vertical">
                 <Label Content="General"
                        FontWeight="Bold"
-                       FontSize="{StaticResource FontBig}"/>
+                       FontSize="{DynamicResource FontBig}"/>
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -37,29 +37,35 @@
 
                     <Label Grid.Row="0" Grid.Column="0"
                            Content="Lobby name"
-                           FontSize="{StaticResource FontNormal}"
-                           Margin="{StaticResource MarginNormal}"/>
+                           FontSize="{DynamicResource FontNormal}"
+                           Margin="{DynamicResource MarginNormal}"/>
 
                     <local:InputBox Grid.Row="0"
                                     Grid.Column="1"
                                     Watermark="Lobby name"
-                                    CornerRadius="{StaticResource RadiusNormal}"
-                                    FontSize="{StaticResource FontSmall}"
-                                    Margin="{StaticResource MarginNormal}"
+                                    CornerRadius="{DynamicResource RadiusNormal}"
+                                    FontSize="{DynamicResource FontSmall}"
+                                    Margin="{DynamicResource MarginNormal}"
                                     x:Name="LobbyNameBox"/>
 
                     <Label Grid.Row="1" Grid.Column="0"
                            Content="Players"
-                           FontSize="{StaticResource FontNormal}"
+                           FontSize="{DynamicResource FontNormal}"
                            Margin="{DynamicResource MarginNormal}"/>
 
                     <local:InputBox Grid.Row="1" Grid.Column="1"
                                     Watermark="Player Count"
-                                    CornerRadius="{StaticResource RadiusNormal}"
-                                    FontSize="{StaticResource FontSmall}"
-                                    Margin="{StaticResource MarginNormal}"
+                                    CornerRadius="{DynamicResource RadiusNormal}"
+                                    FontSize="{DynamicResource FontSmall}"
+                                    Margin="{DynamicResource MarginNormal}"
                                     x:Name="PlayersMaxBox"/>
                 </Grid>
+
+                <Separator Margin="{DynamicResource MarginLargeVertical}"/>
+                <Label Content="Colors"
+                       FontWeight="Bold"
+                       FontSize="{DynamicResource FontBig}"/>
+                <ItemsControl x:Name="PlayerList"></ItemsControl>
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -17,7 +17,7 @@
                Content="Games"
                HorizontalAlignment="Center"
                FontWeight="Black"
-               FontSize="{StaticResource FontHuge}"/>
+               FontSize="{DynamicResource FontHuge}"/>
 
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto">
@@ -25,27 +25,27 @@
         </ScrollViewer>
 
         <StackPanel Orientation="Vertical" Grid.Row="2">
-            <Separator Margin="{StaticResource MarginLargeVertical}"/>
+            <Separator Margin="{DynamicResource MarginLargeVertical}"/>
             <Label Content="Create new game"
                HorizontalAlignment="Center"
                FontWeight="Bold"
-               FontSize="{StaticResource FontLarge}"/>
-            <Border Background="#282828" CornerRadius="{StaticResource RadiusLarge}"
-                    Margin="{StaticResource MarginLargeVertical}"
-                    Padding="{StaticResource MarginNormal}">
+               FontSize="{DynamicResource FontLarge}"/>
+            <Border Background="#282828" CornerRadius="{DynamicResource RadiusLarge}"
+                    Margin="{DynamicResource MarginLargeVertical}"
+                    Padding="{DynamicResource MarginNormal}">
                 <Grid Margin="{DynamicResource MarginNormal}">
                     <Label Content="57"
                            FontWeight="Black"
-                           FontSize="{StaticResource FontXLarge}"
+                           FontSize="{DynamicResource FontXLarge}"
                            HorizontalAlignment="Left"/>
                     <local:RoundButton Content="Create"
                                        HorizontalAlignment="Right"
                                        VerticalAlignment="Center"
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       FontSize="{StaticResource FontLarge}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       FontSize="{DynamicResource FontLarge}"
                                        FontWeight="Bold"
                                        Background="#3D6B3B"
-                                       Margin="{StaticResource MarginLargeHorizontal}"
+                                       Margin="{DynamicResource MarginLargeHorizontal}"
                                        x:Name="Create57Button"/>
                 </Grid>
             </Border>

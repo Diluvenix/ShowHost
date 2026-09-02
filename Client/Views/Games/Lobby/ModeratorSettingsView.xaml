@@ -16,67 +16,67 @@
                Content="Settings"
                HorizontalAlignment="Center"
                FontWeight="Black"
-               FontSize="{StaticResource FontHuge}"/>
+               FontSize="{DynamicResource FontHuge}"/>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" 
-                      Margin="{StaticResource MarginNormal}">
+                      Margin="{DynamicResource MarginNormal}">
             <StackPanel Orientation="Vertical">
                 <Label Content="Server"
                        FontWeight="Bold"
-                       FontSize="{StaticResource FontBig}"/>
+                       FontSize="{DynamicResource FontBig}"/>
                 <StackPanel Orientation="Horizontal">
                     <local:RoundButton Content="Generate moderator key" 
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       HorizontalAlignment="Left" FontSize="{StaticResource FontNormal}"
-                                       Padding="{StaticResource MarginNormal}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       HorizontalAlignment="Left" FontSize="{DynamicResource FontNormal}"
+                                       Padding="{DynamicResource MarginNormal}"
                                        x:Name="ModkeyButton"/>
                     <local:InputBox IsReadOnly="True" Watermark="Moderator key"
-                                    FontSize="{StaticResource FontSmall}"
-                                    CornerRadius="{StaticResource RadiusNormal}"
-                                    Margin="{StaticResource MarginNormalHorizontal}"
+                                    FontSize="{DynamicResource FontSmall}"
+                                    CornerRadius="{DynamicResource RadiusNormal}"
+                                    Margin="{DynamicResource MarginNormalHorizontal}"
                                     x:Name="ModkeyBox"/>
                     <local:RoundButton Content="Copy" 
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       HorizontalAlignment="Left" FontSize="{StaticResource FontXSmall}"
-                                       Padding="{StaticResource MarginNormal}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       HorizontalAlignment="Left" FontSize="{DynamicResource FontXSmall}"
+                                       Padding="{DynamicResource MarginNormal}"
                                        x:Name="ModkeyCopyButton"/>
                 </StackPanel>
 
-                <Separator Margin="{StaticResource MarginLargeVertical}"/>
+                <Separator Margin="{DynamicResource MarginLargeVertical}"/>
 
                 <Label Content="Players"
                        FontWeight="Bold"
-                       FontSize="{StaticResource FontBig}"/>
+                       FontSize="{DynamicResource FontBig}"/>
 
                 <ComboBox x:Name="PlayersDropDown"
-                          FontSize="{StaticResource FontSmall}" Margin="0,5,0,0"/>
+                          FontSize="{DynamicResource FontSmall}" Margin="0,5,0,0"/>
 
-                <StackPanel Orientation="Horizontal" Margin="{StaticResource MarginNormalVertical}">
+                <StackPanel Orientation="Horizontal" Margin="{DynamicResource MarginNormalVertical}">
                     <local:RoundButton Content="Generate recovery key" 
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       HorizontalAlignment="Left" FontSize="{StaticResource FontNormal}"
-                                       Padding="{StaticResource MarginNormal}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       HorizontalAlignment="Left" FontSize="{DynamicResource FontNormal}"
+                                       Padding="{DynamicResource MarginNormal}"
                                        x:Name="RecoveryButton"/>
                     <local:RoundButton Content="Kick player" 
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       HorizontalAlignment="Left" FontSize="{StaticResource FontNormal}"
-                                       Padding="{StaticResource MarginNormal}"
-                                       Margin="{StaticResource MarginNormalHorizontal}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       HorizontalAlignment="Left" FontSize="{DynamicResource FontNormal}"
+                                       Padding="{DynamicResource MarginNormal}"
+                                       Margin="{DynamicResource MarginNormalHorizontal}"
                                        x:Name="KickButton"/>
                     <local:RoundButton Content="Delete player" 
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       HorizontalAlignment="Left" FontSize="{StaticResource FontNormal}"
-                                       Padding="{StaticResource MarginNormal}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       HorizontalAlignment="Left" FontSize="{DynamicResource FontNormal}"
+                                       Padding="{DynamicResource MarginNormal}"
                                        x:Name="DeleteButton"/>
                     <local:InputBox IsReadOnly="True" Watermark="Recovery key"
-                                    FontSize="{StaticResource FontSmall}"
-                                    CornerRadius="{StaticResource RadiusNormal}"
-                                    Margin="{StaticResource MarginNormalHorizontal}"
+                                    FontSize="{DynamicResource FontSmall}"
+                                    CornerRadius="{DynamicResource RadiusNormal}"
+                                    Margin="{DynamicResource MarginNormalHorizontal}"
                                     x:Name="RecoveryBox"/>
                     <local:RoundButton Content="Copy" 
-                                       CornerRadius="{StaticResource RadiusNormal}"
-                                       HorizontalAlignment="Left" FontSize="{StaticResource FontXSmall}"
-                                       Padding="{StaticResource MarginNormal}"
+                                       CornerRadius="{DynamicResource RadiusNormal}"
+                                       HorizontalAlignment="Left" FontSize="{DynamicResource FontXSmall}"
+                                       Padding="{DynamicResource MarginNormal}"
                                        x:Name="RecoveryCopyButton"/>
                 </StackPanel>
             </StackPanel>

@@ -90,4 +90,10 @@
     <Resource Include="Assets\Fonts\Besley\BesleyNarrow-SemiItalic.ttf" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Views\Games\57\SettingsPlayerBox.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

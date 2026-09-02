@@ -16,7 +16,7 @@
                Content="Games"
                HorizontalAlignment="Center"
                FontWeight="Black"
-               FontSize="{StaticResource FontHuge}"/>
+               FontSize="{DynamicResource FontHuge}"/>
 
         <ScrollViewer Grid.Row="1"
                       VerticalScrollBarVisibility="Auto">
