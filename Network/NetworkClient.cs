@@ -12,6 +12,7 @@ namespace Network
         private const int MAX_PACKET_SIZE = 64 * 1024;
 
         public bool IsConnected => tcpClient.Connected;
+        public bool IsEncrypted => aes is not null;
         public bool IsAvailable => tcpClient.Available > 0;
 
         private TcpClient tcpClient;

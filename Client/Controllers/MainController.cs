@@ -92,7 +92,7 @@ namespace Client.Controllers
 
         private async Task Handle(CancellationToken ct)
         {
-            while (!Client.IsConnected && !ct.IsCancellationRequested)
+            while (!Client.IsConnected && !Client.IsEncrypted && !ct.IsCancellationRequested)
             {
                 await Task.Delay(100, ct);
             }
