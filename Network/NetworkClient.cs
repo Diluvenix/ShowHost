@@ -20,6 +20,9 @@ namespace Network
         private byte[]? key;
         private AesGcm? aes;
 
+        private readonly SemaphoreSlim sendLock = new(1, 1);
+        private readonly SemaphoreSlim receiveLock = new(1, 1);
+
         public NetworkClient()
         {
             tcpClient = new TcpClient();
@@ -56,6 +59,7 @@ namespace Network
             {
                 await tcpClient.ConnectAsync(ip, port, ct);
             }
+            catch (OperationCanceledException) { throw; }
             catch (SocketException e)
             {
                 return Result.Fail(e);
@@ -152,14 +156,21 @@ namespace Network
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(length);
 
+            await sendLock.WaitAsync(ct);
+
             try
             {
                 await stream!.WriteAsync(length, ct);
                 await stream!.WriteAsync(data, ct);
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception e)
             {
                 return Result.Fail(e);
+            }
+            finally
+            {
+                sendLock.Release();
             }
 
             return Result.Ok();
@@ -167,6 +178,8 @@ namespace Network
 
         private async Task<Result<byte[]>> ReceivePlainBytesAsync(CancellationToken ct = default)
         {
+            await receiveLock.WaitAsync(ct);
+
             try
             {
                 byte[] length = new byte[4];
@@ -185,35 +198,37 @@ namespace Network
 
                 return Result<byte[]>.Ok(data);
             }
+            catch (OperationCanceledException) { throw; }
             catch (Exception e)
             {
                 return Result<byte[]>.Fail(e);
+            }
+            finally
+            {
+                receiveLock.Release();
             }
         }
 
 
         private async Task<Result> SendEncryptedBytesAsync(byte[] plaintext, CancellationToken ct = default)
         {
-            lock (this)
-            {
-                if (!IsConnected)
-                    return Result.Fail(new Exception("Client not connected."));
-                if (aes == null) 
-                    return Result.Fail(new Exception("Connection not encrypted."));
+            if (!IsConnected)
+                return Result.Fail(new Exception("Client not connected."));
+            if (aes == null) 
+                return Result.Fail(new Exception("Connection not encrypted."));
 
-                byte[] nonce = RandomNumberGenerator.GetBytes(12);
-                byte[] ciphertext = new byte[plaintext.Length];
-                byte[] tag = new byte[16];
+            byte[] nonce = RandomNumberGenerator.GetBytes(12);
+            byte[] ciphertext = new byte[plaintext.Length];
+            byte[] tag = new byte[16];
 
-                aes.Encrypt(nonce, plaintext, ciphertext, tag);
+            aes.Encrypt(nonce, plaintext, ciphertext, tag);
 
-                byte[] packet = new byte[nonce.Length + tag.Length + ciphertext.Length];
-                Buffer.BlockCopy(nonce, 0, packet, 0, 12);
-                Buffer.BlockCopy(tag, 0, packet, 12, 16);
-                Buffer.BlockCopy(ciphertext, 0, packet, 28, ciphertext.Length);
+            byte[] packet = new byte[nonce.Length + tag.Length + ciphertext.Length];
+            Buffer.BlockCopy(nonce, 0, packet, 0, 12);
+            Buffer.BlockCopy(tag, 0, packet, 12, 16);
+            Buffer.BlockCopy(ciphertext, 0, packet, 28, ciphertext.Length);
 
-                return SendPlainBytesAsync(packet, ct).Result;
-            }
+            return await SendPlainBytesAsync(packet, ct);
         }
         private async Task<Result<byte[]>> ReceiveEncryptedBytesAsync(CancellationToken ct = default)
         {
@@ -222,29 +237,26 @@ namespace Network
                 await Task.Delay(10, ct);
             }
 
-            lock (this)
-            {
-                if (!IsConnected)
-                    return Result<byte[]>.Fail(new Exception("Client not connected."));
-                if (aes == null)
-                    return Result<byte[]>.Fail(new Exception("Connection not encrypted."));
+            if (!IsConnected)
+                return Result<byte[]>.Fail(new Exception("Client not connected."));
+            if (aes == null)
+                return Result<byte[]>.Fail(new Exception("Connection not encrypted."));
 
-                Result<byte[]> result = ReceivePlainBytesAsync(ct).Result;
-                if (!result.Success)
-                    return Result<byte[]>.Fail(result.Error!);
+            Result<byte[]> result = ReceivePlainBytesAsync(ct).Result;
+            if (!result.Success)
+                return Result<byte[]>.Fail(result.Error!);
 
-                byte[] packet = result.Value!;
+            byte[] packet = result.Value!;
 
-                byte[] nonce = packet[..12];
-                byte[] tag = packet[12..28];
-                byte[] ciphertext = packet[28..];
+            byte[] nonce = packet[..12];
+            byte[] tag = packet[12..28];
+            byte[] ciphertext = packet[28..];
 
-                byte[] plaintext = new byte[ciphertext.Length];
+            byte[] plaintext = new byte[ciphertext.Length];
 
-                aes.Decrypt(nonce, ciphertext, tag, plaintext);
+            aes.Decrypt(nonce, ciphertext, tag, plaintext);
 
-                return Result<byte[]>.Ok(plaintext);
-            }
+            return Result<byte[]>.Ok(plaintext);
         }
 
         private static readonly Dictionary<string, Type> packetRegistry = new()
