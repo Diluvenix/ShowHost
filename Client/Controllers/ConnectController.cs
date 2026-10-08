@@ -101,6 +101,8 @@ namespace Client.Controllers
                 view.SetControllsEnabled(true);
                 return;
             }
+
+            MainController.Instance!.StartHandler();
         }
 
         public void Dispose() {}

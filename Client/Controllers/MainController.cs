@@ -15,6 +15,7 @@ namespace Client.Controllers
 
         public NetworkClient Client { get; private set; }
         public readonly CancellationTokenSource Cts;
+        private Task handleTask;
 
         private readonly MainWindow mainWindow;
         private IController currentController;
@@ -26,7 +27,7 @@ namespace Client.Controllers
             Instance = this;
 
             Cts = new CancellationTokenSource();
-            _ = Handle(Cts.Token);
+            handleTask = Task.CompletedTask;
 
             currentController = new ConnectController();
             mainWindow.Border.Child = currentController.View;
@@ -90,13 +91,14 @@ namespace Client.Controllers
             Instance = null;
         }
 
+        public void StartHandler()
+        {
+            if (handleTask.IsCompleted)
+                handleTask = Handle(Cts.Token);
+        }
+
         private async Task Handle(CancellationToken ct)
         {
-            while (!Client.IsConnected && !Client.IsEncrypted && !ct.IsCancellationRequested)
-            {
-                await Task.Delay(100, ct);
-            }
-
             while (!ct.IsCancellationRequested)
             {
                 Result<object> result = await Client.ReceivePacketAsync(ct);
@@ -115,6 +117,8 @@ namespace Client.Controllers
                         continue;
                     case SetViewPacket setViewPacket:
                         SetView(setViewPacket.View);
+                        if (setViewPacket.View == SetViewPacket.ViewType.Connect)
+                            return;
                         continue;
                 }
 
