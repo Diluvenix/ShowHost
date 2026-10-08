@@ -1,5 +1,4 @@
 ﻿using Client.Views.Games._57;
-using Network.Packets;
 using Network.Packets.Games._57;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -38,10 +37,10 @@ namespace Client.Controllers.Games._57
                 case _57_LobbyPacket _57_LobbyPacket:
                     view.Dispatcher.Invoke(HandleLobbyPacket, _57_LobbyPacket);
                     break;
-                case PingPacket pingPacket:
+                case _57_PingPacket pingPacket:
                     view.Dispatcher.Invoke(() =>
                     {
-                        foreach (PingPacket.Player player in pingPacket.Players)
+                        foreach (_57_PingPacket.Player player in pingPacket.Players)
                         {
                             if (playerBoxes.TryGetValue(player.Username, out LobbyPlayerBox? playerBox))
                                 playerBox.Update(player);

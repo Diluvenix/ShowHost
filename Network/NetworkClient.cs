@@ -255,15 +255,16 @@ namespace Network
             ["SetViewPacket"] = typeof(SetViewPacket),
             ["ModerationPacket"] = typeof(ModerationPacket),
             ["ModerationSecretPacket"] = typeof(ModerationSecretPacket),
-            ["PingPacket"] = typeof(PingPacket),
 
             ["Lobby_PlayerListPacket"] = typeof(Lobby_PlayerListPacket),
             ["Lobby_GameCreatePacket"] = typeof(Lobby_GameCreatePacket),
             ["Lobby_GameListPacket"] = typeof(Lobby_GameListPacket),
             ["Lobby_GameJoinPacket"] = typeof(Lobby_GameJoinPacket),
+            ["Lobby_PingPacket"] = typeof(Lobby_PingPacket),
 
             ["_57_LobbyPacket"] = typeof(_57_LobbyPacket),
             ["_57_LobbySettingsUpdatePacket"] = typeof(_57_LobbySettingsUpdatePacket),
+            ["_57_PingPacket"] = typeof(_57_PingPacket),
         };
     }
 }

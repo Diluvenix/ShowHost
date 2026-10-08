@@ -8,12 +8,14 @@ namespace Server.Services
     {
         public override int PlayersCount => clients.Count;
 
-        private Task ScheduledGamesUpdateTask;
+        private Task scheduledPingUpdateTask;
+        private Task scheduledGamesUpdateTask;
 
         public Lobby() : base("Lobby", "Lobby")
         {
             Status = Lobby_GameListPacket.GameStatus.Running;
-            ScheduledGamesUpdateTask = Task.CompletedTask;
+            scheduledPingUpdateTask = Task.CompletedTask;
+            scheduledGamesUpdateTask = Task.CompletedTask;
         }
 
         public override void Dispose() { }
@@ -28,8 +30,10 @@ namespace Server.Services
             await SendPlayersUpdateAsync(ct);
             await SendGamesUpdateAsync(ct);
 
-            if (ScheduledGamesUpdateTask.IsCompleted)
-                ScheduledGamesUpdateTask = ScheduledGamesUpdateAsync(Context.Cts.Token);
+            if (scheduledPingUpdateTask.IsCompleted)
+                scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
+            if (scheduledGamesUpdateTask.IsCompleted)
+                scheduledGamesUpdateTask = ScheduledGamesUpdateAsync(Context.Cts.Token);
         }
         private protected override async Task OnPlayerRemovedAsync(Player player, CancellationToken ct)
         {
@@ -41,19 +45,80 @@ namespace Server.Services
             await SendPlayersUpdateAsync(ct);
             await SendGamesUpdateAsync(ct);
 
-            if (ScheduledGamesUpdateTask.IsCompleted)
-                ScheduledGamesUpdateTask = ScheduledGamesUpdateAsync(Context.Cts.Token);
+            if (scheduledPingUpdateTask.IsCompleted)
+                scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
+            if (scheduledGamesUpdateTask.IsCompleted)
+                scheduledGamesUpdateTask = ScheduledGamesUpdateAsync(Context.Cts.Token);
         }
+        private async Task ScheduledPingUpdateAsync(CancellationToken ct)
+        {
+            PeriodicTimer timer = new(TimeSpan.FromSeconds(2));
 
+            while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Values.Any(c => c.IsConnected))
+            {
+                Lobby_PingPacket packet = new()
+                {
+                    Players = [.. clients.Values.Select(p => new Lobby_PingPacket.Player(p.Username, p.PingMS))]
+                };
+
+                await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
+                {
+                    await p.SendPacketAsync(packet, ct);
+                });
+            }
+        }
         private async Task ScheduledGamesUpdateAsync(CancellationToken ct)
         {
-            PeriodicTimer timer = new(TimeSpan.FromSeconds(5));
+            PeriodicTimer timer = new(TimeSpan.FromSeconds(10));
 
             while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Values.Any(p => p.IsConnected))
             {
                 await SendGamesUpdateAsync(ct);
             }
         }
+
+
+        private async Task SendPlayersUpdateAsync(CancellationToken ct)
+        {
+            Lobby_PlayerListPacket packet = new()
+            {
+                Players = [.. clients.Values.Select(p => new Lobby_PlayerListPacket.Player(
+                    p.Username,
+                    p.PingMS,
+                    p.Role switch
+                    {
+                        PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator,
+                        _ => Lobby_PlayerListPacket.PlayerRole.Player
+                    }
+                ))]
+            };
+
+            await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
+            {
+                await p.SendPacketAsync(packet, ct);
+            });
+        }
+        private async Task SendGamesUpdateAsync(CancellationToken ct)
+        {
+            await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
+            {
+                Lobby_GameListPacket packet = new()
+                {
+                    Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
+                        s.Type,
+                        s.Name,
+                        s.PlayersMax,
+                        s.PlayersCount,
+                        s.Status,
+                        s.CanPlayerJoin(p)
+                    ))]
+                };
+                await p.SendPacketAsync(packet, ct);
+            });
+        }
+
+
+
 
         public override async Task HandleAsync<T>(T packet, Player sender, CancellationToken ct)
         {
@@ -91,46 +156,6 @@ namespace Server.Services
             }
 
             await sender.SetServiceAsync(newGame, ct);
-        }
-
-        private async Task SendPlayersUpdateAsync(CancellationToken ct)
-        {
-            Lobby_PlayerListPacket packet = new()
-            {
-                Players = [.. clients.Values.Select(p => new Lobby_PlayerListPacket.Player(
-                    p.Username,
-                    p.PingMS,
-                    p.Role switch 
-                    { 
-                        PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, 
-                        _ => Lobby_PlayerListPacket.PlayerRole.Player 
-                    }
-                ))]
-            };
-
-            await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
-            {
-                await p.SendPacketAsync(packet, ct);
-            });
-        }
-
-        private async Task SendGamesUpdateAsync(CancellationToken ct)
-        {
-            await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
-            {
-                Lobby_GameListPacket packet = new()
-                {
-                    Games = [.. Context.Services.Values.Select(s => new Lobby_GameListPacket.Game(
-                        s.Type,
-                        s.Name,
-                        s.PlayersMax,
-                        s.PlayersCount,
-                        s.Status,
-                        s.CanPlayerJoin(p)
-                    ))]
-                };
-                await p.SendPacketAsync(packet, ct);
-            });
         }
     }
 }

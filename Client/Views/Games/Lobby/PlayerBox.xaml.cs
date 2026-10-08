@@ -1,5 +1,4 @@
-﻿using Network.Packets;
-using Network.Packets.Games.Lobby;
+﻿using Network.Packets.Games.Lobby;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -62,7 +61,7 @@ namespace Client.Views.Games.Lobby
             }
         }
 
-        public void Update(PingPacket.Player player)
+        public void Update(Lobby_PingPacket.Player player)
         {
             username = player.Username;
             UsernameLabel.Content = player.Username;

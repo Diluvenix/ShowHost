@@ -1,5 +1,6 @@
 ﻿using Network.Packets;
 using Network.Packets.Games._57;
+using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
 
@@ -10,12 +11,15 @@ namespace Server.Services
         public override int PlayersCount => players.Count;
 
         private InternalStatus internalStatus = InternalStatus.Lobby;
-        private readonly OrderedDictionary<string, _57_Player> players = [];
+        private readonly OrderedDictionary<string, _57_LobbyPacket.Player> players = [];
         private readonly List<string> moderators = [];
+
+        private Task scheduledPingUpdateTask;
 
         public _57() : base("57") 
         {
             PlayersMax = 4;
+            scheduledPingUpdateTask = Task.CompletedTask;
         }
 
         public override void Dispose() { }
@@ -31,7 +35,7 @@ namespace Server.Services
                     switch (player.Role)
                     {
                         case PlayerRole.Player:
-                            players.Add(player.Username, new _57_Player(player.Username, player.PingMS, Colors.GetNextDefault(players.Values.Select(p => p.Color)), 0));
+                            players.Add(player.Username, new _57_LobbyPacket.Player(player.Username, player.PingMS, Colors.GetNextDefault(players.Values.Select(p => p.Color)), 0));
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
@@ -41,6 +45,9 @@ namespace Server.Services
                     await SendLobbyUpdateAsync(ct);
                     break;
             }
+
+            if (scheduledPingUpdateTask.IsCompleted)
+                scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
         }
         private protected override async Task OnPlayerRemovedAsync(Player player, CancellationToken ct)
         {
@@ -63,7 +70,29 @@ namespace Server.Services
                     await SendLobbyUpdateAsync(ct);
                     break;
             }
+
+            if (scheduledPingUpdateTask.IsCompleted)
+                scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
         }
+
+        private async Task ScheduledPingUpdateAsync(CancellationToken ct)
+        {
+            PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
+
+            while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Values.Any(c => c.IsConnected))
+            {
+                _57_PingPacket packet = new()
+                {
+                    Players = [.. clients.Values.Select(p => new _57_PingPacket.Player(p.Username, p.PingMS))]
+                };
+
+                await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
+                {
+                    await p.SendPacketAsync(packet, ct);
+                });
+            }
+        }
+
 
         public override async Task HandleAsync<T>(T packet, Player sender, CancellationToken ct)
         {

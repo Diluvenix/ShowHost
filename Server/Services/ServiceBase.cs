@@ -1,5 +1,4 @@
-﻿using Network.Packets;
-using Network.Packets.Games.Lobby;
+﻿using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
 
@@ -14,7 +13,6 @@ namespace Server.Services
         public Lobby_GameListPacket.GameStatus Status { get; private protected set; } = Lobby_GameListPacket.GameStatus.Preparing;
         private protected readonly Dictionary<string, Player> clients = [];
 
-        private Task pingTask = Task.CompletedTask;
         private protected ILogger logger;
 
         public ServiceBase(string type)
@@ -43,8 +41,6 @@ namespace Server.Services
 
                 clients[player.Username] = player;
                 logger.ForContext("Player", player.Username).Information("Player joined");
-                if (pingTask.IsCompleted)
-                    pingTask = SendPingAsync(ct);
 
                 try
                 {
@@ -65,13 +61,8 @@ namespace Server.Services
 
             await OnPlayerRemovedAsync(player, ct);
         }
-        public async Task RecoverPlayerAsync(Player player, CancellationToken ct)
-        {
-            if (pingTask.IsCompleted)
-                pingTask = SendPingAsync(ct);
-
-            await OnPlayerRecoveredAsync(player, ct);
-        }
+        public Task RecoverPlayerAsync(Player player, CancellationToken ct)
+            => OnPlayerRecoveredAsync(player, ct);
 
         public abstract bool CanPlayerJoin(Player player);
         private protected abstract Task OnPlayerAddedAsync(Player player, CancellationToken ct);
@@ -79,24 +70,5 @@ namespace Server.Services
         private protected abstract Task OnPlayerRecoveredAsync(Player player, CancellationToken ct);
         public abstract Task HandleAsync<T>(T packet, Player sender, CancellationToken ct);
         public abstract void Dispose();
-
-
-        private async Task SendPingAsync(CancellationToken ct)
-        {
-            PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
-
-            while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Values.Any(c => c.IsConnected))
-            {
-                PingPacket packet = new()
-                {
-                    Players = [.. clients.Values.Select(p => new PingPacket.Player(p.Username, p.PingMS))]
-                };
-
-                await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
-                {
-                    await p.SendPacketAsync(packet, ct);
-                });
-            }
-        }
     }
 }

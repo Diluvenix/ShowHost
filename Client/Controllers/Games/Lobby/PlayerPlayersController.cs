@@ -1,5 +1,4 @@
 ﻿using Client.Views.Games.Lobby;
-using Network.Packets;
 using Network.Packets.Games.Lobby;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -38,7 +37,7 @@ namespace Client.Controllers.Games.Lobby
                 case Lobby_PlayerListPacket lobbyPacket:
                     view.Dispatcher.Invoke(HandleLobbyPacket, lobbyPacket);
                     break;
-                case PingPacket pingPacket:
+                case Lobby_PingPacket pingPacket:
                     view.Dispatcher.Invoke(HandlePingPacket, pingPacket);
                     break;
                 default:
@@ -62,9 +61,9 @@ namespace Client.Controllers.Games.Lobby
             view.PlayerViewRefresh();
         }
 
-        private void HandlePingPacket(PingPacket packet)
+        private void HandlePingPacket(Lobby_PingPacket packet)
         {
-            foreach (PingPacket.Player player in packet.Players)
+            foreach (Lobby_PingPacket.Player player in packet.Players)
             {
                 if (playerBoxes.TryGetValue(player.Username, out PlayerBox? playerBox))
                     playerBox.Update(player);

@@ -6,6 +6,8 @@
         public int PlayersMax { get; set; }
         public int PlayersCurrent { get; set; }
 
-        public _57_Player[] Players { get; set; } = [];
+        public Player[] Players { get; set; } = [];
+
+        public record class Player(string Username, int Ping, int Color, int Points);
     }
 }

@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
-using Network.Packets;
+using Network.Packets.Games.Lobby;
 
 namespace Client.Views.Games._57
 {
@@ -19,7 +19,7 @@ namespace Client.Views.Games._57
             InitializeComponent();
         }
 
-        public void Update(_57_Player player)
+        public void Update(_57_LobbyPacket.Player player)
         {
             UsernameLabel.Content = player.Username;
 
@@ -46,7 +46,7 @@ namespace Client.Views.Games._57
             }
         }
 
-        public void Update(PingPacket.Player player)
+        public void Update(_57_PingPacket.Player player)
         {
             UsernameLabel.Content = player.Username;
 
