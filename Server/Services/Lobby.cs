@@ -100,7 +100,11 @@ namespace Server.Services
                 Players = [.. clients.Values.Select(p => new Lobby_PlayerListPacket.Player(
                     p.Username,
                     p.PingMS,
-                    p.Role switch { PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, _ => Lobby_PlayerListPacket.PlayerRole.Player }
+                    p.Role switch 
+                    { 
+                        PlayerRole.Moderator => Lobby_PlayerListPacket.PlayerRole.Moderator, 
+                        _ => Lobby_PlayerListPacket.PlayerRole.Player 
+                    }
                 ))]
             };
 

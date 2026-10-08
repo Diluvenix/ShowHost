@@ -3,6 +3,7 @@ using Network.Packets;
 using Serilog;
 using Server.Keys;
 using Server.Services;
+using System.Net.Sockets;
 
 namespace Server.Model
 {
@@ -67,7 +68,10 @@ namespace Server.Model
         public async Task SendPacketAsync<T>(T packet, CancellationToken ct)
         {
             if (IsConnected && client is not null)
+            {
                 await client.SendPacketAsync(packet, ct);
+                networkLogger.ForContext("Packet", packet!.GetType().Name).Debug("Send new Packet");
+            }
         }
         public void SetClient(NetworkClient client)
         {
@@ -120,9 +124,9 @@ namespace Server.Model
                     object packet = result.Value!;
                     if (packet is HeartbeatPacket heartbeatPacket)
                     {
-                        lastHeartbeat = DateTime.UtcNow;
-                        TimeSpan ping = lastHeartbeat - new DateTime(heartbeatPacket.Timestamp);
-                        PingMS = (int)ping.TotalMilliseconds;
+                        lastHeartbeat = new DateTime(heartbeatPacket.Timestamp);
+                        TimeSpan ping = DateTime.UtcNow - lastHeartbeat;
+                        PingMS = Math.Max((int)ping.TotalMilliseconds, 1);
 
                         continue;
                     }
@@ -147,8 +151,8 @@ namespace Server.Model
             {
                 while (client is not null && !ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct))
                 {
-                    await SendPacketAsync(new HeartbeatPacket() { Timestamp = DateTime.UtcNow.Ticks }, ct);
-
+                    long t = DateTime.UtcNow.Ticks;
+                    await client.SendPacketAsync(new HeartbeatPacket() { Timestamp = t }, ct);
                     TimeSpan ping = DateTime.UtcNow - lastHeartbeat;
                     if (ping > TimeSpan.FromSeconds(10))
                         await DisconnectAsync("Timeout", ct);
