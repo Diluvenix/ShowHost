@@ -111,7 +111,7 @@ namespace Server.Services
                 case _57_LobbySettingsUpdatePacket _57_LobbySettingsUpdatePacket:
                     if (sender.Role != PlayerRole.Moderator)
                     {
-                        logger.ForContext("Actor", sender.Username).Warning("Denied access to LobbySettingsUpdate Method");
+                        logger.ForContext("Actor", sender.Username).Warning("Access to LobbySettingsUpdate denied");
                         return;
                     }
                     await LobbySettingsUpdateAsync(_57_LobbySettingsUpdatePacket, sender, ct);

@@ -68,10 +68,7 @@ namespace Server.Model
         public async Task SendPacketAsync<T>(T packet, CancellationToken ct)
         {
             if (IsConnected && client is not null)
-            {
                 await client.SendPacketAsync(packet, ct);
-                networkLogger.ForContext("Packet", packet!.GetType().Name).Debug("Send new Packet");
-            }
         }
         public void SetClient(NetworkClient client)
         {
@@ -133,7 +130,6 @@ namespace Server.Model
                         continue;
                     }
 
-                    networkLogger.ForContext("Packet", packet.GetType().Name).Debug("Recieved new Packet");
                     if (await Server.TryHandleServerPackageAsync(packet, this, ct))
                         continue;
 
