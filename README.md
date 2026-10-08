@@ -34,7 +34,7 @@ This project is written and maintained by me.
 
 **No AI-generated code is used in the project.** AI tools may only be used as a source of inspiration and as a helper on UI/UX design. All code is written by the author.
 
-In particular, no code from AI responses is ever copied into the project. The intention si to keep the implementation understandable and fully under the author's control rather than relying on "vibe coding".
+In particular, no code from AI responses is ever copied into the project. The intention is to keep the implementation understandable and fully under the author's control rather than relying on "vibe coding".
 
 ## Dependencies
 
