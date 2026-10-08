@@ -4,12 +4,13 @@ using Network.Packets.Games._57;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace Network
 {
     public class NetworkClient : IDisposable
     {
-        private const int MAX_PACKET_SIZE = 64 * 1024;
+        private const UInt32 MAX_PACKET_SIZE = 64 * 1024;
 
         public bool IsConnected => tcpClient.Connected;
         public bool IsEncrypted => aes is not null;
@@ -36,11 +37,8 @@ namespace Network
 
         public void Dispose()
         {
-            if (IsConnected)
-            {
-                tcpClient.Close();
-            }
             tcpClient.Dispose();
+            stream = null;
             aes?.Dispose();
 
             GC.SuppressFinalize(this);
@@ -50,8 +48,8 @@ namespace Network
         {
             if (IsConnected)
             {
-                tcpClient.Close();
                 tcpClient.Dispose();
+                stream = null;
                 tcpClient = new TcpClient();
             }
 
@@ -69,43 +67,9 @@ namespace Network
             return Result.Ok();
         }
 
-        public async Task<Result> SendPacketAsync<T>(T packet, CancellationToken ct = default)
-        {
-            PacketEnvelope envelope = new()
-            {
-                Type = typeof(T).Name,
-                Data = JsonSerializer.SerializeToElement(packet)
-            };
-
-            byte[] data = JsonSerializer.SerializeToUtf8Bytes(envelope);
-            return await SendEncryptedBytesAsync(data, ct);
-        }
-
-        public async Task<Result<object>> ReceivePacketAsync(CancellationToken ct = default)
-        {
-            Result<byte[]> result = await ReceiveEncryptedBytesAsync(ct);
-            if (!result.Success)
-                return Result<object>.Fail(result.Error!);
-
-            try
-            {
-                PacketEnvelope envelope = JsonSerializer.Deserialize<PacketEnvelope>(result.Value!)!;
-
-                Type type = packetRegistry[envelope.Type];
-                object packet = envelope.Data.Deserialize(type)!;
-
-                return Result<object>.Ok(packet);
-            }
-            catch (Exception e)
-            {
-                return Result<object>.Fail(e);
-            }
-        }
-
         public async Task<Result> DoHandshakeAsync(CancellationToken ct = default)
         {
             aes?.Dispose();
-            aes = null;
 
             using ECDiffieHellman self = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
             using ECDiffieHellman other = ECDiffieHellman.Create();
@@ -115,7 +79,7 @@ namespace Network
 
             Result<byte[]> result = await ReceivePlainBytesAsync(ct);
             if (!result.Success)
-                return Result.Fail(result.Error!);
+                return result;
 
             byte[] otherKey = result.Value!;
             other.ImportSubjectPublicKeyInfo(otherKey, out _);
@@ -128,14 +92,13 @@ namespace Network
         public async Task<Result> ReceiveHandshakeAsync(CancellationToken ct = default)
         {
             aes?.Dispose();
-            aes = null;
 
             using ECDiffieHellman self = ECDiffieHellman.Create(ECCurve.NamedCurves.nistP256);
             using ECDiffieHellman other = ECDiffieHellman.Create();
 
             Result<byte[]> result = await ReceivePlainBytesAsync(ct);
             if (!result.Success)
-                return Result.Fail(result.Error!);
+                return result;
 
             byte[] otherKey = result.Value!;
             other.ImportSubjectPublicKeyInfo(otherKey, out _);
@@ -149,73 +112,22 @@ namespace Network
             return Result.Ok();
         }
 
-        private async Task<Result> SendPlainBytesAsync(byte[] data, CancellationToken ct = default)
+
+
+        public async Task<Result> SendPacketAsync<T>(T packet, CancellationToken ct = default)
         {
-            byte[] length = BitConverter.GetBytes(data.Length);
-
-            if (BitConverter.IsLittleEndian)
-                Array.Reverse(length);
-
-            await sendLock.WaitAsync(ct);
-
-            try
+            PacketEnvelope envelope = new()
             {
-                await stream!.WriteAsync(length, ct);
-                await stream!.WriteAsync(data, ct);
-            }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception e)
-            {
-                return Result.Fail(e);
-            }
-            finally
-            {
-                sendLock.Release();
-            }
+                Type = typeof(T).Name,
+                Data = JsonSerializer.SerializeToElement(packet)
+            };
 
-            return Result.Ok();
+            byte[] data = JsonSerializer.SerializeToUtf8Bytes(envelope);
+            return await SendEncryptedBytesAsync(data, ct);
         }
-
-        private async Task<Result<byte[]>> ReceivePlainBytesAsync(CancellationToken ct = default)
-        {
-            await receiveLock.WaitAsync(ct);
-
-            try
-            {
-                byte[] length = new byte[4];
-                await stream!.ReadExactlyAsync(length, ct);
-
-                if (BitConverter.IsLittleEndian)
-                    Array.Reverse(length);
-
-                int size = BitConverter.ToInt32(length);
-                if (size <= 0 || size > MAX_PACKET_SIZE)
-                    throw new InvalidDataException("Invalid packet size.");
-
-                byte[] data = new byte[size];
-
-                await stream!.ReadExactlyAsync(data, ct);
-
-                return Result<byte[]>.Ok(data);
-            }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception e)
-            {
-                return Result<byte[]>.Fail(e);
-            }
-            finally
-            {
-                receiveLock.Release();
-            }
-        }
-
-
         private async Task<Result> SendEncryptedBytesAsync(byte[] plaintext, CancellationToken ct = default)
         {
-            if (!IsConnected)
-                return Result.Fail(new Exception("Client not connected."));
-            if (aes == null) 
-                return Result.Fail(new Exception("Connection not encrypted."));
+            Debug.Assert(aes is not null, $"{nameof(aes)} should be set before sending encrypted bytes.");
 
             byte[] nonce = RandomNumberGenerator.GetBytes(12);
             byte[] ciphertext = new byte[plaintext.Length];
@@ -230,33 +142,110 @@ namespace Network
 
             return await SendPlainBytesAsync(packet, ct);
         }
-        private async Task<Result<byte[]>> ReceiveEncryptedBytesAsync(CancellationToken ct = default)
+        private async Task<Result> SendPlainBytesAsync(byte[] data, CancellationToken ct = default)
         {
-            while (tcpClient.Available < 4)
+            Debug.Assert(stream is not null, $"{nameof(stream)} should be set before sending bytes.");
+
+            byte[] length = BitConverter.GetBytes((UInt32)data.Length);
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(length);
+
+            await sendLock.WaitAsync(ct);
+
+            try
             {
-                await Task.Delay(10, ct);
+                await stream.WriteAsync(length, ct);
+                await stream.WriteAsync(data, ct);
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception e)
+            {
+                return Result.Fail(e);
+            }
+            finally
+            {
+                sendLock.Release();
             }
 
-            if (!IsConnected)
-                return Result<byte[]>.Fail(new Exception("Client not connected."));
-            if (aes == null)
-                return Result<byte[]>.Fail(new Exception("Connection not encrypted."));
+            return Result.Ok();
+        }
 
-            Result<byte[]> result = ReceivePlainBytesAsync(ct).Result;
-            if (!result.Success)
-                return Result<byte[]>.Fail(result.Error!);
 
-            byte[] packet = result.Value!;
 
-            byte[] nonce = packet[..12];
-            byte[] tag = packet[12..28];
-            byte[] ciphertext = packet[28..];
+        public async Task<Result<object>> ReceivePacketAsync(CancellationToken ct = default)
+        {
+            Result<byte[]> bytesResult = await ReceiveEncryptedBytesAsync(ct);
+            if (!bytesResult.Success)
+                return bytesResult;
 
-            byte[] plaintext = new byte[ciphertext.Length];
+            try
+            {
+                PacketEnvelope envelope = JsonSerializer.Deserialize<PacketEnvelope>(bytesResult.Value!)!;
 
-            aes.Decrypt(nonce, ciphertext, tag, plaintext);
+                Debug.Assert(packetRegistry.ContainsKey(envelope.Type), $"{nameof(packetRegistry)} does not contain \"{envelope.Type}\".");
+                Type type = packetRegistry[envelope.Type];
+                object packet = envelope.Data.Deserialize(type)!;
 
-            return Result<byte[]>.Ok(plaintext);
+                return Result<object>.Ok(packet);
+            }
+            catch (Exception e)
+            {
+                return Result<object>.Fail(e);
+            }
+        }
+        private async Task<Result<byte[]>> ReceiveEncryptedBytesAsync(CancellationToken ct = default)
+        {
+            Debug.Assert(aes is not null, $"{nameof(aes)} should be set before receiving encrypted bytes.");
+
+            Result<byte[]> plainBytesResult = await ReceivePlainBytesAsync(ct);
+            if (!plainBytesResult.Success)
+                return plainBytesResult;
+
+            byte[] plainBytes = plainBytesResult.Value!;
+
+            byte[] nonce = plainBytes[..12];
+            byte[] tag = plainBytes[12..28];
+            byte[] ciphertext = plainBytes[28..];
+
+            byte[] data = new byte[ciphertext.Length];
+            aes.Decrypt(nonce, ciphertext, tag, data);
+
+            return Result<byte[]>.Ok(data);
+        }
+
+        private async Task<Result<byte[]>> ReceivePlainBytesAsync(CancellationToken ct = default)
+        {
+            Debug.Assert(stream is not null, $"{nameof(stream)} should be set before receiving bytes.");
+
+            await receiveLock.WaitAsync(ct);
+            byte[] lengthBytes = new byte[4];
+
+            try
+            {
+                await stream.ReadExactlyAsync(lengthBytes, ct);
+
+                if (BitConverter.IsLittleEndian)
+                    Array.Reverse(lengthBytes);
+
+                UInt32 length = BitConverter.ToUInt32(lengthBytes);
+                if (length <= 0 || length > MAX_PACKET_SIZE)
+                    throw new InvalidDataException("Invalid packet size.");
+
+                byte[] data = new byte[length];
+
+                await stream.ReadExactlyAsync(data, ct);
+
+                return Result<byte[]>.Ok(data);
+            }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception e)
+            {
+                return Result<byte[]>.Fail(e);
+            }
+            finally
+            {
+                receiveLock.Release();
+            }
         }
 
         private static readonly Dictionary<string, Type> packetRegistry = new()
