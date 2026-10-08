@@ -22,7 +22,7 @@ ShowHost is currently under active development.
 - **Server:** .NET 10 Console Application
 	- Cross-plattform / no OS-specific server dependency
 	- Handles client connections, authentication and game states
-	- Communication: TCP with with JSON data
+	- Communication: TCP with JSON data
 	- Encryption: ECDH key exchange followed by symmetric encryption for communication
 - **Client:** .NET 10 WPF Application
 	- Windows only
