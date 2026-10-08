@@ -95,9 +95,11 @@ namespace Server.Model
             if (!IsConnected) return;
 
             if (client is not null)
+            {
                 await client.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType.Connect }, ct);
-                client?.Dispose();
+                client.Dispose();
                 client = null;
+            }
             
             cts.Cancel();
             PingMS = 0;
