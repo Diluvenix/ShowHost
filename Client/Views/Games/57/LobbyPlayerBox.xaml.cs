@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows;
-using Network.Packets.Games.Lobby;
 
 namespace Client.Views.Games._57
 {
@@ -11,7 +10,7 @@ namespace Client.Views.Games._57
     /// </summary>
     public partial class LobbyPlayerBox : UserControl
     {
-        private int color;
+        private UInt32 color;
         private SolidColorBrush colorBrush = new();
 
         public LobbyPlayerBox()

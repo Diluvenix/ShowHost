@@ -9,7 +9,7 @@ namespace Client.Views.Games._57
     /// </summary>
     public partial class SettingsPlayerBox : UserControl
     {
-        private int color;
+        private UInt32 color;
         private SolidColorBrush colorBrush = new();
 
         public SettingsPlayerBox()

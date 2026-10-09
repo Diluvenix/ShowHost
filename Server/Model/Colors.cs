@@ -2,9 +2,9 @@
 {
     internal static class Colors
     {
-        public static readonly int FALLBACK = 0x808080;
+        public static readonly UInt32 FALLBACK = 0x808080;
 
-        public static readonly int[] DEFAULT = 
+        public static readonly UInt32[] DEFAULT = 
         [
             0x4C8DFF,
             0xF59E42,
@@ -16,9 +16,9 @@
             0xD878A5,
         ];
 
-        public static int GetNextDefault(IEnumerable<int> inUse)
+        public static UInt32 GetNextDefault(IEnumerable<UInt32> inUse)
         {
-            HashSet<int> set = [.. inUse];
+            HashSet<UInt32> set = [.. inUse];
 
             for (int i = 0; i < DEFAULT.Length; i++)
             {
