@@ -8,6 +8,6 @@
 
         public Player[] Players { get; set; } = [];
 
-        public record class Player(string Username, int Ping, UInt32 Color, int Points);
+        public record class Player(string Username, int Ping, UInt32 Color);
     }
 }

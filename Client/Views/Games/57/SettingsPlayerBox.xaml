@@ -20,12 +20,18 @@
                         CornerRadius="{DynamicResource RadiusNormal}"
                         x:Name="ColorBorder"/>
 
+                <local:InputBox Margin="{DynamicResource MarginNormalHorizontal}"
+                                Watermark="Color (hex)"
+                                CornerRadius="{DynamicResource RadiusNormal}"
+                                FontSize="{DynamicResource FontSmall}"
+                                Height="{DynamicResource FontBig}"
+                                x:Name="ColorInputBox"/>
+
                 <Label Content="[USERNAME]"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
                        FontSize="{DynamicResource FontNormal}"
                        FontWeight="SemiBold"
-                       Margin="{DynamicResource MarginLargeHorizontal}"
                        x:Name="UsernameLabel"/>
             </StackPanel>
         </Grid>

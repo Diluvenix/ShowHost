@@ -107,7 +107,7 @@ namespace Client.Views.Games._57
             while (SettingsPlayerBoxes.Count < count)
                 SettingsPlayerBoxes.Add(new SettingsPlayerBox());
 
-            //settingsPlayerBoxesView.Refresh();
+            settingsPlayerBoxesView.Refresh();
         }
     }
 }

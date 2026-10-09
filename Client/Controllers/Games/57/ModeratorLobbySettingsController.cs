@@ -1,10 +1,7 @@
 ﻿using Client.Views.Games._57;
-using Client.Views.Games.Lobby;
 using Network.Packets.Games._57;
-using System.Configuration;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace Client.Controllers.Games._57
 {

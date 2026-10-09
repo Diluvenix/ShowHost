@@ -1,8 +1,10 @@
-﻿using Network.Packets;
+﻿using Network;
+using Network.Packets;
 using Network.Packets.Games._57;
-using Network.Packets.Games.Lobby;
 using Serilog;
+using Serilog.Data;
 using Server.Model;
+using System.Runtime.CompilerServices;
 
 namespace Server.Services
 {
@@ -11,7 +13,7 @@ namespace Server.Services
         public override int PlayersCount => players.Count;
 
         private InternalStatus internalStatus = InternalStatus.Lobby;
-        private readonly OrderedDictionary<string, _57_LobbyPacket.Player> players = [];
+        private readonly OrderedDictionary<string, InternalPlayer> players = [];
         private readonly List<string> moderators = [];
 
         private Task scheduledPingUpdateTask;
@@ -35,7 +37,7 @@ namespace Server.Services
                     switch (player.Role)
                     {
                         case PlayerRole.Player:
-                            players.Add(player.Username, new _57_LobbyPacket.Player(player.Username, player.PingMS, Colors.GetNextDefault(players.Values.Select(p => p.Color)), 0));
+                            players.Add(player.Username, new InternalPlayer(player.Username, Colors.GetNextDefault(players.Values.Select(p => p.Color))));
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
@@ -151,6 +153,21 @@ namespace Server.Services
                 }
             }
 
+            if (packet.ColorUsername != null && packet.Color != null)
+            {
+                logger = logger.ForContext("Target", packet.ColorUsername);
+
+                if (!players.TryGetValue(packet.ColorUsername, out InternalPlayer? player))
+                {
+                    logger.Warning("Unknown Player");
+                }
+                else
+                {
+                    logger.ForContext("Color", player.Color).ForContext("NewColor", packet.Color).Information("Updated Color");
+                    player.Color = packet.Color.Value;
+                }
+            }
+
             await SendLobbyUpdateAsync(ct);
         }
 
@@ -161,7 +178,7 @@ namespace Server.Services
                 Name = Name,
                 PlayersMax = PlayersMax,
                 PlayersCurrent = PlayersCount,
-                Players = [.. players.Values]
+                Players = [.. players.Values.Select(p => new _57_LobbyPacket.Player(p.Username, clients[p.Username].PingMS, p.Color))]
             };
 
             await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
@@ -173,6 +190,12 @@ namespace Server.Services
         private enum InternalStatus
         {
             Lobby,
+        }
+
+        private class InternalPlayer(string username, UInt32 color)
+        {
+            public string Username { get; set; } = username;
+            public UInt32 Color { get; set; } = color;
         }
     }
 }
