@@ -56,7 +56,7 @@
                 <Label Content="57" 
                        FontSize="{DynamicResource FontGiant}"
                        FontFamily="{StaticResource Marauder-Text}"
-                       FontWeight="DemiBold"
+                       FontWeight="Bold"
                        Margin="{DynamicResource MarginLargeHorizontal}"
                        VerticalAlignment="Center"
                        RenderTransformOrigin="0.5,0.5">
@@ -73,7 +73,8 @@
                 <Border Margin="{DynamicResource MarginLargeHorizontal}"/>
 
                 <Border Background="WhiteSmoke" VerticalAlignment="Center"
-                        CornerRadius="{DynamicResource RadiusHuge}" Padding="{DynamicResource MarginNormalHorizontal}">
+                        CornerRadius="{DynamicResource RadiusHuge}" 
+                        Padding="{DynamicResource MarginLargeHorizontal}">
                     <Label Content="???" x:Name="Label57" Width="{DynamicResource CardWidthLarge}"
                            Foreground="#263B96" VerticalAlignment="Center"
                            FontSize="{DynamicResource FontLarge}"/>
