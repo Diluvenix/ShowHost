@@ -3,6 +3,7 @@ using Network.Packets.Games._57;
 using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
+using System.Net.Sockets;
 
 namespace Server.Services
 {
@@ -196,6 +197,13 @@ namespace Server.Services
                     logger.Information("Game started");
                     internalStatus = InternalStatus.Game;
                     Status = Lobby_GameListPacket.GameStatus.Running;
+
+                    SetViewPacket packet = new() { View = SetViewPacket.ViewType._57_Game };
+                    await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
+                    {
+                        await p.SendPacketAsync(packet, ct);
+                    });
+
                     break;
             }
         }

@@ -51,6 +51,9 @@ namespace Client.Controllers
                     case SetViewPacket.ViewType._57_Lobby:
                         Set57LobbyController();
                         break;
+                    case SetViewPacket.ViewType._57_Game: 
+                        Set57GameController();
+                        break;
                 }
                 mainWindow.Border.Child = currentController.View;
             });
@@ -80,6 +83,8 @@ namespace Client.Controllers
                     ]
                 )
                 : new _57.PlayerLobbyController();
+        private void Set57GameController()
+            => currentController = new _57.PlayerGameController();
 
         public void Dispose()
         {

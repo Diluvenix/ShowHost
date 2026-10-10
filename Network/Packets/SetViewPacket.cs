@@ -8,7 +8,8 @@
         {
             Connect,
             Lobby,
-            _57_Lobby
+            _57_Lobby,
+            _57_Game,
         }
     }
 }
