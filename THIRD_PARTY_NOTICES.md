@@ -30,7 +30,7 @@ The license is included in:
 
 [LICENSES/MIT_FeatherIcons.txt](LICENSES/MIT_FeatherIcons.txt)
 
-## Besley
+## Besley & Marauder
 
 https://indestructibletype.com/
 
@@ -40,9 +40,10 @@ Designed by Owen Earl / Indestructible Type.
 
 License: SIL Open Font License 1.1
 
-The license is included with the font in:
+The license is included with the fonts in:
 
-[Client/Assets/Fonts/Besley/LICENSE.md](Client/Assets/Fonts/Besley/LICENSE.md)
+[Client/Assets/Fonts/Besley/LICENSE.md](Client/Assets/Fonts/Besley/LICENSE.md) and
+[Client/Assets/Fonts/Marauder/LICENSE.md](Client/Assets/Fonts/Marauder/LICENSE.md)
 
 ## Word List from ACA
 

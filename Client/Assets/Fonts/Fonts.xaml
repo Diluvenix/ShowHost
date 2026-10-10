@@ -1,4 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <FontFamily x:Key="Besley">pack://application:,,,/Client;component/Fonts/Besley/#Besley</FontFamily>
+    <FontFamily x:Key="Besley">pack://application:,,,/Client;component/Assets/Fonts/Besley/#Besley*</FontFamily>
+    <FontFamily x:Key="BesleyNarrow">pack://application:,,,/Client;component/Assets/Fonts/Besley/#Besley* Narrow</FontFamily>
+    <FontFamily x:Key="BesleyCondensed">pack://application:,,,/Client;component/Assets/Fonts/Besley/#Besley* Condensed</FontFamily>
+    <FontFamily x:Key="Marauder-Text">pack://application:,,,/Client;component/Assets/Fonts/Marauder/#Marauder* Text</FontFamily>
 </ResourceDictionary>

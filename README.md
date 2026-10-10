@@ -88,6 +88,7 @@ The project uses third-party software and assets that are distributed under diff
 | --- | --- |
 | Serilog | Apache License 2.0 |
 | Besley | SIL Open Font License 1.1 |
+| Marauder | SIL Open Font License 1.1 |
 | Feather Icons | MIT License |
 | Word Lists | MIT License |
 

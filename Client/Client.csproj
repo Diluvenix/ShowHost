@@ -45,6 +45,42 @@
     <None Remove="Assets\Fonts\Besley\BesleyNarrow-MediumItalic.ttf" />
     <None Remove="Assets\Fonts\Besley\BesleyNarrow-Semi.ttf" />
     <None Remove="Assets\Fonts\Besley\BesleyNarrow-SemiItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-Black.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-BlackItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-Bold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-ExtraBold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-ExtraBoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-Italic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-Medium.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-Regular.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-SemiBold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Caption-SemiBoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-Black.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-BlackItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-Bold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-ExtraBold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-ExtraBoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-Italic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-Medium.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-Regular.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-SemiBold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Display-SemiBoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-Black.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-BlackItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-Bold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-BoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-ExtraBold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-ExtraBoldItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-Italic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-Medium.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-MediumItalic.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-Regular.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-SemiBold.ttf" />
+    <None Remove="Assets\Fonts\Marauder\Marauder-Text-SemiBoldItalic.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -88,6 +124,42 @@
     <Resource Include="Assets\Fonts\Besley\BesleyNarrow-MediumItalic.ttf" />
     <Resource Include="Assets\Fonts\Besley\BesleyNarrow-Semi.ttf" />
     <Resource Include="Assets\Fonts\Besley\BesleyNarrow-SemiItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-Black.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-BlackItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-ExtraBold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-ExtraBoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-Italic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-Regular.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-SemiBold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Caption-SemiBoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-Black.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-BlackItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-ExtraBold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-ExtraBoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-Italic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-Regular.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-SemiBold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Display-SemiBoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-Black.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-BlackItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-Bold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-BoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-ExtraBold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-ExtraBoldItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-Italic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-Medium.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-MediumItalic.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-Regular.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-SemiBold.ttf" />
+    <Resource Include="Assets\Fonts\Marauder\Marauder-Text-SemiBoldItalic.ttf" />
   </ItemGroup>
 
   <ItemGroup>
