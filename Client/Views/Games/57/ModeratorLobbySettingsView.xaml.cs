@@ -1,5 +1,6 @@
 ﻿using Client.Controllers;
 using Network;
+using Network.Packets;
 using Network.Packets.Games._57;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -40,9 +41,14 @@ namespace Client.Views.Games._57
                     e.Handled = true;
             };
 
+            StartGameButton.Click += StartGameButton_Click;
+
             settingsPlayerBoxesView = CollectionViewSource.GetDefaultView(SettingsPlayerBoxes);
             PlayerList.ItemsSource = SettingsPlayerBoxes;
         }
+
+        private void StartGameButton_Click(object sender, RoutedEventArgs e) 
+            => _ = client.SendPacketAsync(Signal.START, MainController.Instance!.Cts.Token);
 
         private void PlayersMaxBox_KeyDown(object sender, KeyEventArgs e)
         {

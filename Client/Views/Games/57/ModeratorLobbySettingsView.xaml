@@ -62,6 +62,15 @@
                 </Grid>
 
                 <Separator Margin="{DynamicResource MarginLargeVertical}"/>
+                <local:RoundButton Content="Start Game" 
+                                   HorizontalAlignment="Center"
+                                   CornerRadius="{DynamicResource RadiusNormal}"
+                                   FontSize="{DynamicResource FontBig}"
+                                   FontWeight="Bold"
+                                   Padding="{DynamicResource MarginNormal}"
+                                   x:Name="StartGameButton"/>
+
+                <Separator Margin="{DynamicResource MarginLargeVertical}"/>
                 <Label Content="Colors"
                        FontWeight="Bold"
                        FontSize="{DynamicResource FontBig}"/>

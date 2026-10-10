@@ -1,10 +1,8 @@
-﻿using Network;
-using Network.Packets;
+﻿using Network.Packets;
 using Network.Packets.Games._57;
+using Network.Packets.Games.Lobby;
 using Serilog;
-using Serilog.Data;
 using Server.Model;
-using System.Runtime.CompilerServices;
 
 namespace Server.Services
 {
@@ -27,7 +25,7 @@ namespace Server.Services
         public override void Dispose() { }
 
         public override bool CanPlayerJoin(Player player) 
-            => player.Role == PlayerRole.Moderator || PlayersCount < PlayersMax;
+            => player.Role == PlayerRole.Moderator || (PlayersCount < PlayersMax && internalStatus == InternalStatus.Lobby);
 
         private protected override async Task OnPlayerAddedAsync(Player player, CancellationToken ct)
         {
@@ -44,7 +42,7 @@ namespace Server.Services
                             break;
                     }
                     await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby }, ct);
-                    await SendLobbyUpdateAsync(ct);
+                    await Lobby_SendLobbyPacketAsync(ct);
                     break;
             }
 
@@ -69,7 +67,7 @@ namespace Server.Services
             {
                 case InternalStatus.Lobby:
                     await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby }, ct);
-                    await SendLobbyUpdateAsync(ct);
+                    await Lobby_SendLobbyPacketAsync(ct);
                     break;
             }
 
@@ -101,12 +99,13 @@ namespace Server.Services
             switch (internalStatus)
             {
                 case InternalStatus.Lobby:
-                    await HandleLobbyAsync(packet, sender, ct);
+                    await Lobby_HandleAsync(packet, sender, ct);
                     break;
             }
         }
 
-        private async Task HandleLobbyAsync<T>(T packet, Player sender, CancellationToken ct)
+        #region Lobby
+        private async Task Lobby_HandleAsync<T>(T packet, Player sender, CancellationToken ct)
         {
             switch (packet)
             {
@@ -116,12 +115,15 @@ namespace Server.Services
                         logger.ForContext("Actor", sender.Username).Warning("Access to LobbySettingsUpdate denied");
                         return;
                     }
-                    await LobbySettingsUpdateAsync(_57_LobbySettingsUpdatePacket, sender, ct);
+                    await Lobby_HandleAsync(_57_LobbySettingsUpdatePacket, sender, ct);
+                    break;
+                case Signal signal:
+                    await Lobby_HandleAsync(signal, sender, ct);
                     break;
             }
         }
 
-        private async Task LobbySettingsUpdateAsync(_57_LobbySettingsUpdatePacket packet, Player sender, CancellationToken ct)
+        private async Task Lobby_HandleAsync(_57_LobbySettingsUpdatePacket packet, Player sender, CancellationToken ct)
         {
             ILogger logger = this.logger.ForContext("Actor", sender.Username);
 
@@ -169,10 +171,37 @@ namespace Server.Services
                 }
             }
 
-            await SendLobbyUpdateAsync(ct);
+            await Lobby_SendLobbyPacketAsync(ct);
         }
 
-        private async Task SendLobbyUpdateAsync(CancellationToken ct)
+        private async Task Lobby_HandleAsync(Signal signal, Player sender, CancellationToken ct)
+        {
+            ILogger logger = this.logger.ForContext("Actor", sender.Username);
+
+            switch (signal)
+            {
+                case Signal.START:
+                    if (sender.Role != PlayerRole.Moderator)
+                    {
+                        logger.Warning("Access to START denied");
+                        return;
+                    }
+
+                    if (PlayersCount != PlayersMax)
+                    {
+                        logger.ForContext(nameof(PlayersCount), PlayersCount).ForContext(nameof(PlayersMax), PlayersMax).Warning("Incorrect number of players");
+                        return;
+                    }
+
+                    logger.Information("Game started");
+                    internalStatus = InternalStatus.Game;
+                    Status = Lobby_GameListPacket.GameStatus.Running;
+                    break;
+            }
+        }
+
+
+        private async Task Lobby_SendLobbyPacketAsync(CancellationToken ct)
         {
             _57_LobbyPacket packet = new()
             {
@@ -187,10 +216,13 @@ namespace Server.Services
                 await p.SendPacketAsync(packet, ct);
             });
         }
+        #endregion
+
 
         private enum InternalStatus
         {
             Lobby,
+            Game,
         }
 
         private class InternalPlayer(string username, UInt32 color)
