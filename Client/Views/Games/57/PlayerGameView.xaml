@@ -3,10 +3,408 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Client.Views.Games._57"
+             xmlns:local="clr-namespace:Client.Views"
              mc:Ignorable="d"
              d:DesignHeight="900" d:DesignWidth="1600">
-    <Grid Margin="20">
-            
+    <Grid>
+        <Rectangle>
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1, 0.4">
+                    <GradientStop Color="#263B96" Offset="0.0" />
+                    <GradientStop Color="#4A3AB0" Offset="0.1" />
+                    <GradientStop Color="#8C32B5" Offset="0.3" />
+                    <GradientStop Color="#D82AA9" Offset="0.5" />
+                    <GradientStop Color="#F34B9B" Offset="0.6" />
+                    <GradientStop Color="#FA7B86" Offset="0.7" />
+                    <GradientStop Color="#FF9B78" Offset="0.8" />
+                    <GradientStop Color="#E93C8E" Offset="1.0" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle>
+            <Rectangle.Fill>
+                <DrawingBrush TileMode="Tile"
+                              Viewport="0,0,0.025,1"
+                              Stretch="Fill">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing Geometry="M 0,0 L 1,0 L 1,1 L 0,1 Z">
+                            <GeometryDrawing.Brush>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#00FFFFFF" Offset="0.00"/>
+                                    <GradientStop Color="#28FFFFFF" Offset="0.98"/>
+                                    <GradientStop Color="#00FFFFFF" Offset="1.00"/>
+                                </LinearGradientBrush>
+                            </GeometryDrawing.Brush>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Grid Margin="{DynamicResource MarginLarge}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Left"
+                        Margin="{DynamicResource MarginLargeHorizontal}"
+                        VerticalAlignment="Center">
+                <Label Content="57" 
+                       FontSize="{DynamicResource FontGiant}"
+                       FontFamily="{StaticResource Marauder-Text}"
+                       FontWeight="DemiBold"
+                       Margin="{DynamicResource MarginLargeHorizontal}"
+                       VerticalAlignment="Center"
+                       RenderTransformOrigin="0.5,0.5">
+                    <Label.RenderTransform>
+                        <RotateTransform Angle="-18.435"/>
+                    </Label.RenderTransform>
+                </Label>
+                <Label Content="DIE SHOW"
+                       FontFamily="{StaticResource BesleyCondensed}"
+                       FontSize="{DynamicResource FontXLarge}"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"/>
+
+                <Border Margin="{DynamicResource MarginLargeHorizontal}"/>
+
+                <Border Background="WhiteSmoke" VerticalAlignment="Center"
+                        CornerRadius="{DynamicResource RadiusHuge}" Padding="{DynamicResource MarginNormalHorizontal}">
+                    <Label Content="???" x:Name="Label57" Width="{DynamicResource CardWidthLarge}"
+                           Foreground="#263B96" VerticalAlignment="Center"
+                           FontSize="{DynamicResource FontLarge}"/>
+                </Border>
+                <Label Content="57" VerticalAlignment="Center"
+                       FontSize="{DynamicResource FontXLarge}"
+                       FontWeight="Bold"
+                       FontFamily="{StaticResource Marauder-Text}"/>
+            </StackPanel>
+
+            <Label Grid.Row="0"
+                   HorizontalAlignment="Right" VerticalAlignment="Center"
+                   Content="Die 57 am besten bewerteten Filme auf IMDb"
+                   FontFamily="{StaticResource Marauder-Text}" 
+                   FontSize="{DynamicResource FontXLarge}"
+                   FontWeight="Black"/>
+
+            <Grid Grid.Row="1" Margin="{DynamicResource MarginLarge}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="1-14"
+                       FontFamily="{StaticResource Marauder-Text}"
+                       HorizontalAlignment="Right"
+                       FontSize="{DynamicResource FontXLarge}"
+                       FontWeight="Bold"
+                       Margin="{DynamicResource MarginLargeHorizontal}"/>
+                <Label Grid.Row="0" Grid.Column="1"
+                       Content="15-28"
+                       FontFamily="{StaticResource Marauder-Text}"
+                       HorizontalAlignment="Right"
+                       FontSize="{DynamicResource FontXLarge}"
+                       FontWeight="Bold"
+                       Margin="{DynamicResource MarginLargeHorizontal}"/>
+                <Label Grid.Row="0" Grid.Column="2"
+                       Content="29-42"
+                       FontFamily="{StaticResource Marauder-Text}"
+                       HorizontalAlignment="Right"
+                       FontSize="{DynamicResource FontXLarge}"
+                       FontWeight="Bold"
+                       Margin="{DynamicResource MarginLargeHorizontal}"/>
+                <Label Grid.Row="0" Grid.Column="3"
+                       Content="43-56"
+                       FontFamily="{StaticResource Marauder-Text}"
+                       HorizontalAlignment="Right"
+                       FontSize="{DynamicResource FontXLarge}"
+                       FontWeight="Bold"
+                       Margin="{DynamicResource MarginLargeHorizontal}"/>
+
+                <Border Grid.Row="1" Grid.Column="0"
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Background="WhiteSmoke"
+                        CornerRadius="{DynamicResource RadiusHuge}"
+                        Margin="{DynamicResource MarginLargeHorizontal}">
+                    <Grid Margin="{DynamicResource MarginLarge}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Content="1. ???" x:Name="Label1"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="1" Content="2. ???" x:Name="Label2"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="2" Content="3. ???" x:Name="Label3"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="3" Content="4. ???" x:Name="Label4"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="4" Content="5. ???" x:Name="Label5"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="5" Content="6. ???" x:Name="Label6"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="6" Content="7. ???" x:Name="Label7"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="7" Content="8. ???" x:Name="Label8"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="8" Content="9. ???" x:Name="Label9"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="9" Content="10. ???" x:Name="Label10"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="10" Content="11. ???" x:Name="Label11"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="11" Content="12. ???" x:Name="Label12"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="12" Content="13. ???" x:Name="Label13"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="13" Content="14. ???" x:Name="Label14"
+                               Foreground="#7247B8" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="1"
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Background="WhiteSmoke"
+                        CornerRadius="{DynamicResource RadiusHuge}"
+                        Margin="{DynamicResource MarginLargeHorizontal}">
+                    <Grid Margin="{DynamicResource MarginLarge}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Content="15. ???" x:Name="Label15"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="1" Content="16. ???" x:Name="Label16"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="2" Content="17. ???" x:Name="Label17"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="3" Content="18. ???" x:Name="Label18"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="4" Content="19. ???" x:Name="Label19"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="5" Content="20. ???" x:Name="Label20"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="6" Content="21. ???" x:Name="Label21"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="7" Content="22. ???" x:Name="Label22"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="8" Content="23. ???" x:Name="Label23"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="9" Content="24. ???" x:Name="Label24"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="10" Content="25. ???" x:Name="Label25"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="11" Content="26. ???" x:Name="Label26"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="12" Content="27. ???" x:Name="Label27"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="13" Content="28. ???" x:Name="Label28"
+                               Foreground="#C342B5" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="2"
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Background="WhiteSmoke"
+                        CornerRadius="{DynamicResource RadiusHuge}"
+                        Margin="{DynamicResource MarginLargeHorizontal}">
+                    <Grid Margin="{DynamicResource MarginLarge}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Content="29. ???" x:Name="Label29"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="1" Content="30. ???" x:Name="Label30"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="2" Content="31. ???" x:Name="Label31"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="3" Content="32. ???" x:Name="Label32"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="4" Content="33. ???" x:Name="Label33"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="5" Content="34. ???" x:Name="Label34"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="6" Content="35. ???" x:Name="Label35"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="7" Content="36. ???" x:Name="Label36"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="8" Content="37. ???" x:Name="Label37"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="9" Content="38. ???" x:Name="Label38"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="10" Content="39. ???" x:Name="Label39"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="11" Content="40. ???" x:Name="Label40"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="12" Content="41. ???" x:Name="Label41"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="13" Content="42. ???" x:Name="Label42"
+                               Foreground="#F97A98" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Grid.Column="3"
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        Background="WhiteSmoke"
+                        CornerRadius="{DynamicResource RadiusHuge}"
+                        Margin="{DynamicResource MarginLargeHorizontal}">
+                    <Grid Margin="{DynamicResource MarginLarge}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Content="43. ???" x:Name="Label43"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="1" Content="44. ???" x:Name="Label44"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="2" Content="45. ???" x:Name="Label45"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="3" Content="46. ???" x:Name="Label46"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="4" Content="47. ???" x:Name="Label47"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="5" Content="48. ???" x:Name="Label48"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="6" Content="49. ???" x:Name="Label49"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="7" Content="50. ???" x:Name="Label50"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="8" Content="51. ???" x:Name="Label51"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="9" Content="52. ???" x:Name="Label52"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="10" Content="53. ???" x:Name="Label53"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="11" Content="54. ???" x:Name="Label54"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="12" Content="55. ???" x:Name="Label55"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                        <Label Grid.Row="13" Content="56. ???" x:Name="Label56"
+                               Foreground="#F5788F" VerticalAlignment="Center"
+                               FontSize="{DynamicResource FontBig}" Margin="{DynamicResource MarginNormalVerticalNegative}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>

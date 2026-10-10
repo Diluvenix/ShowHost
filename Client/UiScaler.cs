@@ -30,11 +30,14 @@ namespace Client
             resources["FontLarge"] = 25 * scale;
             resources["FontXLarge"] = 36 * scale;
             resources["FontHuge"] = 48 * scale;
+            resources["FontGiant"] = 64 * scale;
 
             resources["RadiusNormal"] = new CornerRadius(5 * scale);
             resources["RadiusLarge"] = new CornerRadius(8 * scale);
+            resources["RadiusHuge"] = new CornerRadius(24 * scale);
             
             resources["CardHeightNormal"] = 70 * scale;
+            resources["CardWidthLarge"] = 400 * scale;
 
             resources["MarginNormal"] = new Thickness(3 * scale);
             resources["MarginNormalHorizontal"] = new Thickness(3 * scale, 0, 3 * scale, 0);

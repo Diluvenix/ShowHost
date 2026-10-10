@@ -6,7 +6,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local:InputBox">
                     <Border CornerRadius="{TemplateBinding CornerRadius}"
-                            Background="#3D3D3D"
+                            Background="{TemplateBinding Background}"
                             Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
                             BorderBrush="Transparent" BorderThickness="1"
                             x:Name="Border">
@@ -48,6 +48,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="WhiteSmoke"/>
         <Setter Property="FontFamily" Value="{StaticResource Besley}"/>
+        <Setter Property="Background" Value="#3D3D3D"/>
     </Style>
 
     <Style TargetType="{x:Type local:RoundButton}">

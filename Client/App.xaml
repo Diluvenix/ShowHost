@@ -20,11 +20,14 @@
                     <sys:Double x:Key="FontLarge">25</sys:Double>
                     <sys:Double x:Key="FontXLarge">36</sys:Double>
                     <sys:Double x:Key="FontHuge">48</sys:Double>
+                    <sys:Double x:Key="FontGiant">64</sys:Double>
 
                     <CornerRadius x:Key="RadiusNormal">5</CornerRadius>
                     <CornerRadius x:Key="RadiusLarge">8</CornerRadius>
+                    <CornerRadius x:Key="RadiusHuge">24</CornerRadius>
 
                     <sys:Double x:Key="CardHeightNormal">70</sys:Double>
+                    <sys:Double x:Key="CardWidthLarge">400</sys:Double>
 
                     <Thickness x:Key="MarginNormal">3</Thickness>
                     <Thickness x:Key="MarginNormalHorizontal">3,0</Thickness>
