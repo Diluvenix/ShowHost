@@ -43,8 +43,11 @@ namespace Client.Views.Games._57
                 return;
             }
 
+            newColor &= 0xffffff;
+
             if (newColor == color)
             {
+                ColorInputBox.Text = color.ToString("X6");
                 return;
             }
 

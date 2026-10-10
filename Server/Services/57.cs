@@ -163,6 +163,7 @@ namespace Server.Services
                 }
                 else
                 {
+                    packet.Color &= 0xffffff;
                     logger.ForContext("Color", player.Color).ForContext("NewColor", packet.Color).Information("Updated Color");
                     player.Color = packet.Color.Value;
                 }
