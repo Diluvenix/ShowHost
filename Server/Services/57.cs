@@ -51,6 +51,30 @@ namespace Server.Services
                     if (scheduledPingUpdateTask.IsCompleted)
                         scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
                     break;
+                case InternalStatus.Input:
+                    _57_GamePacket packet = new() { Entries = currentEntries };
+                    switch (player.Role)
+                    {
+                        case PlayerRole.Player:
+                            players.Add(player.Username, new InternalPlayer(player.Username));
+                            packet.Players = [.. players.Values.Select(p => new _57_GamePacket.Player(
+                                p.Username,
+                                p.Points,
+                                p.Username == player.Username ? p.Value : "???"
+                            ))];
+                            break;
+                        case PlayerRole.Moderator:
+                            moderators.Add(player.Username);
+                            packet.Players = [.. players.Values.Select(p => new _57_GamePacket.Player(
+                                p.Username,
+                                p.Points,
+                                p.Value
+                            ))];
+                            break;
+                    }
+
+                    await player.SendPacketAsync(packet, ct);
+                    break;
             }
         }
         private protected override async Task OnPlayerRemovedAsync(Player player, CancellationToken ct)
@@ -75,6 +99,17 @@ namespace Server.Services
 
                     if (scheduledPingUpdateTask.IsCompleted)
                         scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
+                    break;
+                case InternalStatus.Input:
+                    await player.SendPacketAsync(new _57_GamePacket()
+                    {
+                        Entries = currentEntries,
+                        Players = [.. players.Values.Select(p => new _57_GamePacket.Player(
+                            p.Username,
+                            p.Points,
+                            player.Role == PlayerRole.Moderator || p.Username == player.Username ? p.Value : "???"
+                        ))]
+                    }, ct);
                     break;
             }
         }
@@ -221,10 +256,14 @@ namespace Server.Services
         private async Task Input_StartInputAsync(CancellationToken ct)
         {
             internalStatus = InternalStatus.Input;
+            foreach (InternalPlayer player in players.Values)
+                player.Value = string.Empty;
+
+            Array.Fill(currentEntries, "???");
 
             _57_GamePacket packet = new()
             {
-                Entries = entries,
+                Entries = currentEntries,
                 Players = [..
                     players.Values.Select(
                         p => new _57_GamePacket.Player(
@@ -251,6 +290,7 @@ namespace Server.Services
         private class InternalPlayer(string username)
         {
             public string Username { get; set; } = username;
+            public string Value { get; set; } = string.Empty;
             public int Points { get; set; } = 0;
         }
     }
