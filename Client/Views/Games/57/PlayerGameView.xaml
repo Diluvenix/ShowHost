@@ -406,6 +406,12 @@
                     </Grid>
                 </Border>
             </Grid>
+
+            <ScrollViewer Grid.Row="2"
+                          VerticalScrollBarVisibility="Disabled"
+                          HorizontalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="PlayerList"></ItemsControl>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </UserControl>

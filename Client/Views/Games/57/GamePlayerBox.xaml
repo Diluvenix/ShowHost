@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="Client.Views.Games._57.GamePlayerBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Client.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="170" d:DesignWidth="320">
+    <Grid Margin="10">
+        <Border CornerRadius="{DynamicResource RadiusHuge}"
+                Background="WhiteSmoke"
+                Opacity=".3"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.9*"/>
+                <RowDefinition Height="0.7*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="0"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   FontWeight="Bold" FontSize="{DynamicResource FontBig}"
+                   x:Name="PointLabel"/>
+            <local:InputBox Grid.Row="1" Margin="{DynamicResource MarginNormalHorizontal}"
+                            CornerRadius="{DynamicResource RadiusNormal}"
+                            x:Name="InputBox"/>
+            <Label Grid.Row="2" Content="[Username]"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   FontWeight="Black" FontSize="{DynamicResource FontLarge}"
+                   x:Name="UsernameLabel"/>
+        </Grid>
+    </Grid>
+</UserControl>
