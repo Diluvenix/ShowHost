@@ -1,4 +1,5 @@
-﻿using Network.Packets;
+﻿using Network;
+using Network.Packets;
 using Network.Packets.Games._57;
 using Network.Packets.Games.Lobby;
 using Serilog;
@@ -144,6 +145,9 @@ namespace Server.Services
                 case InternalStatus.Lobby:
                     await Lobby_HandleAsync(packet, sender, ct);
                     break;
+                case InternalStatus.Input:
+                    await Input_HandleAsync(packet, sender, ct);
+                    break;
             }
         }
 
@@ -253,6 +257,52 @@ namespace Server.Services
         }
         #endregion
         #region Input
+        private async Task Input_HandleAsync<T>(T packet, Player sender, CancellationToken ct)
+        {
+            switch (packet)
+            {
+                case _57_GameValueUpdatePacket _57_GameValueUpdatePacket:
+                    if (sender.Role != PlayerRole.Moderator && sender.Username != _57_GameValueUpdatePacket.Target)
+                    {
+                        logger.ForContext("Actor", sender.Username)
+                            .ForContext("Target", _57_GameValueUpdatePacket.Target)
+                            .Warning("Access to GameValueUpdate denied");
+                        return;
+                    }
+                    await Input_HandleAsync(_57_GameValueUpdatePacket, sender, ct);
+                    break;
+            }
+        }
+        private async Task Input_HandleAsync(_57_GameValueUpdatePacket packet, Player sender, CancellationToken ct)
+        {
+            ILogger logger = this.logger
+                .ForContext("Actor", sender.Username)
+                .ForContext("Target", packet.Target);
+
+            if (!players.TryGetValue(packet.Target, out InternalPlayer? player))
+            {
+                logger.Warning("Target does not exist on GameValueUpdate");
+                return;
+            }
+
+            if (player.Value != packet.Value)
+            {
+                player.Value = packet.Value;
+
+                _57_GamePacket newPacket = new()
+                {
+                    Players = [new _57_GamePacket.Player(player.Username, player.Points, player.Value)]
+                };
+
+                await Parallel.ForEachAsync(moderators, ct, async (m, ct)
+                    => await clients[m].SendPacketAsync(newPacket, ct)
+                );
+
+                if (sender.Username != player.Username)
+                    await clients[player.Username].SendPacketAsync(newPacket, ct);
+            }
+        }
+
         private async Task Input_StartInputAsync(CancellationToken ct)
         {
             internalStatus = InternalStatus.Input;

@@ -11,7 +11,7 @@ namespace Client.Controllers.Games._57
         public UserControl View => view;
         public Geometry? Path => null;
 
-        private Dictionary<string, GamePlayerBox> players = [];
+        private readonly Dictionary<string, GamePlayerBox> players = [];
 
         public void Dispose()
         {
