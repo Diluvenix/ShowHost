@@ -16,6 +16,10 @@ namespace Server.Services
 
         private Task scheduledPingUpdateTask;
 
+        private string[] entries = [.. Enumerable.Range(1, 57).Select(i => i.ToString())];
+        private string[] currentEntries = [.. Enumerable.Repeat("???", 57)];
+
+
         public _57() : base("57") 
         {
             PlayersMax = 4;
@@ -43,11 +47,11 @@ namespace Server.Services
                     }
                     await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby }, ct);
                     await Lobby_SendLobbyPacketAsync(ct);
+
+                    if (scheduledPingUpdateTask.IsCompleted)
+                        scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
                     break;
             }
-
-            if (scheduledPingUpdateTask.IsCompleted)
-                scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
         }
         private protected override async Task OnPlayerRemovedAsync(Player player, CancellationToken ct)
         {
@@ -68,19 +72,23 @@ namespace Server.Services
                 case InternalStatus.Lobby:
                     await player.SendPacketAsync(new SetViewPacket() { View = SetViewPacket.ViewType._57_Lobby }, ct);
                     await Lobby_SendLobbyPacketAsync(ct);
+
+                    if (scheduledPingUpdateTask.IsCompleted)
+                        scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
                     break;
             }
-
-            if (scheduledPingUpdateTask.IsCompleted)
-                scheduledPingUpdateTask = ScheduledPingUpdateAsync(Context.Cts.Token);
         }
 
         private async Task ScheduledPingUpdateAsync(CancellationToken ct)
         {
             PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
 
-            while (!ct.IsCancellationRequested && await timer.WaitForNextTickAsync(ct) && clients.Values.Any(c => c.IsConnected))
-            {
+            while (
+                !ct.IsCancellationRequested && 
+                await timer.WaitForNextTickAsync(ct) && 
+                clients.Values.Any(c => c.IsConnected) && 
+                internalStatus == InternalStatus.Lobby
+            ) {
                 _57_PingPacket packet = new()
                 {
                     Players = [.. clients.Values.Select(p => new _57_PingPacket.Player(p.Username, p.PingMS))]
@@ -178,7 +186,6 @@ namespace Server.Services
                     }
 
                     logger.Information("Game started");
-                    internalStatus = InternalStatus.Game;
                     Status = Lobby_GameListPacket.GameStatus.Running;
 
                     SetViewPacket packet = new() { View = SetViewPacket.ViewType._57_Game };
@@ -186,6 +193,8 @@ namespace Server.Services
                     {
                         await p.SendPacketAsync(packet, ct);
                     });
+
+                    await Input_StartInputAsync(ct);
 
                     break;
             }
@@ -208,17 +217,41 @@ namespace Server.Services
             });
         }
         #endregion
+        #region Input
+        private async Task Input_StartInputAsync(CancellationToken ct)
+        {
+            internalStatus = InternalStatus.Input;
+
+            _57_GamePacket packet = new()
+            {
+                Entries = entries,
+                Players = [..
+                    players.Values.Select(
+                        p => new _57_GamePacket.Player(
+                            p.Username,
+                            p.Points,
+                            ""
+                        )
+                    )
+                ]
+            };
+            await Parallel.ForEachAsync(clients.Values, ct, async (c, ct) =>
+                await c.SendPacketAsync(packet, ct)
+            );
+        }
+        #endregion
 
 
         private enum InternalStatus
         {
             Lobby,
-            Game,
+            Input,
         }
 
         private class InternalPlayer(string username)
         {
             public string Username { get; set; } = username;
+            public int Points { get; set; } = 0;
         }
     }
 }

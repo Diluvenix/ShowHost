@@ -266,6 +266,7 @@ namespace Network
             ["_57_LobbyPacket"] = typeof(_57_LobbyPacket),
             ["_57_LobbySettingsUpdatePacket"] = typeof(_57_LobbySettingsUpdatePacket),
             ["_57_PingPacket"] = typeof(_57_PingPacket),
+            ["_57_GamePacket"] = typeof(_57_GamePacket),
         };
     }
 }
