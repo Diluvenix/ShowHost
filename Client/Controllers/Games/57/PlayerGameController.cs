@@ -16,7 +16,7 @@ namespace Client.Controllers.Games._57
         {
         }
 
-        public async Task HandleAsync<T>(T packet, CancellationToken ct)
+        public void Handle<T>(T packet)
         {
             switch (packet)
             {

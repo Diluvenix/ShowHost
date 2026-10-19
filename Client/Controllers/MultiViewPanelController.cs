@@ -26,7 +26,10 @@ namespace Client.Controllers
                 panel.Dispose();
         }
 
-        public async Task HandleAsync<T>(T packet, CancellationToken ct) 
-            => await Parallel.ForEachAsync(panels, ct, async (panel, ct) => await panel.HandleAsync(packet, ct));
+        public void Handle<T>(T packet)
+        {
+            foreach (IController panel in panels)
+                panel.Handle(packet);
+        } 
     }
 }

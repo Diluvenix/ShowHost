@@ -8,6 +8,6 @@ namespace Client.Controllers
         public UserControl View { get; }
         public Geometry? Path { get; }
 
-        public Task HandleAsync<T>(T packet, CancellationToken ct);
+        public void Handle<T>(T packet);
     }
 }

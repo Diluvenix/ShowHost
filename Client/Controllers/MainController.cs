@@ -127,7 +127,7 @@ namespace Client.Controllers
                         continue;
                 }
 
-                await currentController.HandleAsync(packet, ct);
+                currentController.Handle(packet);
             }
         }
     }

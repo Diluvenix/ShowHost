@@ -30,7 +30,7 @@ namespace Client.Controllers.Games.Lobby
 
         public void Dispose() {}
 
-        public Task HandleAsync<T>(T packet, CancellationToken ct)
+        public void Handle<T>(T packet)
         {
             switch (packet)
             {
@@ -49,8 +49,6 @@ namespace Client.Controllers.Games.Lobby
                     view.Dispatcher.Invoke(view.SetPlayers, lobbyPacket.Players.Select(p => p.Username));
                     break;
             }
-
-            return Task.CompletedTask;
         }
     }
 }
