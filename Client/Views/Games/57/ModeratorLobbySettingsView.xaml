@@ -69,12 +69,6 @@
                                    FontWeight="Bold"
                                    Padding="{DynamicResource MarginNormal}"
                                    x:Name="StartGameButton"/>
-
-                <Separator Margin="{DynamicResource MarginLargeVertical}"/>
-                <Label Content="Colors"
-                       FontWeight="Bold"
-                       FontSize="{DynamicResource FontBig}"/>
-                <ItemsControl x:Name="PlayerList"></ItemsControl>
             </StackPanel>
         </ScrollViewer>
     </Grid>

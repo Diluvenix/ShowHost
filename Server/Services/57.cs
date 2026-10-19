@@ -36,7 +36,7 @@ namespace Server.Services
                     switch (player.Role)
                     {
                         case PlayerRole.Player:
-                            players.Add(player.Username, new InternalPlayer(player.Username, Colors.GetNextDefault(players.Values.Select(p => p.Color))));
+                            players.Add(player.Username, new InternalPlayer(player.Username));
                             break;
                         case PlayerRole.Moderator:
                             moderators.Add(player.Username);
@@ -156,22 +156,6 @@ namespace Server.Services
                 }
             }
 
-            if (packet.ColorUsername != null && packet.Color != null)
-            {
-                logger = logger.ForContext("Target", packet.ColorUsername);
-
-                if (!players.TryGetValue(packet.ColorUsername, out InternalPlayer? player))
-                {
-                    logger.Warning("Unknown Player");
-                }
-                else
-                {
-                    packet.Color &= 0xffffff;
-                    logger.ForContext("Color", player.Color).ForContext("NewColor", packet.Color).Information("Updated Color");
-                    player.Color = packet.Color.Value;
-                }
-            }
-
             await Lobby_SendLobbyPacketAsync(ct);
         }
 
@@ -216,7 +200,7 @@ namespace Server.Services
                 Name = Name,
                 PlayersMax = PlayersMax,
                 PlayersCurrent = PlayersCount,
-                Players = [.. players.Values.Select(p => new _57_LobbyPacket.Player(p.Username, clients[p.Username].PingMS, p.Color))]
+                Players = [.. players.Values.Select(p => new _57_LobbyPacket.Player(p.Username, clients[p.Username].PingMS))]
             };
 
             await Parallel.ForEachAsync(clients.Values, ct, async (p, ct) =>
@@ -233,10 +217,9 @@ namespace Server.Services
             Game,
         }
 
-        private class InternalPlayer(string username, UInt32 color)
+        private class InternalPlayer(string username)
         {
             public string Username { get; set; } = username;
-            public UInt32 Color { get; set; } = color;
         }
     }
 }

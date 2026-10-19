@@ -4,9 +4,5 @@
     {
         public string? Name { get; set; }
         public int? PlayersMax { get; set; }
-
-
-        public string? ColorUsername { get; set; }
-        public UInt32? Color { get; set; }
     }
 }

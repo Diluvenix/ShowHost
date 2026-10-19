@@ -15,11 +15,6 @@
                         VerticalAlignment="Stretch" 
                         HorizontalAlignment="Left"
                         Margin="{DynamicResource MarginNormal}">
-                <Border Background="Purple"
-                        Width="{DynamicResource FontNormal}"
-                        CornerRadius="{DynamicResource RadiusNormal}"
-                        x:Name="ColorBorder"/>
-
                 <StackPanel Orientation="Vertical"
                             VerticalAlignment="Center">
                     <Label Content="[USERNAME]"

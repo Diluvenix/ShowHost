@@ -16,9 +16,6 @@ namespace Client.Views.Games._57
     /// </summary>
     public partial class ModeratorLobbySettingsView : UserControl
     {
-        public readonly ObservableCollection<SettingsPlayerBox> SettingsPlayerBoxes = [];
-        private readonly ICollectionView settingsPlayerBoxesView;
-
         private string lobbyName = string.Empty;
         private int playersMax;
 
@@ -42,9 +39,6 @@ namespace Client.Views.Games._57
             };
 
             StartGameButton.Click += StartGameButton_Click;
-
-            settingsPlayerBoxesView = CollectionViewSource.GetDefaultView(SettingsPlayerBoxes);
-            PlayerList.ItemsSource = SettingsPlayerBoxes;
         }
 
         private void StartGameButton_Click(object sender, RoutedEventArgs e) 
@@ -104,16 +98,6 @@ namespace Client.Views.Games._57
 
             playersMax = _57_LobbyPacket.PlayersMax;
             PlayersMaxBox.Text = playersMax.ToString();
-        }
-
-        public void SetSettingsPlayerBoxCount(int count)
-        {
-            while (SettingsPlayerBoxes.Count > count)
-                SettingsPlayerBoxes.RemoveAt(0);
-            while (SettingsPlayerBoxes.Count < count)
-                SettingsPlayerBoxes.Add(new SettingsPlayerBox());
-
-            settingsPlayerBoxesView.Refresh();
         }
     }
 }
