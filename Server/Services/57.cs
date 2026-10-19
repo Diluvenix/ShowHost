@@ -3,7 +3,6 @@ using Network.Packets.Games._57;
 using Network.Packets.Games.Lobby;
 using Serilog;
 using Server.Model;
-using System.Net.Sockets;
 
 namespace Server.Services
 {

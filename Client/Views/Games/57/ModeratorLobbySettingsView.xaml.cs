@@ -2,11 +2,8 @@
 using Network;
 using Network.Packets;
 using Network.Packets.Games._57;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Client.Views.Games._57

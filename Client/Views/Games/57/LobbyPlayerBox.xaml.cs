@@ -1,6 +1,5 @@
 ﻿using Network.Packets.Games._57;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows;
 
 namespace Client.Views.Games._57
