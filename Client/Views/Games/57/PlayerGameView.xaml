@@ -410,7 +410,8 @@
             <ScrollViewer Grid.Row="2"
                           VerticalScrollBarVisibility="Disabled"
                           HorizontalScrollBarVisibility="Auto">
-                <ItemsControl x:Name="PlayerList"></ItemsControl>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                            x:Name="PlayerStackPanel"/>
             </ScrollViewer>
         </Grid>
     </Grid>

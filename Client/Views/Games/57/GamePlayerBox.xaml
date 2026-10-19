@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Client.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="170" d:DesignWidth="320">
+             Height="170" Width="{DynamicResource CardWidthLarge}">
     <Grid Margin="10">
         <Border CornerRadius="{DynamicResource RadiusHuge}"
                 Background="WhiteSmoke"
@@ -23,7 +23,9 @@
                    x:Name="PointLabel"/>
             <local:InputBox Grid.Row="1" Margin="{DynamicResource MarginNormalHorizontal}"
                             CornerRadius="{DynamicResource RadiusNormal}"
-                            x:Name="InputBox"/>
+                            x:Name="ValueInputBox"
+                            Background="White"
+                            Foreground="Black"/>
             <Label Grid.Row="2" Content="[Username]"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontWeight="Black" FontSize="{DynamicResource FontLarge}"

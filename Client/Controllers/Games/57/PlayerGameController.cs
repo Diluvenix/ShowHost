@@ -9,8 +9,9 @@ namespace Client.Controllers.Games._57
     {
         private readonly PlayerGameView view = new();
         public UserControl View => view;
-
         public Geometry? Path => null;
+
+        private Dictionary<string, GamePlayerBox> players = [];
 
         public void Dispose()
         {
@@ -30,6 +31,21 @@ namespace Client.Controllers.Games._57
         {
             if (packet.Entries is not null)
                 view.UpdateEntries(packet.Entries);
+
+            if (packet.Players is not null)
+            {
+                foreach (_57_GamePacket.Player player in packet.Players)
+                {
+                    if (!players.TryGetValue(player.Username, out GamePlayerBox? gamePlayerBox))
+                    {
+                        gamePlayerBox = new();
+                        players.Add(player.Username, gamePlayerBox);
+                        view.AddControl(gamePlayerBox);
+                    }
+
+                    gamePlayerBox.Update(player);
+                }
+            }
         }
     }
 }
